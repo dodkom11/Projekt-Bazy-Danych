@@ -1,0 +1,14 @@
+  html,body {
+    height: 100%;
+    width: 100%;
+  }
+
+#vegasSlide {
+    padding-top: 56px;
+    height: 100%;
+    width: 100%;
+  }
+
+.navbar {
+	background: #000050!important;
+}
