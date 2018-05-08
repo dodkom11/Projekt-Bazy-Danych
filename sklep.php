@@ -32,9 +32,7 @@
     if (!$result) {
         $m = oci_error($stid);
         trigger_error('Nie udało się wykonać polecenia: '. $m['message'], E_USER_ERROR);
-    }
-
-        
+    }        
     
 ?>
 
