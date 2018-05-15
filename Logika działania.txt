@@ -1,5 +1,7 @@
 Panel Admina
 ============
+Funkcje:
+-> Zarządzanie pracownikiem
 
 
 
@@ -41,3 +43,5 @@ Funkcje:
 LUZNE PRZEMYSLENIA
 + wszsytkie mozliwe ID dodac do konta, po zalogowaniu latwiejszy dostep do pozostalych tabel
 + jedno konto - jedna karta kredytowa zapisana
+
+!!!!!!!! BLAD Z COMMITEM
