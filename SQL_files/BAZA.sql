@@ -4,7 +4,7 @@
 CREATE TABLE KATEGORIA (
   KATEGORIA_ID INT,
   KATEGORIA_NAZWA VARCHAR2(45 char) NOT NULL,
-  OPIS VARCHAR2(45 char),
+  OPIS VARCHAR2(300 char),
   PRIMARY KEY (KATEGORIA_ID)
 );
  
@@ -490,3 +490,5 @@ VALUES ('1','2','KORDA','FSDFSBF-745','PREMIUM','999,99','1','Lorem ipsum dolor 
 /
 INSERT INTO PRODUKT (DOSTAWCA_ID,KATEGORIA_ID,PRODUCENT,NUMER_KATALOGOWY,MODEL,CENA,SZTUK_NA_MAGAZYNIE,OPIS) 
 VALUES ('1','2','NASH','GAFGSGS-885','MOETTO','680,58','58','Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla elementum turpis risus, eu hendrerit odio lobortis aliquet.');
+
+COMMIT;
