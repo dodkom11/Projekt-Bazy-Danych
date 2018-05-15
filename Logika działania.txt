@@ -1,0 +1,43 @@
+Panel Admina
+============
+
+
+
+
+
+
+Panel Pracownika
+================
+
+
+
+
+
+Panel Klienta
+=============
+Funkcje:
+-> Zamawianie produktow
+	+ Dodajemy Produkty do koszyka, zatwierdzamy zamowienie(dane z koszyka usuwane)
+
+-> Rejestracja
+	+ Wypelniamy dane z tabeli Konto, Kontakt, Adres
+
+-> Modyfikacja Adresu
+	+ Po zalogowaniu
+
+-> Modyfikacja Kontaktu
+	+ Po zalogowaniu
+
+-> Zarzadzanie kartami kredytowymi
+	+ Po zalogowaniu
+
+//Koszyk jest czyszczony zawsze po zatwierdzeniu zamowienia
+//Zamowienie - Koszyk
+> Tabela przechowujaca liste produktow do danego zamowienia
+> Gdy tworzone jest zamowienie dane z koszyka sa kopiowane do ZAMOWIONE_PRODUKTY
+> Gdy 2x klikniemy KUP musi sie zwiekszyc ilosc produktu, a nie dodac kolejny rekord
+
+=====================
+LUZNE PRZEMYSLENIA
++ wszsytkie mozliwe ID dodac do konta, po zalogowaniu latwiejszy dostep do pozostalych tabel
++ jedno konto - jedna karta kredytowa zapisana
