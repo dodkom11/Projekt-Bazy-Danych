@@ -63,6 +63,11 @@
                 </button>
                 <div class="collapse navbar-collapse" id="navbarResponsive">
                     <ul class="navbar-nav ml-auto">
+                         <?php
+                         if (!strcmp($_SESSION['S_UPRAWNIENIA'], "admin" )){
+                            echo '<li class="nav-item"><a class="nav-link" href="adminphp/zarzadzaj_pracownikiem.php"><i class="fas fa-gavel"></i>&nbsp;&nbsp;Admin Panel</a></li>';
+                         }
+                         ?>  
                         <li class="nav-item">
                             <a class="nav-link" href="index.php"><i class="fas fa-home"></i>&nbsp;&nbsp;Strona Główna                                
                             </a>
@@ -161,16 +166,19 @@
                             $model =  oci_result($stid, 'MODEL');
                             $szukMagazyn = oci_result($stid, 'SZTUK_NA_MAGAZYNIE');
                             $opis = oci_result($stid, 'OPIS');
-                            $zdjecie = oci_result($stid, 'ZDJECIE')->load();
-                                
-                         
-                               
+                            if( ($zdjecie = oci_result($stid, 'ZDJECIE')) != null){
+                                $zdjecie = oci_result($stid, 'ZDJECIE')->load();
+                            }                                                                                                  
 echo <<<END
                         <div class="col-lg-4 col-md-6 mb-4">
                             <div class="card h-100">
                                 <a href="#"> 
 END;
-echo '<div><img class="card-img-top" alt="700x400" src="data:image/jpeg;base64,'.base64_encode($zdjecie).'" /></div>';
+                        if($zdjecie != null) {   
+                            echo '<div><img class="card-img-top" alt="700x400" src="data:image/jpeg;base64,'.base64_encode($zdjecie).'" /></div>';
+                        } else {
+                            echo '<div><img class="card-img-top" alt="700x400" src="img/brakzdj.jpg" /></div>';
+                        }
 
 echo <<<END
                                 <div class="card-body">

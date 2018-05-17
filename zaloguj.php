@@ -47,9 +47,14 @@
 		if ($list=oci_fetch($stid) && empty($list) ) {			
 			$_SESSION['zalogowany'] = true;	
 
-			$_SESSION['KONTO_ID'] =  oci_result($stid, 'KONTO_ID');
-			$_SESSION['IMIE'] =  oci_result($stid, 'IMIE');
-			$_SESSION['NAZWISKO'] =  oci_result($stid, 'NAZWISKO');
+			$_SESSION['S_KONTO_ID'] =  oci_result($stid, 'KONTO_ID');			
+			$_SESSION['S_KARTA_ID'] =  oci_result($stid, 'KARTA_ID');
+			$_SESSION['S_ADRES_ID'] =  oci_result($stid, 'ADRES_ID');
+			$_SESSION['S_KONTAKT_ID'] =  oci_result($stid, 'KONTAKT_ID');
+			$_SESSION['S_LOGIN'] =  oci_result($stid, 'S_LOGIN');
+			$_SESSION['S_UPRAWNIENIA'] =  oci_result($stid, 'UPRAWNIENIA');
+			$_SESSION['S_IMIE'] =  oci_result($stid, 'IMIE');
+			$_SESSION['S_NAZWISKO'] =  oci_result($stid, 'NAZWISKO');
 
     		unset($_SESSION['blad_log']); //usuń z sesji zmienna blad skoro udalo nam sie zalogowac
     		oci_free_statement($stid); //wyczysc z pamieci RAM serwera zwrocone z bazy rezultaty zapytania			
