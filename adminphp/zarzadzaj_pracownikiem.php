@@ -175,7 +175,7 @@
                                         </tfoot>
                                         <tbody>
                                             <?php
-                                            while (($row = oci_fetch_array($p_cursor, OCI_ASSOC+OCI_RETURN_NULLS)) != false)
+                                            while (($row = oci_fetch_array($p_cursor, OCI_ASSOC+OCI_RETURN_NULLS)) != false){
                                             $KONTO_ID = $row['KONTO_ID'];
                                             $IMIE = $row['IMIE'];
                                             $NAZWISKO = $row['NAZWISKO'];

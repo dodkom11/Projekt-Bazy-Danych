@@ -2,6 +2,7 @@ Panel Admina
 ============
 Funkcje:
 -> Zarządzanie pracownikiem
+	+ Dodaj, usuń, modyfikuj
 
 
 
