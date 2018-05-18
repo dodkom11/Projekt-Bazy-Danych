@@ -72,8 +72,9 @@
                 </button>
                 <div class="collapse navbar-collapse" id="navbarResponsive">
                     <ul class="navbar-nav ml-auto">
-                        <li class="nav-item">
+                        <li class="nav-item active">
                             <a class="nav-link" href="zarzadzaj_pracownikiem.php"><i class="fas fa-gavel"></i>&nbsp;&nbsp;Admin Panel</a>
+                            <span class="sr-only">(current)</span>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="../index.php"><i class="fas fa-home"></i>&nbsp;&nbsp;Strona Główna
@@ -111,19 +112,10 @@
                         <a href="zarzadzaj_klientem.php">&nbsp;&nbsp;Zarządaj Klientem</a>
                     </li>
                     <li>
-                        <a href="#">&nbsp;&nbsp;Haki</a>
+                        <a href="#">&nbsp;&nbsp;Zarządaj Producentem</a>
                     </li>
                     <li>
-                        <a href="#">&nbsp;&nbsp;Kat. 4</a>
-                    </li>
-                    <li>
-                        <a href="#">&nbsp;&nbsp;Kat. 5</a>
-                    </li>
-                    <li>
-                        <a href="#">&nbsp;&nbsp;Kat. 6</a>
-                    </li>
-                    <li>
-                        <a href="#">&nbsp;&nbsp;Kat. 7</a>
+                        <a href="#">&nbsp;&nbsp;Zarządaj Kurierem</a>
                     </li>
                 </ul>
             </div>
