@@ -46,3 +46,15 @@ LUZNE PRZEMYSLENIA
 + jedno konto - jedna karta kredytowa zapisana
 
 !!!!!!!! BLAD Z COMMITEM
+
+
+
+
+==================
+<script>
+$(document).ready(function(){
+    $("#target").click(function(){
+        $('.nav-tabs a[href="#nav-zakladka2"]').tab('show')
+    });
+});
+</script>
