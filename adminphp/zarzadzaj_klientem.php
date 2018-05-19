@@ -47,6 +47,25 @@
 
     oci_execute($p_cursor, OCI_DEFAULT);
 
+       $queryLicz = "begin 
+                :bv := COUNTRW(:tabl, :colm, :cond);    
+               end;";
+
+       $tablename = 'KONTO';
+       $columnname = 'KONTO_ID';
+       $condition = "UPRAWNIENIA = 'klient'";
+       
+       $s = oci_parse($connection, $queryLicz);
+       
+       oci_bind_by_name($s, ":tabl", $tablename);
+       oci_bind_by_name($s, ":colm", $columnname);
+       oci_bind_by_name($s, ":cond", $condition);
+       oci_bind_by_name($s, ":bv", $ileKlientow, 10);
+       $res=oci_execute($s);
+        if (!$res) {
+        $m = oci_error($s);
+        trigger_error('Nie udało się wykonać polecenia: '. $m['message'], E_USER_ERROR);
+    }
     
 ?>
 <!DOCTYPE html>
@@ -193,10 +212,10 @@ END;
                         <div class="row">
                             <div class="card mb-3">
                                 <div class="card-header">
-                                <i class="fa fa-table"></i> Klienci</div>
+                                <i class="fa fa-table"></i> Wybrany Klient</div>
                                 <div class="card-body">
                                     <div class="table-responsive">
-                                        <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                                        <table class="table table-bordered" id="dataTable2" width="100%" cellspacing="0">
                                             <thead>
                                                 <tr>
                                                     <th>KONTO_ID</th>
@@ -238,15 +257,13 @@ END;
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        
-                        
+                        </div>             
                     </div>
                     <div class="tab-pane fade" id="nav-zakladka2" role="tabpanel" aria-labelledby="nav-zakladka2-tab">
                         <div class="row">
                             <div class="card mb-3">
                                 <div class="card-header">
-                                <i class="fa fa-table"></i> Klienci</div>
+                                <i class="fa fa-table"></i> Klienci [<?php echo $ileKlientow; ?>]</div>
                                 <div class="card-body">
                                     <div class="table-responsive">
                                         <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
@@ -319,10 +336,10 @@ END;
                     <div class="row">
                         <div class="card mb-3">
                             <div class="card-header">
-                            <i class="fa fa-table"></i> Klienci</div>
+                            <i class="fa fa-table"></i> Wybrany Klient</div>
                             <div class="card-body">
                                 <div class="table-responsive">
-                                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                                    <table class="table table-bordered" id="dataTable3" width="100%" cellspacing="0">
                                         <thead>
                                             <tr>
                                                 <th>KONTO_ID</th>
@@ -386,7 +403,7 @@ END;
                     </div>      
                     <?php
                     if(!empty($_REQUEST['number-input'])){                        
-                        echo '<button type="submit" class="btn btn-primary">POTWIERDZ USUNIECIE</button>';
+                        echo '<button type="submit" id="buttonkasujklient" class="btn btn-primary">POTWIERDZ USUNIECIE</button>';
                     }   
                     ?>                            
                 </div>
@@ -406,5 +423,18 @@ END;
     <script src="../vendor/datatables/jquery.dataTables.js"></script>
     <script src="../vendor/datatables/dataTables.bootstrap4.js"></script>
     <script src="../vendor/datatables/callDataTables.js"></script>
+    <script>
+        $('#buttonkasujklient').click(function() {
+
+ $.ajax({
+  type: "POST",
+  url: "funkcjeDELETE.php",
+  data: { kontoid: "3" }
+}).done(function abc( msg ) {
+  alert( "Data Saved: " + msg );
+});    
+
+    });
+    </script>
 </body>
 </html>
