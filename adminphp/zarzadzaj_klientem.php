@@ -59,8 +59,8 @@ if (!$stid) {
 }
 
 //PHP VARIABLE --> ORACLE PLACEHOLDER
-$cursorTabelaKlient = oci_new_cursor($connection);
-oci_bind_by_name($stid, ":cursor", $cursorTabelaKlient, -1, OCI_B_CURSOR);
+$cursorTabela = oci_new_cursor($connection);
+oci_bind_by_name($stid, ":cursor", $cursorTabela, -1, OCI_B_CURSOR);
 
 //EXECUTE POLECENIE
 $result = oci_execute($stid);
@@ -70,7 +70,7 @@ if (!$result) {
 }
 
 //EXECUTE KURSOR
-$result = oci_execute($cursorTabelaKlient, OCI_DEFAULT);
+$result = oci_execute($cursorTabela, OCI_DEFAULT);
 if (!$result) {
     $m = oci_error($stid);
     trigger_error('Nie udało się wykonać polecenia: ' . $m['message'], E_USER_ERROR);
@@ -87,7 +87,7 @@ $stid = oci_parse($connection, $queryLicz);
 oci_bind_by_name($stid, ":tabl", $tablename);
 oci_bind_by_name($stid, ":colm", $columnname);
 oci_bind_by_name($stid, ":cond", $condition);
-oci_bind_by_name($stid, ":bv", $ileKlientow, 10);
+oci_bind_by_name($stid, ":bv", $ileOsob, 10);
 
 //EXECUTE POLECENIE
 $result = oci_execute($stid);
@@ -188,6 +188,11 @@ oci_free_statement($stid);
                     </nav>
                     <br>
                     <div class="tab-content" id="nav-tabContent">
+<!-- 
+        +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++    
+                            >>>>>>>>>>      ZAKLADKA 1      <<<<<<<<<<
+        +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+-->
                         <div class="tab-pane fade show active" id="nav-zakladka1" role="tabpanel" aria-labelledby="nav-zakladka1-tab">
                             <form method="post" action="<?php
 echo $_SERVER['PHP_SELF'];
@@ -265,9 +270,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
 
         //PHP VARIABLE --> ORACLE PLACEHOLDER        
-        $cursorPokazKlient = oci_new_cursor($connection);
+        $cursorPokazOsobe = oci_new_cursor($connection);
         oci_bind_by_name($stid, ":konto_id", $_REQUEST['number-input']);
-        oci_bind_by_name($stid, ":cursor2", $cursorPokazKlient, -1, OCI_B_CURSOR);
+        oci_bind_by_name($stid, ":cursor2", $cursorPokazOsobe, -1, OCI_B_CURSOR);
 
         //EXECUTE POLECENIE
         $result = oci_execute($stid);
@@ -277,7 +282,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
 
         //EXECUTE KURSOR
-        oci_execute($cursorPokazKlient, OCI_DEFAULT);
+        oci_execute($cursorPokazOsobe, OCI_DEFAULT);
 
         //ZWOLNIJ ZASOBY
 		oci_free_statement($stid);
@@ -311,7 +316,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                                 <?php
 //WYPEŁNIJ TABELE JEŻELI PODANO ID KONTA
 if (!empty($_REQUEST['number-input'])) {
-    while (($row = oci_fetch_array($cursorPokazKlient, OCI_ASSOC + OCI_RETURN_NULLS)) != false) {
+    while (($row = oci_fetch_array($cursorPokazOsobe, OCI_ASSOC + OCI_RETURN_NULLS)) != false) {
         $KONTO_ID     = $row['KONTO_ID'];
         $IMIE         = $row['IMIE'];
         $NAZWISKO     = $row['NAZWISKO'];
@@ -335,13 +340,27 @@ if (!empty($_REQUEST['number-input'])) {
                             </div>
                         </div>             
                     </div>
+<!-- 
+        +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++    
+                            >>>>>>>>>>      ZAKLADKA 2      <<<<<<<<<<
+        +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+-->
                     <div class="tab-pane fade" id="nav-zakladka2" role="tabpanel" aria-labelledby="nav-zakladka2-tab">
+                        <?php
+//POKAŻ WYBRANE ID JEŚLI PODANO ID
+if (!empty($_REQUEST['number-input'])) {
+    echo <<<END
+                       <span style="font-size: 25px;">WYBRANE ID:&nbsp;</span> <span class="badge badge-dark" style="font-size: 26px;">
+END;
+    echo $_REQUEST['number-input'] . "</span><br/> <br/>";
+}
+?>
                         <div class="row">
                             <div class="card mb-3">
                                 <div class="card-header">
                                 <i class="fa fa-table"></i> Klienci [<?php
 //WYŚWIETL LICZBE KLIENTÓW
-echo $ileKlientow;
+echo $ileOsob;
 ?>]</div>
                                 <div class="card-body">
                                     <div class="table-responsive">
@@ -381,7 +400,7 @@ echo $ileKlientow;
                                             <tbody>
                                                 <?php
 //WYPEŁNIJ TABELE KLIENTAMI Z BAZY                                            
-while (($row = oci_fetch_array($cursorTabelaKlient, OCI_ASSOC + OCI_RETURN_NULLS)) != false) {
+while (($row = oci_fetch_array($cursorTabela, OCI_ASSOC + OCI_RETURN_NULLS)) != false) {
     $KONTO_ID     = $row['KONTO_ID'];
     $IMIE         = $row['IMIE'];
     $NAZWISKO     = $row['NAZWISKO'];
@@ -404,6 +423,11 @@ while (($row = oci_fetch_array($cursorTabelaKlient, OCI_ASSOC + OCI_RETURN_NULLS
                             </div>
                         </div>
                     </div>
+<!-- 
+        +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++    
+                            >>>>>>>>>>      ZAKLADKA 3      <<<<<<<<<<
+        +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+-->
                     <div class="tab-pane fade" id="nav-zakladka3" role="tabpanel" aria-labelledby="nav-zakladka3-tab">
                         <?php
 //POKAŻ WYBRANE ID JEŚLI PODANO ID
@@ -411,10 +435,9 @@ if (!empty($_REQUEST['number-input'])) {
     echo <<<END
                        <span style="font-size: 25px;">WYBRANE ID:&nbsp;</span> <span class="badge badge-dark" style="font-size: 26px;">
 END;
-    echo $_REQUEST['number-input'] . "</span>";
+    echo $_REQUEST['number-input'] . "</span><br/> <br/>";
 }
 ?>
-                   <br/> <br/>
                     <div class="row">
                         <div class="card mb-3">
                             <div class="card-header">
@@ -449,9 +472,9 @@ if (!empty($_REQUEST['number-input'])) {
     }
 
     //PHP VARIABLE --> ORACLE PLACEHOLDER
-    $cursorUsunKlient = oci_new_cursor($connection);
+    $cursorUsunOsobe = oci_new_cursor($connection);
     oci_bind_by_name($stid, ":konto_id", $_REQUEST['number-input']);
-    oci_bind_by_name($stid, ":cursor2", $cursorUsunKlient, -1, OCI_B_CURSOR);
+    oci_bind_by_name($stid, ":cursor2", $cursorUsunOsobe, -1, OCI_B_CURSOR);
 
 
     //EXECUTE POLECENIE
@@ -462,13 +485,13 @@ if (!empty($_REQUEST['number-input'])) {
     }
 
     //EXECUTE KURSOR
-    oci_execute($cursorUsunKlient, OCI_DEFAULT);
+    oci_execute($cursorUsunOsobe, OCI_DEFAULT);
 
     //ZWOLNIJ ZASOBY
 	oci_free_statement($stid); 
 }
 if (!empty($_REQUEST['number-input'])) {
-    while (($row = oci_fetch_array($cursorUsunKlient, OCI_ASSOC + OCI_RETURN_NULLS)) != false) {
+    while (($row = oci_fetch_array($cursorUsunOsobe, OCI_ASSOC + OCI_RETURN_NULLS)) != false) {
         $KONTO_ID     = $row['KONTO_ID'];
         $IMIE         = $row['IMIE'];
         $NAZWISKO     = $row['NAZWISKO'];
