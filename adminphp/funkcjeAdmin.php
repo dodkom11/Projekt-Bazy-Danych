@@ -33,6 +33,13 @@ $queryUsunKontoID = "begin
               			 	DELETEKONTO(:konto_id);
           				end;";
 
+$queryDodajPracownikID = "begin 
+              			 	INSERTPRACOWNIK(:konto_id, :pensja, :premia);
+          				end;";
+
+
+
+
 /* ==========		FUNKCJA DELETE KONTO			========== */
 
 function funkcjaUsunKonto($connection, $queryUsunKontoID)
@@ -54,6 +61,32 @@ function funkcjaUsunKonto($connection, $queryUsunKontoID)
 	oci_free_statement($stid);
 
 	echo '<div class="alert alert-success" role="alert"><strong>INFORMACJA!</strong> Pomyślnie usunięto konto ID: <strong>' . $_POST['usunkontoid'] . "</strong></div>";
+}
+
+
+/* ==========		FUNKCJA DODAJ PRACOWNIKA			========== */
+
+function funkcjaDodajPracownik($connection, $queryDodajPracownikID)
+{
+	//PARSOWANIE  
+	$stid = oci_parse($connection, $queryDodajPracownikID);
+
+	//PHP VARIABLE --> ORACLE PLACEHOLDER
+	oci_bind_by_name($stid, ":konto_id", $_POST['dodajpracownikid']);
+	oci_bind_by_name($stid, ":pensja", $_POST['pensja']);
+	oci_bind_by_name($stid, ":premia", $_POST['premia']);
+
+	//EXECUTE POLECENIE
+	$result = oci_execute($stid);
+	if (!$result) {
+	    $m = oci_error($stid);
+	    trigger_error('Nie udało się wykonać polecenia: ' . $m['message'], E_USER_ERROR);
+	}
+
+	//ZWOLNIJ ZASOBY
+	oci_free_statement($stid);
+
+	echo '<div class="alert alert-success" role="alert"><strong>INFORMACJA!</strong> Pomyślnie dodano pracownika. Konto ID: <strong>' . $_POST['dodajpracownikid'] . "</strong></div>";
 }
 ?>
 <!DOCTYPE html>
@@ -135,11 +168,14 @@ function funkcjaUsunKonto($connection, $queryUsunKontoID)
             <!-- Page Content -->
             <div id="page-content-wrapper">
                 <div class="container-fluid">
-		<?php
-if($_SERVER['REQUEST_METHOD'] == "POST" and isset($_POST['usunkontobutton']))
-	{
-    	funkcjaUsunKonto($connection, $queryUsunKontoID);
-	}	
+<?php
+	if($_SERVER['REQUEST_METHOD'] == "POST" and isset($_POST['usunkontobutton'])) {
+    		funkcjaUsunKonto($connection, $queryUsunKontoID);
+		}
+	else if($_SERVER['REQUEST_METHOD'] == "POST" and isset($_POST['dodajpracownikbutton'])) {
+			funkcjaDodajPracownik($connection, $queryDodajPracownikID);
+	}
+
 ?>
             <!-- ./container-fluid -->
         </div>

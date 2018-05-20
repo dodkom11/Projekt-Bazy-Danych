@@ -28,17 +28,17 @@ if (!$connection) {
 
 
 /* ==========       ZMIENNE LOKALNE         ========== */
-//SELECT KLIENCI TABELA
+//SELECT PRACOWNICY TABELA
 $querySelectPracownik = "begin 
                             :cursor := SELECTPRACOWNICY;
                         end;";
 
-//SELECT LICZBA KLIENTOW
+//SELECT LICZBA PRACOWNIKOW
 $queryLicz = "begin 
                 :bv := COUNTRW(:tabl, :colm, :cond);    
                end;";
 
-//SELECT KLIENT PO ID
+//SELECT PRACOWNIK PO ID
 $querySelectPracownikID = "begin 
                             :cursor2 := SELECTPRACOWNIKKONTOID(:konto_id);
                         end;";   
@@ -47,10 +47,10 @@ $tablename  = 'KONTO';
 $columnname = 'KONTO_ID';
 $condition  = "UPRAWNIENIA = 'pracownik'";
 
-//WARUNEK CZY ISTENIEJE KLIENT 
+//WARUNEK CZY ISTENIEJE PRACOWNIK 
 $condition2  = "UPRAWNIENIA = 'pracownik' AND KONTO_ID = '";
 
-/* ==========       SELECT KLIENCI TABELA       ========== */
+/* ==========       SELECT PRACOWNICY TABELA       ========== */
 //PARSOWANIE  
 $stid = oci_parse($connection, $querySelectPracownik);
 if (!$stid) {
@@ -79,7 +79,7 @@ if (!$result) {
 //ZWOLNIJ ZASOBY
 oci_free_statement($stid);
 
-/* ==========       SELECT LICZBA KLIENTOW          ========== */
+/* ==========       SELECT LICZBA PRACOWNIKOW          ========== */
 //PARSOWANIE  
 $stid = oci_parse($connection, $queryLicz);
 
@@ -183,14 +183,14 @@ oci_free_statement($stid);
                         <div class="nav nav-tabs" id="nav-tab" role="tablist">
                             <a class="nav-item nav-link active" id="nav-zakladka1-tab" data-toggle="tab" href="#nav-zakladka1" role="tab" aria-controls="nav-zakladka1" aria-selected="true">Podaj ID Konta</a>
                             <a class="nav-item nav-link" id="nav-zakladka2-tab" data-toggle="tab" href="#nav-zakladka2" role="tab" aria-controls="nav-zakladka2" aria-selected="false">Przeglądaj</a>
-                            <a class="nav-item nav-link" id="nav-zakladka3-tab" data-toggle="tab" href="#nav-zakladka3" role="tab" aria-controls="nav-zakladka3" aria-selected="false">Usuń Konto</a>
+                            <a class="nav-item nav-link" id="nav-zakladka3-tab" data-toggle="tab" href="#nav-zakladka3" role="tab" aria-controls="nav-zakladka3" aria-selected="false">Usuń Konto</a> 
                         </div>
                     </nav>
                     <br>
                     <div class="tab-content" id="nav-tabContent">
 <!-- 
         +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++    
-                            >>>>>>>>>>      ZAKLADKA 3      <<<<<<<<<<
+                            >>>>>>>>>>      ZAKLADKA 1      <<<<<<<<<<
         +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 -->
                         <div class="tab-pane fade show active" id="nav-zakladka1" role="tabpanel" aria-labelledby="nav-zakladka1-tab">
@@ -215,10 +215,10 @@ echo $_SERVER['PHP_SELF'];
 // POKAŻ WYBRANE ID JEŚLI PODANO ID
 if (!empty($_REQUEST['number-input'])) {
 
-//WARUNEK CZY ISTENIEJE KLIENT 
+//WARUNEK CZY ISTENIEJE PRACOWNIK 
 $condition2 = $condition2 . $_REQUEST['number-input'] . "'";
 
-/* ==========       SPRAWDZ CZY KONTO NALEZY DO KLIENT          ========== */
+/* ==========       SPRAWDZ CZY KONTO NALEZY DO PRACOWNIK          ========== */
 //PARSOWANIE  
 $stid = oci_parse($connection, $queryLicz);
 
@@ -226,7 +226,7 @@ $stid = oci_parse($connection, $queryLicz);
 oci_bind_by_name($stid, ":tabl", $tablename);
 oci_bind_by_name($stid, ":colm", $columnname);
 oci_bind_by_name($stid, ":cond", $condition2);
-oci_bind_by_name($stid, ":bv", $istniejeKlient, 10);
+oci_bind_by_name($stid, ":bv", $istniejeKonto, 10);
 
 //EXECUTE POLECENIE
 $result = oci_execute($stid);
@@ -237,7 +237,7 @@ if (!$result) {
 
 //ZWOLNIJ ZASOBY
 oci_free_statement($stid);
-    if($istniejeKlient > 0) {
+    if($istniejeKonto > 0) {
 echo <<<END
 <span style="font-size: 25px;">WYBRANE ID: </span> <span class="badge badge-dark" style="font-size: 26px;">
 END;
@@ -292,7 +292,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                        <div class="row">
                             <div class="card mb-3">
                                 <div class="card-header">
-                                <i class="fa fa-table"></i> Wybrany Klient</div>
+                                <i class="fa fa-table"></i> Wybrany Pracownik</div>
                                 <div class="card-body">
                                     <div class="table-responsive">
                                         <table class="table table-bordered" id="dataTable2" width="100%" cellspacing="0">
@@ -342,15 +342,15 @@ if (!empty($_REQUEST['number-input'])) {
                     </div>
 <!-- 
         +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++    
-                            >>>>>>>>>>      ZAKLADKA 3      <<<<<<<<<<
+                            >>>>>>>>>>      ZAKLADKA 2      <<<<<<<<<<
         +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 -->
                     <div class="tab-pane fade" id="nav-zakladka2" role="tabpanel" aria-labelledby="nav-zakladka2-tab">
                         <div class="row">
                             <div class="card mb-3">
                                 <div class="card-header">
-                                <i class="fa fa-table"></i> Klienci [<?php
-//WYŚWIETL LICZBE KLIENTÓW
+                                <i class="fa fa-table"></i> Pracownicy [<?php
+//WYŚWIETL LICZBE PRACOWNIKÓW
 echo $ileOsob;
 ?>]</div>
                                 <div class="card-body">
@@ -362,6 +362,9 @@ echo $ileOsob;
                                                     <th>IMIE</th>
                                                     <th>NAZWISKO</th>
                                                     <th>UPRAWNIENIA</th>
+                                                    <th>ZATRUDNIONO</th>
+                                                    <th>PENSJA</th>
+                                                    <th>PREMIA</th>
                                                     <th>MIEJSCOWOSC</th>
                                                     <th>WOJEWODZTWO</th>
                                                     <th>KOD_POCZTOWY</th>
@@ -378,6 +381,9 @@ echo $ileOsob;
                                                 <th>IMIE</th>
                                                 <th>NAZWISKO</th>
                                                 <th>UPRAWNIENIA</th>
+                                                <th>ZATRUDNIONO</th>
+                                                <th>PENSJA</th>
+                                                <th>PREMIA</th>
                                                 <th>MIEJSCOWOSC</th>
                                                 <th>WOJEWODZTWO</th>
                                                 <th>KOD_POCZTOWY</th>
@@ -390,21 +396,25 @@ echo $ileOsob;
                                             </tfoot>
                                             <tbody>
                                                 <?php
-//WYPEŁNIJ TABELE KLIENTAMI Z BAZY                                            
-while (($row = oci_fetch_array($cursorTabela, OCI_ASSOC + OCI_RETURN_NULLS)) != false) {
-    $KONTO_ID     = $row['KONTO_ID'];
-    $IMIE         = $row['IMIE'];
-    $NAZWISKO     = $row['NAZWISKO'];
-    $UPRAWNIENIA  = $row['UPRAWNIENIA'];
-    $MIEJSCOWOSC  = $row['MIEJSCOWOSC'];
-    $WOJEWODZTWO  = $row['WOJEWODZTWO'];
-    $KOD_POCZTOWY = $row['KOD_POCZTOWY'];
-    $ULICA        = $row['ULICA'];
-    $NR_DOMU      = $row['NR_DOMU'];
-    $NR_LOKALU    = $row['NR_LOKALU'];
-    $EMAIL        = $row['EMAIL'];
-    $NR_TEL       = $row['NR_TEL'];
-    echo "<tr><td>$KONTO_ID</td> <td>$IMIE</td> <td>$NAZWISKO</td> <td>$UPRAWNIENIA</td> <td>$MIEJSCOWOSC</td> <td>$WOJEWODZTWO</td> <td>$KOD_POCZTOWY</td> <td>$ULICA</td> <td>$NR_DOMU</td> <td>$NR_LOKALU</td> <td>$EMAIL</td> <td>$NR_TEL</td></tr>";
+//WYPEŁNIJ TABELE PRACOWNIKAMI Z BAZY                                            
+while (($row = oci_fetch_array($cursorTabela, OCI_ASSOC+OCI_RETURN_NULLS)) != false){
+$KONTO_ID = $row['KONTO_ID'];
+$IMIE = $row['IMIE'];
+$NAZWISKO = $row['NAZWISKO'];
+$UPRAWNIENIA = $row['UPRAWNIENIA'];
+$DATA_ZATRUDNIENIA = $row['DATA_ZATRUDNIENIA'];
+$DATA_ZWOLNIENIA = $row['DATA_ZWOLNIENIA'];
+$PENSJA = $row['PENSJA'];
+$PREMIA = $row['PREMIA'];
+$MIEJSCOWOSC = $row['MIEJSCOWOSC'];
+$WOJEWODZTWO = $row['WOJEWODZTWO'];
+$KOD_POCZTOWY = $row['KOD_POCZTOWY'];
+$ULICA = $row['ULICA'];
+$NR_DOMU = $row['NR_DOMU'];
+$NR_LOKALU = $row['NR_LOKALU'];
+$EMAIL = $row['EMAIL'];
+$NR_TEL = $row['NR_TEL'];
+echo "<tr><td>$KONTO_ID</td> <td>$IMIE</td> <td>$NAZWISKO</td> <td>$UPRAWNIENIA</td> <td>$DATA_ZATRUDNIENIA</td> <td>$PENSJA</td> <td>$PREMIA</td> <td>$MIEJSCOWOSC</td> <td>$WOJEWODZTWO</td> <td>$KOD_POCZTOWY</td> <td>$ULICA</td> <td>$NR_DOMU</td> <td>$NR_LOKALU</td> <td>$EMAIL</td> <td>$NR_TEL</td></tr>";     
 }
 ?>
                                            </tbody>
@@ -432,7 +442,7 @@ END;
                     <div class="row">
                         <div class="card mb-3">
                             <div class="card-header">
-                            <i class="fa fa-table"></i> Wybrany Klient</div>
+                            <i class="fa fa-table"></i> Wybrany Pracownik</div>
                             <div class="card-body">
                                 <div class="table-responsive">
                                     <table class="table table-bordered" id="dataTable3" width="100%" cellspacing="0">

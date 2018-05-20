@@ -39,13 +39,16 @@ $queryLicz = "begin
                end;";
 
 //SELECT KLIENT PO ID
-$querySelectKlienciID = "begin 
+$querySelectKlientID = "begin 
             				:cursor2 := SELECTKLIENCIKONTOID(:konto_id);
             			end;";   
 
 $tablename  = 'KONTO';
 $columnname = 'KONTO_ID';
 $condition  = "UPRAWNIENIA = 'klient'";
+
+//WARUNEK CZY ISTENIEJE KLIENT 
+$condition2  = "UPRAWNIENIA = 'klient' AND KONTO_ID = '";
 
 
 
@@ -184,6 +187,7 @@ oci_free_statement($stid);
                             <a class="nav-item nav-link active" id="nav-zakladka1-tab" data-toggle="tab" href="#nav-zakladka1" role="tab" aria-controls="nav-zakladka1" aria-selected="true">Podaj ID Konta</a>
                             <a class="nav-item nav-link" id="nav-zakladka2-tab" data-toggle="tab" href="#nav-zakladka2" role="tab" aria-controls="nav-zakladka2" aria-selected="false">Przeglądaj</a>
                             <a class="nav-item nav-link" id="nav-zakladka3-tab" data-toggle="tab" href="#nav-zakladka3" role="tab" aria-controls="nav-zakladka3" aria-selected="false">Usuń Konto</a>
+                            <a class="nav-item nav-link" id="nav-zakladka4-tab" data-toggle="tab" href="#nav-zakladka4" role="tab" aria-controls="nav-zakladka" aria-selected="false">Utwórz Pracownika</a>
                         </div>
                     </nav>
                     <br>
@@ -216,7 +220,7 @@ echo $_SERVER['PHP_SELF'];
 if (!empty($_REQUEST['number-input'])) {
 
 //WARUNEK CZY ISTENIEJE KLIENT 
-$condition2  = "UPRAWNIENIA = 'klient' AND KONTO_ID = '" . $_REQUEST['number-input'] . "'";
+$condition2 = $condition2 . $_REQUEST['number-input'] . "'";
 
 /* ==========		SPRAWDZ CZY KONTO NALEZY DO KLIENT			========== */
 //PARSOWANIE  
@@ -226,7 +230,7 @@ $stid = oci_parse($connection, $queryLicz);
 oci_bind_by_name($stid, ":tabl", $tablename);
 oci_bind_by_name($stid, ":colm", $columnname);
 oci_bind_by_name($stid, ":cond", $condition2);
-oci_bind_by_name($stid, ":bv", $istniejeKlient, 10);
+oci_bind_by_name($stid, ":bv", $istniejeKonto, 10);
 
 //EXECUTE POLECENIE
 $result = oci_execute($stid);
@@ -237,7 +241,7 @@ if (!$result) {
 
 //ZWOLNIJ ZASOBY
 oci_free_statement($stid);
-	if($istniejeKlient > 0) {
+	if($istniejeKonto > 0) {
 echo <<<END
 <span style="font-size: 25px;">WYBRANE ID: </span> <span class="badge badge-dark" style="font-size: 26px;">
 END;
@@ -263,7 +267,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     } else {
 
         //PARSOWANIE 
-        $stid = oci_parse($connection, $querySelectKlienciID);
+        $stid = oci_parse($connection, $querySelectKlientID);
         if (!$stid) {
             $m = oci_error($connection);
             trigger_error('Nie udało się przeanalizować polecenia pl/sql: ' . $m['message'], E_USER_ERROR);
@@ -465,7 +469,7 @@ END;
                                             <?php
 if (!empty($_REQUEST['number-input'])) { 
     //PARSOWANIE
-    $stid = oci_parse($connection, $querySelectKlienciID);
+    $stid = oci_parse($connection, $querySelectKlientID);
     if (!$stid) {
         $m = oci_error($connection);
         trigger_error('Nie udało się przeanalizować polecenia pl/sql: ' . $m['message'], E_USER_ERROR);
@@ -529,6 +533,136 @@ END;
 echo <<<END
 "><br>
 <input type="submit" name="usunkontobutton" class="btn btn-primary" value="POTWIERDZ USUNIECIE" />
+</form>
+END;
+}
+?>
+             
+                </div>
+<!-- 
+        +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++    
+                            >>>>>>>>>>      ZAKLADKA 4     <<<<<<<<<<
+        +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+-->
+                    <div class="tab-pane fade" id="nav-zakladka4" role="tabpanel" aria-labelledby="nav-zakladka4-tab">
+                        <?php
+//POKAŻ WYBRANE ID JEŚLI PODANO ID
+if (!empty($_REQUEST['number-input'])) {
+    echo <<<END
+                       <span style="font-size: 25px;">WYBRANE ID:&nbsp;</span> <span class="badge badge-dark" style="font-size: 26px;">
+END;
+    echo $_REQUEST['number-input'] . "</span><br/> <br/>";
+}
+?>                   
+                    <div class="row">
+                        <div class="card mb-3">
+                            <div class="card-header">
+                            <i class="fa fa-table"></i> Wybrany Klient</div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered" id="dataTable3" width="100%" cellspacing="0">
+                                        <thead>
+                                            <tr>
+                                                <th>KONTO_ID</th>
+                                                <th>IMIE</th>
+                                                <th>NAZWISKO</th>
+                                                <th>UPRAWNIENIA</th>
+                                                <th>MIEJSCOWOSC</th>
+                                                <th>WOJEWODZTWO</th>
+                                                <th>KOD_POCZTOWY</th>
+                                                <th>ULICA</th>
+                                                <th>NR_DOMU</th>
+                                                <th>NR_LOKALU</th>
+                                                <th>EMAIL</th>
+                                                <th>NR_TEL</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <?php
+if (!empty($_REQUEST['number-input'])) { 
+    //PARSOWANIE
+    $stid = oci_parse($connection, $querySelectKlientID);
+    if (!$stid) {
+        $m = oci_error($connection);
+        trigger_error('Nie udało się przeanalizować polecenia pl/sql: ' . $m['message'], E_USER_ERROR);
+    }
+
+    //PHP VARIABLE --> ORACLE PLACEHOLDER
+    $cursorUsunOsobe = oci_new_cursor($connection);
+    oci_bind_by_name($stid, ":konto_id", $_REQUEST['number-input']);
+    oci_bind_by_name($stid, ":cursor2", $cursorUsunOsobe, -1, OCI_B_CURSOR);
+
+
+    //EXECUTE POLECENIE
+    $result = oci_execute($stid);
+    if (!$result) {
+        $m = oci_error($stid);
+        trigger_error('Nie udało się wykonać polecenia: ' . $m['message'], E_USER_ERROR);
+    }
+
+    //EXECUTE KURSOR
+    oci_execute($cursorUsunOsobe, OCI_DEFAULT);
+
+    //ZWOLNIJ ZASOBY
+    oci_free_statement($stid); 
+}
+if (!empty($_REQUEST['number-input'])) {
+    while (($row = oci_fetch_array($cursorUsunOsobe, OCI_ASSOC + OCI_RETURN_NULLS)) != false) {
+        $KONTO_ID     = $row['KONTO_ID'];
+        $IMIE         = $row['IMIE'];
+        $NAZWISKO     = $row['NAZWISKO'];
+        $UPRAWNIENIA  = $row['UPRAWNIENIA'];
+        $MIEJSCOWOSC  = $row['MIEJSCOWOSC'];
+        $WOJEWODZTWO  = $row['WOJEWODZTWO'];
+        $KOD_POCZTOWY = $row['KOD_POCZTOWY'];
+        $ULICA        = $row['ULICA'];
+        $NR_DOMU      = $row['NR_DOMU'];
+        $NR_LOKALU    = $row['NR_LOKALU'];
+        $EMAIL        = $row['EMAIL'];
+        $NR_TEL       = $row['NR_TEL'];
+        echo "<tr><td>$KONTO_ID</td> <td>$IMIE</td> <td>$NAZWISKO</td> <td>$UPRAWNIENIA</td> <td>$MIEJSCOWOSC</td> <td>$WOJEWODZTWO</td> <td>$KOD_POCZTOWY</td> <td>$ULICA</td> <td>$NR_DOMU</td> <td>$NR_LOKALU</td> <td>$EMAIL</td> <td>$NR_TEL</td></tr>";
+    }
+}
+?>
+                                       </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>    
+
+   
+
+
+
+<?php
+if (!empty($_REQUEST['number-input'])) {
+
+echo <<<END
+<form action="funkcjeAdmin.php" method="post">
+<input type="hidden" name="dodajpracownikid" min="1" value="
+END;
+?>
+<?php echo htmlspecialchars($_REQUEST['number-input']);
+echo <<<END
+"><br>
+END;
+
+?>
+
+<?php 
+echo <<<END
+	   <div class="form-row">
+     		 <div class="form-group col-3">
+     		 	<label for="inputpensjaid">Pensja</label>
+     			<input type="number" class="form-control" id="inputpensjaid" name="pensja" placeholder="PLN" required>        			
+     		 </div>
+     		 <div class="form-group col-3">
+     		 	<label for="inputpremiaid">Premia</label>
+     			<input type="number" class="form-control" id="inputpremiaid" name="premia" placeholder="PLN" required>        			
+     		 </div>     		 	
+      </div>
+	  <input type="submit" name="dodajpracownikbutton" class="btn btn-primary" value="POTWIERDZ DODANIE" />
 </form>
 END;
 }
