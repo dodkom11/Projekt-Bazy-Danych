@@ -1,72 +1,104 @@
 <?php
 
-    session_start();
-    
-    //jezeli nie jestesmy zalogowani wroc do index.php
-    if (!isset($_SESSION['zalogowany']) OR strcmp($_SESSION['S_UPRAWNIENIA'], "admin" ))
-    {
-        header('Location: ../index.php');
-        exit(); //opuszczamy plik nie wykonuje sie reszta
-    }
 
-    require_once "../connect.php"; 
 
-    $konto_id = null;
 
-    $query = "begin 
-               :cursor := SELECTKLIENCI;
-             end;";
+/* ==========		SESJA I WARUNKI DOSTEPU		========== */
+session_start();
 
-    $query2 = "begin 
-               :cursor2 := SELECTKLIENCIKONTOID(:konto_id);
-             end;";
+//jezeli nie jestesmy zalogowani i nasze uprawnienia inne niz "admin" wroc do index.php
+if (!isset($_SESSION['zalogowany']) OR strcmp($_SESSION['S_UPRAWNIENIA'], "admin")) {
+    header('Location: ../index.php');
+    exit(); //opuszczamy plik nie wykonuje sie reszta
+}
 
-    //Polaczenie z baza
-    $connection = oci_connect($username, $password, $database);
-    if (!$connection) {
-        $m = oci_error();
-        trigger_error('Nie udało się połaczyć z baza: '. $m['message'], E_USER_ERROR);
-    }
+require_once "../connect.php";
 
-    //Parsowanie polecenia pl/sql   
-    $stid = oci_parse($connection, $query);
-    if (!$stid) {
-        $m = oci_error($connection);
-        trigger_error('Nie udało się przeanalizować polecenia pl/sql: '. $m['message'], E_USER_ERROR);
-    }
 
-    $p_cursor = oci_new_cursor($connection);
-    oci_bind_by_name($stid, ":cursor", $p_cursor, -1, OCI_B_CURSOR);
 
-    //Wykonaj polecenie SQL
-    $result = oci_execute($stid);   
-    if (!$result) {
-        $m = oci_error($stid);
-        trigger_error('Nie udało się wykonać polecenia: '. $m['message'], E_USER_ERROR);
-    }
 
-    oci_execute($p_cursor, OCI_DEFAULT);
+/* ==========		POLACZENIE Z BAZA		========== */
+$connection = oci_connect($username, $password, $database);
+if (!$connection) {
+    $m = oci_error();
+    trigger_error('Nie udało się połaczyć z baza: ' . $m['message'], E_USER_ERROR);
+}
 
-       $queryLicz = "begin 
+
+
+
+/* ==========		ZMIENNE LOKALNE			========== */
+//SELECT KLIENCI TABELA
+$querySelectKlienci = "begin 
+              			 	:cursor := SELECTKLIENCI;
+          				end;";
+
+//SELECT LICZBA KLIENTOW
+$queryLicz = "begin 
                 :bv := COUNTRW(:tabl, :colm, :cond);    
                end;";
 
-       $tablename = 'KONTO';
-       $columnname = 'KONTO_ID';
-       $condition = "UPRAWNIENIA = 'klient'";
-       
-       $s = oci_parse($connection, $queryLicz);
-       
-       oci_bind_by_name($s, ":tabl", $tablename);
-       oci_bind_by_name($s, ":colm", $columnname);
-       oci_bind_by_name($s, ":cond", $condition);
-       oci_bind_by_name($s, ":bv", $ileKlientow, 10);
-       $res=oci_execute($s);
-        if (!$res) {
-        $m = oci_error($s);
-        trigger_error('Nie udało się wykonać polecenia: '. $m['message'], E_USER_ERROR);
-    }
-    
+//SELECT KLIENT PO ID
+$querySelectKlienciID = "begin 
+            				:cursor2 := SELECTKLIENCIKONTOID(:konto_id);
+            			end;";   
+
+$tablename  = 'KONTO';
+$columnname = 'KONTO_ID';
+$condition  = "UPRAWNIENIA = 'klient'";
+
+
+
+
+/* ==========		SELECT KLIENCI TABELA		========== */
+//PARSOWANIE  
+$stid = oci_parse($connection, $querySelectKlienci);
+if (!$stid) {
+    $m = oci_error($connection);
+    trigger_error('Nie udało się przeanalizować polecenia pl/sql: ' . $m['message'], E_USER_ERROR);
+}
+
+//PHP VARIABLE --> ORACLE PLACEHOLDER
+$cursorTabelaKlient = oci_new_cursor($connection);
+oci_bind_by_name($stid, ":cursor", $cursorTabelaKlient, -1, OCI_B_CURSOR);
+
+//EXECUTE POLECENIE
+$result = oci_execute($stid);
+if (!$result) {
+    $m = oci_error($stid);
+    trigger_error('Nie udało się wykonać polecenia: ' . $m['message'], E_USER_ERROR);
+}
+
+//EXECUTE KURSOR
+$result = oci_execute($cursorTabelaKlient, OCI_DEFAULT);
+if (!$result) {
+    $m = oci_error($stid);
+    trigger_error('Nie udało się wykonać polecenia: ' . $m['message'], E_USER_ERROR);
+}
+
+//ZWOLNIJ ZASOBY
+oci_free_statement($stid);
+
+/* ==========		SELECT LICZBA KLIENTOW			========== */
+//PARSOWANIE  
+$stid = oci_parse($connection, $queryLicz);
+
+//PHP VARIABLE --> ORACLE PLACEHOLDER
+oci_bind_by_name($stid, ":tabl", $tablename);
+oci_bind_by_name($stid, ":colm", $columnname);
+oci_bind_by_name($stid, ":cond", $condition);
+oci_bind_by_name($stid, ":bv", $ileKlientow, 10);
+
+//EXECUTE POLECENIE
+$result = oci_execute($stid);
+if (!$result) {
+    $m = oci_error($stid);
+    trigger_error('Nie udało się wykonać polecenia: ' . $m['message'], E_USER_ERROR);
+}
+
+//ZWOLNIJ ZASOBY
+oci_free_statement($stid);
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -157,7 +189,9 @@
                     <br>
                     <div class="tab-content" id="nav-tabContent">
                         <div class="tab-pane fade show active" id="nav-zakladka1" role="tabpanel" aria-labelledby="nav-zakladka1-tab">
-                            <form method="post" action="<?php echo $_SERVER['PHP_SELF'];?>">
+                            <form method="post" action="<?php
+echo $_SERVER['PHP_SELF'];
+?>">
                                 <div class="row">
                                     <div class="col-6">
                                         <div class="form-group row">
@@ -171,45 +205,86 @@
                                         <button type="submit" class="btn btn-primary">AKCEPTUJ</button>
                                     </div>
                                     <div class="col-4">
+   
                                         <?php
-                                        if(!empty($_REQUEST['number-input'])){
+// POKAŻ WYBRANE ID JEŚLI PODANO ID
+if (!empty($_REQUEST['number-input'])) {
+
+//WARUNEK CZY ISTENIEJE KLIENT 
+$condition2  = "UPRAWNIENIA = 'klient' AND KONTO_ID = '" . $_REQUEST['number-input'] . "'";
+
+/* ==========		SPRAWDZ CZY KONTO NALEZY DO KLIENT			========== */
+//PARSOWANIE  
+$stid = oci_parse($connection, $queryLicz);
+
+//PHP VARIABLE --> ORACLE PLACEHOLDER
+oci_bind_by_name($stid, ":tabl", $tablename);
+oci_bind_by_name($stid, ":colm", $columnname);
+oci_bind_by_name($stid, ":cond", $condition2);
+oci_bind_by_name($stid, ":bv", $istniejeKlient, 10);
+
+//EXECUTE POLECENIE
+$result = oci_execute($stid);
+if (!$result) {
+    $m = oci_error($stid);
+    trigger_error('Nie udało się wykonać polecenia: ' . $m['message'], E_USER_ERROR);
+}
+
+//ZWOLNIJ ZASOBY
+oci_free_statement($stid);
+	if($istniejeKlient > 0) {
 echo <<<END
 <span style="font-size: 25px;">WYBRANE ID: </span> <span class="badge badge-dark" style="font-size: 26px;">
 END;
-                                    echo $_REQUEST['number-input'] . "</span>";}
-                                    ?>
-                                </div>
+    echo $_REQUEST['number-input'] . "</span>";
+	}
+	else {
+		$_REQUEST['number-input'] = 0;
+	}
+}
+?>
+                               </div>
                             </div>
                         </form>
                         <?php
-                        if ($_SERVER["REQUEST_METHOD"] == "POST") {
-                        // collect value of input field
-                        $konto_id = htmlspecialchars($_REQUEST['number-input']);
-                        if (empty($konto_id)) {
-                        $message = "NIE PODANO ID";
-                        echo "<script type='text/javascript'>alert('$message');</script>";
-                        } else if(!empty($_REQUEST['number-input'])) {
-                        
-                        //Parsowanie polecenia pl/sql
-                        $stid = oci_parse($connection, $query2);
-                        if (!$stid) {
-                        $m = oci_error($connection);
-                        trigger_error('Nie udało się przeanalizować polecenia pl/sql: '. $m['message'], E_USER_ERROR);
-                        }
-                        $p2_cursor = oci_new_cursor($connection);
-                        oci_bind_by_name($stid, ":konto_id", $konto_id);
-                        oci_bind_by_name($stid, ":cursor2", $p2_cursor, -1, OCI_B_CURSOR);
-                        //Wykonaj polecenie SQL
-                        $result = oci_execute($stid);
-                        if (!$result) {
-                        $m = oci_error($stid);
-                        trigger_error('Nie udało się wykonać polecenia: '. $m['message'], E_USER_ERROR);
-                        }
-                        oci_execute($p2_cursor, OCI_DEFAULT);
-                        }
-                        }
-                        ?>
-                        <div class="row">
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    
+    // ZBIERAMY DANE Z INPUT
+    htmlspecialchars($_REQUEST['number-input']);
+    
+    if (empty($_REQUEST['number-input'])) { 	//JEŻELI INPUT PUSTY LUB NIEPOPRAWNE ID   	
+        $message = "PODAJ POPRAWNE KONTO_ID!";        
+        echo "<script type='text/javascript'>alert('$message');</script>";
+    } else {
+
+        //PARSOWANIE 
+        $stid = oci_parse($connection, $querySelectKlienciID);
+        if (!$stid) {
+            $m = oci_error($connection);
+            trigger_error('Nie udało się przeanalizować polecenia pl/sql: ' . $m['message'], E_USER_ERROR);
+        }
+
+        //PHP VARIABLE --> ORACLE PLACEHOLDER        
+        $cursorPokazKlient = oci_new_cursor($connection);
+        oci_bind_by_name($stid, ":konto_id", $_REQUEST['number-input']);
+        oci_bind_by_name($stid, ":cursor2", $cursorPokazKlient, -1, OCI_B_CURSOR);
+
+        //EXECUTE POLECENIE
+        $result = oci_execute($stid);
+        if (!$result) {
+            $m = oci_error($stid);
+            trigger_error('Nie udało się wykonać polecenia: ' . $m['message'], E_USER_ERROR);
+        }
+
+        //EXECUTE KURSOR
+        oci_execute($cursorPokazKlient, OCI_DEFAULT);
+
+        //ZWOLNIJ ZASOBY
+		oci_free_statement($stid);
+    }
+}
+?>
+                       <div class="row">
                             <div class="card mb-3">
                                 <div class="card-header">
                                 <i class="fa fa-table"></i> Wybrany Klient</div>
@@ -234,25 +309,26 @@ END;
                                             </thead>
                                             <tbody>
                                                 <?php
-                                                if(!empty($_REQUEST['number-input'])) {
-                                                while (($row = oci_fetch_array($p2_cursor, OCI_ASSOC+OCI_RETURN_NULLS)) != false) {
-                                                $KONTO_ID = $row['KONTO_ID'];
-                                                $IMIE = $row['IMIE'];
-                                                $NAZWISKO = $row['NAZWISKO'];
-                                                $UPRAWNIENIA = $row['UPRAWNIENIA'];
-                                                $MIEJSCOWOSC = $row['MIEJSCOWOSC'];
-                                                $WOJEWODZTWO = $row['WOJEWODZTWO'];
-                                                $KOD_POCZTOWY = $row['KOD_POCZTOWY'];
-                                                $ULICA = $row['ULICA'];
-                                                $NR_DOMU = $row['NR_DOMU'];
-                                                $NR_LOKALU = $row['NR_LOKALU'];
-                                                $EMAIL = $row['EMAIL'];
-                                                $NR_TEL = $row['NR_TEL'];
-                                                echo "<tr><td>$KONTO_ID</td> <td>$IMIE</td> <td>$NAZWISKO</td> <td>$UPRAWNIENIA</td> <td>$MIEJSCOWOSC</td> <td>$WOJEWODZTWO</td> <td>$KOD_POCZTOWY</td> <td>$ULICA</td> <td>$NR_DOMU</td> <td>$NR_LOKALU</td> <td>$EMAIL</td> <td>$NR_TEL</td></tr>";
-                                                }
-                                                }
-                                                ?>
-                                            </tbody>
+//WYPEŁNIJ TABELE JEŻELI PODANO ID KONTA
+if (!empty($_REQUEST['number-input'])) {
+    while (($row = oci_fetch_array($cursorPokazKlient, OCI_ASSOC + OCI_RETURN_NULLS)) != false) {
+        $KONTO_ID     = $row['KONTO_ID'];
+        $IMIE         = $row['IMIE'];
+        $NAZWISKO     = $row['NAZWISKO'];
+        $UPRAWNIENIA  = $row['UPRAWNIENIA'];
+        $MIEJSCOWOSC  = $row['MIEJSCOWOSC'];
+        $WOJEWODZTWO  = $row['WOJEWODZTWO'];
+        $KOD_POCZTOWY = $row['KOD_POCZTOWY'];
+        $ULICA        = $row['ULICA'];
+        $NR_DOMU      = $row['NR_DOMU'];
+        $NR_LOKALU    = $row['NR_LOKALU'];
+        $EMAIL        = $row['EMAIL'];
+        $NR_TEL       = $row['NR_TEL'];
+        echo "<tr><td>$KONTO_ID</td> <td>$IMIE</td> <td>$NAZWISKO</td> <td>$UPRAWNIENIA</td> <td>$MIEJSCOWOSC</td> <td>$WOJEWODZTWO</td> <td>$KOD_POCZTOWY</td> <td>$ULICA</td> <td>$NR_DOMU</td> <td>$NR_LOKALU</td> <td>$EMAIL</td> <td>$NR_TEL</td></tr>";
+    }
+}
+?>
+                                           </tbody>
                                         </table>
                                     </div>
                                 </div>
@@ -263,7 +339,10 @@ END;
                         <div class="row">
                             <div class="card mb-3">
                                 <div class="card-header">
-                                <i class="fa fa-table"></i> Klienci [<?php echo $ileKlientow; ?>]</div>
+                                <i class="fa fa-table"></i> Klienci [<?php
+//WYŚWIETL LICZBE KLIENTÓW
+echo $ileKlientow;
+?>]</div>
                                 <div class="card-body">
                                     <div class="table-responsive">
                                         <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
@@ -301,23 +380,24 @@ END;
                                             </tfoot>
                                             <tbody>
                                                 <?php
-                                                while (($row = oci_fetch_array($p_cursor, OCI_ASSOC+OCI_RETURN_NULLS)) != false) {
-                                                $KONTO_ID = $row['KONTO_ID'];
-                                                $IMIE = $row['IMIE'];
-                                                $NAZWISKO = $row['NAZWISKO'];
-                                                $UPRAWNIENIA = $row['UPRAWNIENIA'];
-                                                $MIEJSCOWOSC = $row['MIEJSCOWOSC'];
-                                                $WOJEWODZTWO = $row['WOJEWODZTWO'];
-                                                $KOD_POCZTOWY = $row['KOD_POCZTOWY'];
-                                                $ULICA = $row['ULICA'];
-                                                $NR_DOMU = $row['NR_DOMU'];
-                                                $NR_LOKALU = $row['NR_LOKALU'];
-                                                $EMAIL = $row['EMAIL'];
-                                                $NR_TEL = $row['NR_TEL'];
-                                                echo "<tr><td>$KONTO_ID</td> <td>$IMIE</td> <td>$NAZWISKO</td> <td>$UPRAWNIENIA</td> <td>$MIEJSCOWOSC</td> <td>$WOJEWODZTWO</td> <td>$KOD_POCZTOWY</td> <td>$ULICA</td> <td>$NR_DOMU</td> <td>$NR_LOKALU</td> <td>$EMAIL</td> <td>$NR_TEL</td></tr>";
-                                                }
-                                                ?>
-                                            </tbody>
+//WYPEŁNIJ TABELE KLIENTAMI Z BAZY                                            
+while (($row = oci_fetch_array($cursorTabelaKlient, OCI_ASSOC + OCI_RETURN_NULLS)) != false) {
+    $KONTO_ID     = $row['KONTO_ID'];
+    $IMIE         = $row['IMIE'];
+    $NAZWISKO     = $row['NAZWISKO'];
+    $UPRAWNIENIA  = $row['UPRAWNIENIA'];
+    $MIEJSCOWOSC  = $row['MIEJSCOWOSC'];
+    $WOJEWODZTWO  = $row['WOJEWODZTWO'];
+    $KOD_POCZTOWY = $row['KOD_POCZTOWY'];
+    $ULICA        = $row['ULICA'];
+    $NR_DOMU      = $row['NR_DOMU'];
+    $NR_LOKALU    = $row['NR_LOKALU'];
+    $EMAIL        = $row['EMAIL'];
+    $NR_TEL       = $row['NR_TEL'];
+    echo "<tr><td>$KONTO_ID</td> <td>$IMIE</td> <td>$NAZWISKO</td> <td>$UPRAWNIENIA</td> <td>$MIEJSCOWOSC</td> <td>$WOJEWODZTWO</td> <td>$KOD_POCZTOWY</td> <td>$ULICA</td> <td>$NR_DOMU</td> <td>$NR_LOKALU</td> <td>$EMAIL</td> <td>$NR_TEL</td></tr>";
+}
+?>
+                                           </tbody>
                                         </table>
                                     </div>
                                 </div>
@@ -326,13 +406,15 @@ END;
                     </div>
                     <div class="tab-pane fade" id="nav-zakladka3" role="tabpanel" aria-labelledby="nav-zakladka3-tab">
                         <?php
-                        if(!empty($_REQUEST['number-input'])){
-echo <<<END
-                        <span style="font-size: 25px;">WYBRANE ID:&nbsp;</span> <span class="badge badge-dark" style="font-size: 26px;">
+//POKAŻ WYBRANE ID JEŚLI PODANO ID
+if (!empty($_REQUEST['number-input'])) {
+    echo <<<END
+                       <span style="font-size: 25px;">WYBRANE ID:&nbsp;</span> <span class="badge badge-dark" style="font-size: 26px;">
 END;
-                    echo $_REQUEST['number-input'] . "</span>";}
-                    ?>
-                    <br/> <br/>
+    echo $_REQUEST['number-input'] . "</span>";
+}
+?>
+                   <br/> <br/>
                     <div class="row">
                         <div class="card mb-3">
                             <div class="card-header">
@@ -358,54 +440,77 @@ END;
                                         </thead>
                                         <tbody>
                                             <?php
-                                            if(!empty($_REQUEST['number-input'])) {
-                                            
-                                            //Parsowanie polecenia pl/sql
-                                            $stid3 = oci_parse($connection, $query2);
-                                            if (!$stid3) {
-                                            $m = oci_error($connection);
-                                            trigger_error('Nie udało się przeanalizować polecenia pl/sql: '. $m['message'], E_USER_ERROR);
-                                            }
-                                            $p3_cursor = oci_new_cursor($connection);
-                                            oci_bind_by_name($stid3, ":konto_id", $konto_id);
-                                            oci_bind_by_name($stid3, ":cursor2", $p3_cursor, -1, OCI_B_CURSOR);
-                                            //Wykonaj polecenie SQL
-                                            $result3 = oci_execute($stid3);
-                                            if (!$result3) {
-                                            $m = oci_error($stid3);
-                                            trigger_error('Nie udało się wykonać polecenia: '. $m['message'], E_USER_ERROR);
-                                            }
-                                            oci_execute($p3_cursor, OCI_DEFAULT);
-                                            }
-                                            if(!empty($_REQUEST['number-input'])) {
-                                            while (($row = oci_fetch_array($p3_cursor, OCI_ASSOC+OCI_RETURN_NULLS)) != false) {
-                                            $KONTO_ID = $row['KONTO_ID'];
-                                            $IMIE = $row['IMIE'];
-                                            $NAZWISKO = $row['NAZWISKO'];
-                                            $UPRAWNIENIA = $row['UPRAWNIENIA'];
-                                            $MIEJSCOWOSC = $row['MIEJSCOWOSC'];
-                                            $WOJEWODZTWO = $row['WOJEWODZTWO'];
-                                            $KOD_POCZTOWY = $row['KOD_POCZTOWY'];
-                                            $ULICA = $row['ULICA'];
-                                            $NR_DOMU = $row['NR_DOMU'];
-                                            $NR_LOKALU = $row['NR_LOKALU'];
-                                            $EMAIL = $row['EMAIL'];
-                                            $NR_TEL = $row['NR_TEL'];
-                                            echo "<tr><td>$KONTO_ID</td> <td>$IMIE</td> <td>$NAZWISKO</td> <td>$UPRAWNIENIA</td> <td>$MIEJSCOWOSC</td> <td>$WOJEWODZTWO</td> <td>$KOD_POCZTOWY</td> <td>$ULICA</td> <td>$NR_DOMU</td> <td>$NR_LOKALU</td> <td>$EMAIL</td> <td>$NR_TEL</td></tr>";
-                                            }
-                                            }
-                                            ?>
-                                        </tbody>
+if (!empty($_REQUEST['number-input'])) { 
+    //PARSOWANIE
+    $stid = oci_parse($connection, $querySelectKlienciID);
+    if (!$stid) {
+        $m = oci_error($connection);
+        trigger_error('Nie udało się przeanalizować polecenia pl/sql: ' . $m['message'], E_USER_ERROR);
+    }
+
+    //PHP VARIABLE --> ORACLE PLACEHOLDER
+    $cursorUsunKlient = oci_new_cursor($connection);
+    oci_bind_by_name($stid, ":konto_id", $_REQUEST['number-input']);
+    oci_bind_by_name($stid, ":cursor2", $cursorUsunKlient, -1, OCI_B_CURSOR);
+
+
+    //EXECUTE POLECENIE
+    $result = oci_execute($stid);
+    if (!$result) {
+        $m = oci_error($stid);
+        trigger_error('Nie udało się wykonać polecenia: ' . $m['message'], E_USER_ERROR);
+    }
+
+    //EXECUTE KURSOR
+    oci_execute($cursorUsunKlient, OCI_DEFAULT);
+
+    //ZWOLNIJ ZASOBY
+	oci_free_statement($stid); 
+}
+if (!empty($_REQUEST['number-input'])) {
+    while (($row = oci_fetch_array($cursorUsunKlient, OCI_ASSOC + OCI_RETURN_NULLS)) != false) {
+        $KONTO_ID     = $row['KONTO_ID'];
+        $IMIE         = $row['IMIE'];
+        $NAZWISKO     = $row['NAZWISKO'];
+        $UPRAWNIENIA  = $row['UPRAWNIENIA'];
+        $MIEJSCOWOSC  = $row['MIEJSCOWOSC'];
+        $WOJEWODZTWO  = $row['WOJEWODZTWO'];
+        $KOD_POCZTOWY = $row['KOD_POCZTOWY'];
+        $ULICA        = $row['ULICA'];
+        $NR_DOMU      = $row['NR_DOMU'];
+        $NR_LOKALU    = $row['NR_LOKALU'];
+        $EMAIL        = $row['EMAIL'];
+        $NR_TEL       = $row['NR_TEL'];
+        echo "<tr><td>$KONTO_ID</td> <td>$IMIE</td> <td>$NAZWISKO</td> <td>$UPRAWNIENIA</td> <td>$MIEJSCOWOSC</td> <td>$WOJEWODZTWO</td> <td>$KOD_POCZTOWY</td> <td>$ULICA</td> <td>$NR_DOMU</td> <td>$NR_LOKALU</td> <td>$EMAIL</td> <td>$NR_TEL</td></tr>";
+    }
+}
+?>
+                                       </tbody>
                                     </table>
                                 </div>
                             </div>
                         </div>
-                    </div>      
-                    <?php
-                    if(!empty($_REQUEST['number-input'])){                        
-                        echo '<button type="submit" id="buttonkasujklient" class="btn btn-primary">POTWIERDZ USUNIECIE</button>';
-                    }   
-                    ?>                            
+                    </div>    
+
+   
+
+
+<?php
+if (!empty($_REQUEST['number-input'])) {
+echo <<<END
+<form action="funkcjeAdmin.php" method="post">
+<input type="hidden" name="usunkontoid" min="1" value="
+END;
+?>
+<?php echo htmlspecialchars($_REQUEST['number-input']);
+echo <<<END
+"><br>
+<input type="submit" name="usunkontobutton" class="btn btn-primary" value="POTWIERDZ USUNIECIE" />
+</form>
+END;
+}
+?>
+             
                 </div>
                 
                 <!-- /.row -->
@@ -423,18 +528,10 @@ END;
     <script src="../vendor/datatables/jquery.dataTables.js"></script>
     <script src="../vendor/datatables/dataTables.bootstrap4.js"></script>
     <script src="../vendor/datatables/callDataTables.js"></script>
-    <script>
-        $('#buttonkasujklient').click(function() {
 
- $.ajax({
-  type: "POST",
-  url: "funkcjeDELETE.php",
-  data: { kontoid: "3" }
-}).done(function abc( msg ) {
-  alert( "Data Saved: " + msg );
-});    
-
-    });
-    </script>
 </body>
 </html>
+<?php
+	//CLOSE POŁĄCZENIE
+	oci_close($connection);
+?>
