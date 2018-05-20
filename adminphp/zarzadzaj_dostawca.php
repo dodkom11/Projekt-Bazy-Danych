@@ -3,7 +3,7 @@
 
 
 
-/* ==========		SESJA I WARUNKI DOSTEPU		========== */
+/* ==========       SESJA I WARUNKI DOSTEPU     ========== */
 session_start();
 
 //jezeli nie jestesmy zalogowani i nasze uprawnienia inne niz "admin" wroc do index.php
@@ -17,7 +17,7 @@ require_once "../connect.php";
 
 
 
-/* ==========		POLACZENIE Z BAZA		========== */
+/* ==========       POLACZENIE Z BAZA       ========== */
 $connection = oci_connect($username, $password, $database);
 if (!$connection) {
     $m = oci_error();
@@ -27,11 +27,11 @@ if (!$connection) {
 
 
 
-/* ==========		ZMIENNE LOKALNE			========== */
+/* ==========       ZMIENNE LOKALNE         ========== */
 //SELECT KLIENCI TABELA
 $querySelectKlienci = "begin 
-              			 	:cursor := SELECTKLIENCI;
-          				end;";
+                            :cursor := SELECTKLIENCI;
+                        end;";
 
 //SELECT LICZBA KLIENTOW
 $queryLicz = "begin 
@@ -40,8 +40,8 @@ $queryLicz = "begin
 
 //SELECT KLIENT PO ID
 $querySelectKlientID = "begin 
-            				:cursor2 := SELECTKLIENCIKONTOID(:konto_id);
-            			end;";   
+                            :cursor2 := SELECTKLIENCIKONTOID(:konto_id);
+                        end;";   
 
 $tablename  = 'KONTO';
 $columnname = 'KONTO_ID';
@@ -53,7 +53,7 @@ $condition2  = "UPRAWNIENIA = 'klient' AND KONTO_ID = '";
 
 
 
-/* ==========		SELECT KLIENCI TABELA		========== */
+/* ==========       SELECT KLIENCI TABELA       ========== */
 //PARSOWANIE  
 $stid = oci_parse($connection, $querySelectKlienci);
 if (!$stid) {
@@ -82,7 +82,7 @@ if (!$result) {
 //ZWOLNIJ ZASOBY
 oci_free_statement($stid);
 
-/* ==========		SELECT LICZBA KLIENTOW			========== */
+/* ==========       SELECT LICZBA KLIENTOW          ========== */
 //PARSOWANIE  
 $stid = oci_parse($connection, $queryLicz);
 
@@ -168,10 +168,10 @@ oci_free_statement($stid);
                         <a href="zarzadzaj_pracownikiem.php">&nbsp;&nbsp;Zarządaj Pracownikiem</a>
                     </li>
                     <li>
-                        <a href="zarzadzaj_klientem.php" class="nav-active">&nbsp;&nbsp;Zarządaj Klientem</a>
+                        <a href="zarzadzaj_klientem.php">&nbsp;&nbsp;Zarządaj Klientem</a>
                     </li>
                     <li>
-                        <a href="zarzadzaj_dostawca.php">&nbsp;&nbsp;Zarządaj Dostawcą</a>
+                        <a href="zarzadzaj_dostawca.php" class="nav-active">&nbsp;&nbsp;Zarządaj Dostawcą</a>
                     </li>
                     <li>
                         <a href="zarzadzaj_kurierem.php">&nbsp;&nbsp;Zarządaj Kurierem</a>
@@ -184,10 +184,10 @@ oci_free_statement($stid);
                 <div class="container-fluid">
                     <nav>
                         <div class="nav nav-tabs" id="nav-tab" role="tablist">
-                            <a class="nav-item nav-link active" id="nav-zakladka1-tab" data-toggle="tab" href="#nav-zakladka1" role="tab" aria-controls="nav-zakladka1" aria-selected="true">Podaj ID Konta</a>
+                            <a class="nav-item nav-link active" id="nav-zakladka1-tab" data-toggle="tab" href="#nav-zakladka1" role="tab" aria-controls="nav-zakladka1" aria-selected="true">Podaj ID Dostawcy</a>
                             <a class="nav-item nav-link" id="nav-zakladka2-tab" data-toggle="tab" href="#nav-zakladka2" role="tab" aria-controls="nav-zakladka2" aria-selected="false">Przeglądaj</a>
-                            <a class="nav-item nav-link" id="nav-zakladka3-tab" data-toggle="tab" href="#nav-zakladka3" role="tab" aria-controls="nav-zakladka3" aria-selected="false">Usuń Konto</a>
-                            <a class="nav-item nav-link" id="nav-zakladka4-tab" data-toggle="tab" href="#nav-zakladka4" role="tab" aria-controls="nav-zakladka" aria-selected="false">Utwórz Pracownika</a>
+                            <a class="nav-item nav-link" id="nav-zakladka3-tab" data-toggle="tab" href="#nav-zakladka3" role="tab" aria-controls="nav-zakladka3" aria-selected="false">Usuń Dostawcę</a>
+                            <a class="nav-item nav-link" id="nav-zakladka4-tab" data-toggle="tab" href="#nav-zakladka4" role="tab" aria-controls="nav-zakladka" aria-selected="false">Utwórz Dostawcę</a>
                         </div>
                     </nav>
                     <br>
@@ -222,7 +222,7 @@ if (!empty($_REQUEST['number-input'])) {
 //WARUNEK CZY ISTENIEJE KLIENT 
 $condition2 = $condition2 . $_REQUEST['number-input'] . "'";
 
-/* ==========		SPRAWDZ CZY KONTO NALEZY DO KLIENT			========== */
+/* ==========       SPRAWDZ CZY KONTO NALEZY DO KLIENT          ========== */
 //PARSOWANIE  
 $stid = oci_parse($connection, $queryLicz);
 
@@ -241,15 +241,15 @@ if (!$result) {
 
 //ZWOLNIJ ZASOBY
 oci_free_statement($stid);
-	if($istniejeKonto > 0) {
+    if($istniejeKonto > 0) {
 echo <<<END
 <span style="font-size: 25px;">WYBRANE ID: </span> <span class="badge badge-dark" style="font-size: 26px;">
 END;
     echo $_REQUEST['number-input'] . "</span>";
-	}
-	else {
-		$_REQUEST['number-input'] = 0;
-	}
+    }
+    else {
+        $_REQUEST['number-input'] = 0;
+    }
 }
 ?>
                                </div>
@@ -261,7 +261,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // ZBIERAMY DANE Z INPUT
     htmlspecialchars($_REQUEST['number-input']);
     
-    if (empty($_REQUEST['number-input'])) { 	//JEŻELI INPUT PUSTY LUB NIEPOPRAWNE ID   	
+    if (empty($_REQUEST['number-input'])) {     //JEŻELI INPUT PUSTY LUB NIEPOPRAWNE ID     
         $message = "PODAJ POPRAWNE KONTO_ID!";        
         echo "<script type='text/javascript'>alert('$message');</script>";
     } else {
@@ -289,7 +289,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         oci_execute($cursorPokazOsobe, OCI_DEFAULT);
 
         //ZWOLNIJ ZASOBY
-		oci_free_statement($stid);
+        oci_free_statement($stid);
     }
 }
 ?>
@@ -492,7 +492,7 @@ if (!empty($_REQUEST['number-input'])) {
     oci_execute($cursorUsunOsobe, OCI_DEFAULT);
 
     //ZWOLNIJ ZASOBY
-	oci_free_statement($stid); 
+    oci_free_statement($stid); 
 }
 if (!empty($_REQUEST['number-input'])) {
     while (($row = oci_fetch_array($cursorUsunOsobe, OCI_ASSOC + OCI_RETURN_NULLS)) != false) {
@@ -652,17 +652,17 @@ END;
 
 <?php 
 echo <<<END
-	   <div class="form-row">
-     		 <div class="form-group col-3">
-     		 	<label for="inputpensjaid">Pensja</label>
-     			<input type="number" class="form-control" id="inputpensjaid" name="pensja" placeholder="PLN" required>        			
-     		 </div>
-     		 <div class="form-group col-3">
-     		 	<label for="inputpremiaid">Premia</label>
-     			<input type="number" class="form-control" id="inputpremiaid" name="premia" placeholder="PLN" required>        			
-     		 </div>     		 	
+       <div class="form-row">
+             <div class="form-group col-3">
+                <label for="inputpensjaid">Pensja</label>
+                <input type="number" class="form-control" id="inputpensjaid" name="pensja" placeholder="PLN" required>                  
+             </div>
+             <div class="form-group col-3">
+                <label for="inputpremiaid">Premia</label>
+                <input type="number" class="form-control" id="inputpremiaid" name="premia" placeholder="PLN" required>                  
+             </div>                 
       </div>
-	  <input type="submit" name="dodajpracownikbutton" class="btn btn-primary" value="POTWIERDZ DODANIE" />
+      <input type="submit" name="dodajpracownikbutton" class="btn btn-primary" value="POTWIERDZ DODANIE" />
 </form>
 END;
 }
@@ -689,6 +689,6 @@ END;
 </body>
 </html>
 <?php
-	//CLOSE POŁĄCZENIE
-	oci_close($connection);
+    //CLOSE POŁĄCZENIE
+    oci_close($connection);
 ?>

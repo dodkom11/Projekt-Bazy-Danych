@@ -37,6 +37,15 @@ $queryDodajPracownikID = "begin
               			 	INSERTPRACOWNIK(:konto_id, :pensja, :premia);
           				end;";
 
+$queryDodajKurier = "begin 
+              			  	INSERTKURIER(:nazwa);
+          			end;";
+
+$queryUsunKurieraID= "begin 
+              			 	DELETEKURIER(:konto_id);
+          			 end;";
+
+
 
 
 
@@ -87,6 +96,59 @@ function funkcjaDodajPracownik($connection, $queryDodajPracownikID)
 	oci_free_statement($stid);
 
 	echo '<div class="alert alert-success" role="alert"><strong>INFORMACJA!</strong> Pomyślnie dodano pracownika. Konto ID: <strong>' . $_POST['dodajpracownikid'] . "</strong></div>";
+}
+
+
+
+
+
+/* ==========		FUNKCJA DODAJ KURIER			========== */
+
+function funkcjaDodajKurier($connection, $queryDodajKurier)
+{
+	//PARSOWANIE  
+	$stid = oci_parse($connection, $queryDodajKurier);
+
+	//PHP VARIABLE --> ORACLE PLACEHOLDER
+	oci_bind_by_name($stid, ':nazwa', $_POST['nazwafirmy']);
+
+	//EXECUTE POLECENIE
+	$result = oci_execute($stid);
+	if (!$result) {
+	    $m = oci_error($stid);
+	    trigger_error('Nie udało się wykonać polecenia: ' . $m['message'], E_USER_ERROR);
+	}
+
+	//ZWOLNIJ ZASOBY
+	oci_free_statement($stid);
+
+	echo '<div class="alert alert-success" role="alert"><strong>INFORMACJA!</strong> Pomyślnie dodano kuriera: <strong>' . $_POST['nazwafirmy'] . "</strong></div>";
+}
+
+
+
+
+/* ==========		FUNKCJA DELETE KONTO			========== */
+
+function funkcjaUsunKuriera($connection, $queryUsunKurieraID)
+{
+	//PARSOWANIE  
+	$stid = oci_parse($connection, $queryUsunKurieraID);
+
+	//PHP VARIABLE --> ORACLE PLACEHOLDER
+	oci_bind_by_name($stid, ":konto_id", $_POST['usunkurieraid']);
+
+	//EXECUTE POLECENIE
+	$result = oci_execute($stid);
+	if (!$result) {
+	    $m = oci_error($stid);
+	    trigger_error('Nie udało się wykonać polecenia: ' . $m['message'], E_USER_ERROR);
+	}
+
+	//ZWOLNIJ ZASOBY
+	oci_free_statement($stid);
+
+	echo '<div class="alert alert-success" role="alert"><strong>INFORMACJA!</strong> Pomyślnie usunięto kuriera ID: <strong>' . $_POST['usunkurieraid'] . "</strong></div>";
 }
 ?>
 <!DOCTYPE html>
@@ -157,10 +219,10 @@ function funkcjaDodajPracownik($connection, $queryDodajPracownikID)
                         <a href="zarzadzaj_klientem.php">&nbsp;&nbsp;Zarządaj Klientem</a>
                     </li>
                     <li>
-                        <a href="#">&nbsp;&nbsp;Zarządaj Producentem</a>
+                        <a href="zarzadzaj_dostawca.php">&nbsp;&nbsp;Zarządaj Dostawcą</a>
                     </li>
                     <li>
-                        <a href="#">&nbsp;&nbsp;Zarządaj Kurierem</a>
+                        <a href="zarzadzaj_kurierem.php">&nbsp;&nbsp;Zarządaj Kurierem</a>
                     </li>
                 </ul>
             </div>
@@ -175,6 +237,15 @@ function funkcjaDodajPracownik($connection, $queryDodajPracownikID)
 	else if($_SERVER['REQUEST_METHOD'] == "POST" and isset($_POST['dodajpracownikbutton'])) {
 			funkcjaDodajPracownik($connection, $queryDodajPracownikID);
 	}
+	else if($_SERVER['REQUEST_METHOD'] == "POST" and isset($_POST['dodajkurierbutton'])) {
+			funkcjaDodajKurier($connection, $queryDodajKurier);
+	}
+	else if($_SERVER['REQUEST_METHOD'] == "POST" and isset($_POST['usunkurierabutton'])) {
+			funkcjaUsunKuriera($connection, $queryUsunKurieraID);
+	}
+
+
+	
 
 ?>
             <!-- ./container-fluid -->

@@ -59,6 +59,34 @@ BEGIN
   RETURN MY_CURSOR;
 END SELECTPRACOWNIKKONTOID;
 /
+create or replace FUNCTION SELECTKURIERZY
+  RETURN SYS_REFCURSOR 
+AS
+  MY_CURSOR SYS_REFCURSOR;
+  MY_QUERY VARCHAR2(500);
+BEGIN
+
+  MY_QUERY := 'SELECT * FROM KURIER';
+
+  OPEN MY_CURSOR FOR MY_QUERY;
+
+  RETURN MY_CURSOR;
+END SELECTKURIERZY;
+/
+create or replace FUNCTION SELECTKURIERID(KURIER_ID INT)
+  RETURN SYS_REFCURSOR 
+AS
+  MY_CURSOR SYS_REFCURSOR;
+  MY_QUERY VARCHAR2(500);
+BEGIN
+
+  MY_QUERY := 'SELECT * FROM KURIER WHERE KURIER_ID = ' || KURIER_ID;
+
+  OPEN MY_CURSOR FOR MY_QUERY;
+
+  RETURN MY_CURSOR;
+END SELECTKURIERID;
+/
 
 create or replace function COUNTRW(TABLENAME VARCHAR2, COLUMNNAME VARCHAR2, CONDITION VARCHAR2) 
    return number
@@ -185,7 +213,7 @@ END INSERTKONTAKT;
 mozliwie do zmiany, poniewaz nie sprawdza ZAMOWIENIE_ID, 
 a więc w przypadku gdy konto ma więcej zamówień wszystkie zamowienia zostaną z update'owane o to KURIER_ID
 ale poki co zostawiam tak jak jest*/
-CREATE OR REPLACE PROCEDURE INSERTKURIER
+/*CREATE OR REPLACE PROCEDURE INSERTKURIER
        (
         KON_ID IN INT, 
   		NAZ_FIRMY IN VARCHAR2            
@@ -202,7 +230,15 @@ BEGIN
 	WHERE KONTO_ID = KON_ID;
 
 END INSERTKURIER;
-/
+/ */
+
+create or replace PROCEDURE INSERTKURIER(NAZ_FIRMY IN VARCHAR2)
+AS 
+BEGIN 
+
+    INSERT INTO KURIER(NAZWA_FIRMY) VALUES (NAZ_FIRMY);
+
+END INSERTKURIER;
 
 /* ---------------------------- */
 /* ---------- DELETE ---------- */
@@ -217,7 +253,15 @@ BEGIN
 	DELETE FROM KONTO
 	WHERE KONTO_ID = KON_ID;
 END DELETEKONTO;
+/
 
+create or replace PROCEDURE DELETEKURIER
+(KON_ID IN INT)
+AS 
+BEGIN 
+  DELETE FROM KURIER
+  WHERE KURIER_ID = KON_ID;
+END DELETEKURIER;
 /
 
 /* fajna procedura na dodawanie do bazy wielu rekordow, liczby ustawia randomowo z zakresu jaki wybierzemy

@@ -168,7 +168,7 @@ oci_free_statement($stid);
                         <a href="zarzadzaj_klientem.php">&nbsp;&nbsp;Zarządaj Klientem</a>
                     </li>
                     <li>
-                        <a href="zarzadzaj_producentem.php">&nbsp;&nbsp;Zarządaj Producentem</a>
+                        <a href="zarzadzaj_dostawca.php">&nbsp;&nbsp;Zarządaj Dostawcą</a>
                     </li>
                     <li>
                         <a href="zarzadzaj_kurierem.php">&nbsp;&nbsp;Zarządaj Kurierem</a>
