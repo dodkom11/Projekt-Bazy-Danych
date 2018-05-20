@@ -106,16 +106,16 @@
                         </a>
                     </li>
                     <li>
-                        <a href="zarzadzaj_pracownikiem.php">&nbsp;&nbsp;Zarządaj Pracownikiem</a>
+                        <a href="zarzadzaj_pracownikiem.php" class="nav-active">&nbsp;&nbsp;Zarządaj Pracownikiem</a>
                     </li>
                     <li>
                         <a href="zarzadzaj_klientem.php">&nbsp;&nbsp;Zarządaj Klientem</a>
                     </li>
                     <li>
-                        <a href="#">&nbsp;&nbsp;Zarządaj Producentem</a>
+                        <a href="zarzadzaj_producentem.php">&nbsp;&nbsp;Zarządaj Producentem</a>
                     </li>
                     <li>
-                        <a href="#">&nbsp;&nbsp;Zarządaj Kurierem</a>
+                        <a href="zarzadzaj_kurierem.php">&nbsp;&nbsp;Zarządaj Kurierem</a>
                     </li>
                 </ul>
             </div>
