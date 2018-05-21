@@ -13,7 +13,7 @@ if (!isset($_SESSION['zalogowany']))
     exit(); //opuszczamy plik nie wykonuje sie reszta
 }
 
-require_once "connect.php"; 
+require_once "logikaphp/connect.php"; 
 
 
 
@@ -134,17 +134,24 @@ oci_free_statement($stid);
                 <div class="collapse navbar-collapse" id="navbarResponsive">
                     <ul class="navbar-nav ml-auto">
                          <?php
-                         if (!strcmp($_SESSION['S_UPRAWNIENIA'], "admin" )){
+                         if ((isset($_SESSION['S_UPRAWNIENIA'])) && (!strcmp($_SESSION['S_UPRAWNIENIA'], "admin" ))){
                             echo '<li class="nav-item"><a class="nav-link" href="adminphp/zarzadzaj_pracownikiem.php"><i class="fas fa-gavel"></i>&nbsp;&nbsp;Admin Panel</a></li>';
                          }
-                         ?>  
+                         ?>
+                         <?php
+                         if ((isset($_SESSION['S_UPRAWNIENIA'])) && (!strcmp($_SESSION['S_UPRAWNIENIA'], "admin" ) OR !strcmp($_SESSION['S_UPRAWNIENIA'], "pracownik" ))){
+                            echo '<li class="nav-item"><a class="nav-link" href="pracownikphp/zarzadzaj_produktem.php"><i class="fas fa-pencil-alt"></i>&nbsp;&nbsp;Pracownik Panel</a></li>';
+                         }
+                         ?>   
                         <li class="nav-item">
-                            <a class="nav-link" href="index.php"><i class="fas fa-home"></i>&nbsp;&nbsp;Strona Główna                                
-                            </a>
+                            <a class="nav-link" href="index.php"><i class="fas fa-home"></i>&nbsp;&nbsp;Strona Główna</a>
                         </li>
                         <li class="nav-item active">
                             <a class="nav-link" href="sklep.php"><i class="fas fa-shopping-basket"></i></i>&nbsp;&nbsp;Sklep</a>
                             <span class="sr-only">(current)</span>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="koszyk.php"><i class="fas fa-shopping-cart"></i>&nbsp;&nbsp;Koszyk</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="#"><i class="fas fa-info"></i>&nbsp;&nbsp;O nas</a>
@@ -153,7 +160,7 @@ oci_free_statement($stid);
                             <a class="nav-link" href="#"><i class="fas fa-address-book"></i>&nbsp;&nbsp;Kontakt</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="logout.php"><i class="fas fa-sign-in-alt"></i>&nbsp;&nbsp;Wyloguj</a>
+                            <a class="nav-link" href="logikaphp/logout.php"><i class="fas fa-sign-in-alt"></i>&nbsp;&nbsp;Wyloguj</a>
                         </li>
                     </ul>
                 </div>
@@ -275,7 +282,7 @@ echo <<<END
                                         <div class="col-lg-6"><em class="align-middle">Dodano: 2018-04-29</em></div>
                                         
                                             <div class="col-lg-6 text-right">
-                                                <form action="koszyk.php" method="post">
+                                                <form action="logikaphp/logickoszyk.php" method="post">
                                                     <button type="submit" name="buttonproduktid" class="btn btn-success" value="
 END;
 ?>

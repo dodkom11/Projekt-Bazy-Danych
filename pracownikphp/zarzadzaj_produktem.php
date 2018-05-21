@@ -7,12 +7,12 @@
 session_start();
 
 //jezeli nie jestesmy zalogowani i nasze uprawnienia inne niz "admin" wroc do index.php
-if (!isset($_SESSION['zalogowany']) OR strcmp($_SESSION['S_UPRAWNIENIA'], "admin")) {
+if (!isset($_SESSION['zalogowany']) OR (strcmp($_SESSION['S_UPRAWNIENIA'], "admin") AND strcmp($_SESSION['S_UPRAWNIENIA'], "pracownik"))) {
     header('Location: ../index.php');
     exit(); //opuszczamy plik nie wykonuje sie reszta
 }
 
-require_once "../connect.php";
+require_once "../logikaphp/connect.php";
 
 
 
@@ -131,6 +131,11 @@ oci_free_statement($stid);
                 </button>
                 <div class="collapse navbar-collapse" id="navbarResponsive">
                     <ul class="navbar-nav ml-auto">
+                         <?php
+                         if ((isset($_SESSION['S_UPRAWNIENIA'])) && (!strcmp($_SESSION['S_UPRAWNIENIA'], "admin" ))){
+                            echo '<li class="nav-item"><a class="nav-link" href="../adminphp/zarzadzaj_pracownikiem.php"><i class="fas fa-gavel"></i>&nbsp;&nbsp;Admin Panel</a></li>';
+                         }
+                         ?>
                         <li class="nav-item active">
                              <a class="nav-link" href="zarzadzaj_produktem.php"><i class="fas fa-pencil-alt"></i>&nbsp;&nbsp;Pracownik Panel</a>
                             <span class="sr-only">(current)</span>
@@ -149,7 +154,7 @@ oci_free_statement($stid);
                             <a class="nav-link" href="#"><i class="fas fa-address-book"></i>&nbsp;&nbsp;Kontakt</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="../logout.php"><i class="fas fa-sign-in-alt"></i>&nbsp;&nbsp;Wyloguj</a>
+                            <a class="nav-link" href="../logikaphp/logout.php"><i class="fas fa-sign-in-alt"></i>&nbsp;&nbsp;Wyloguj</a>
                         </li>
                     </ul>
                 </div>

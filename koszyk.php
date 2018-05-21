@@ -13,48 +13,46 @@ if (!isset($_SESSION['zalogowany']))
     exit(); //opuszczamy plik nie wykonuje sie reszta
 }
 
-require_once "connect.php"; 
+require_once "logikaphp/connect.php"; 
 
 
 
 
-/* ==========		POLACZENIE Z BAZA		========== */
+/* ==========       POLACZENIE Z BAZA       ========== */
 $connection = oci_connect($username, $password, $database);
 if (!$connection) {
     $m = oci_error();
-    trigger_error('Nie udało się połaczyć z baza: ' . $m['message'], E_USER_ERROR);
+    trigger_error('Nie udało się połaczyć z baza: '. $m['message'], E_USER_ERROR);
 }
 
 
 
 
-/* ==========		ZMIENNE LOKALNE			========== */
-//CZY PRODUKT W KOSZYKU
-$queryLicz = "begin 
-                :bv := COUNTRW(:tabl, :colm, :cond);    
-               end;";
+/* ==========       ZMIENNE LOKALNE         ========== */
+//SELECT OSTATNIE 6 PRODUKTÓW 
+$queryOstatnie6Produktow = "begin 
+                                :cursor := LAST6PRODUCTS;
+                            end;";
 
-$tablename  = 'KOSZYK';
-$columnname = 'PRODUKT_ID';
-$condition  = "PRODUKT_ID = '" . $_POST['buttonproduktid'] . "' AND KONTO_ID = '" . $_SESSION['S_KONTO_ID'] . "'";
-
-//DODAJ PRODUKT DO KOSZYKA
-$queryDodajDoKoszyka = "begin 
-              			 	INSERTKOSZYK(:produkt_id, :konto_id, :sztuk);
-          				end;";
+//SELECT OSTATNIE KATEGORIA
+$queryPokazKategorie =      "begin 
+                                :cursor := SELECTKATEGORIA;
+                            end;";
 
 
 
 
-/* ==========		SELECT LICZBA KLIENTOW			========== */
+/* ==========       SELECT OSTATNIE 6 PRODUKTÓW       ========== */
 //PARSOWANIE  
-$stid = oci_parse($connection, $queryLicz);
+$stid = oci_parse($connection, $queryOstatnie6Produktow);
+if (!$stid) {
+    $m = oci_error($connection);
+    trigger_error('Nie udało się przeanalizować polecenia pl/sql: ' . $m['message'], E_USER_ERROR);
+}
 
 //PHP VARIABLE --> ORACLE PLACEHOLDER
-oci_bind_by_name($stid, ":tabl", $tablename);
-oci_bind_by_name($stid, ":colm", $columnname);
-oci_bind_by_name($stid, ":cond", $condition);
-oci_bind_by_name($stid, ":bv", $liczProdukt, 10);
+$cursorProdukty = oci_new_cursor($connection);
+oci_bind_by_name($stid, ":cursor", $cursorProdukty, -1, OCI_B_CURSOR);
 
 //EXECUTE POLECENIE
 $result = oci_execute($stid);
@@ -63,56 +61,254 @@ if (!$result) {
     trigger_error('Nie udało się wykonać polecenia: ' . $m['message'], E_USER_ERROR);
 }
 
+//EXECUTE KURSOR
+$result = oci_execute($cursorProdukty, OCI_DEFAULT);
+if (!$result) {
+    $m = oci_error($stid);
+    trigger_error('Nie udało się wykonać polecenia: ' . $m['message'], E_USER_ERROR);
+}
+
 //ZWOLNIJ ZASOBY
-oci_free_statement($stid);
-
-if($liczProdukt == 0){
-	$sztuk = 1;
-	//PARSOWANIE  
-	$stid = oci_parse($connection, $queryDodajDoKoszyka);
-
-	//PHP VARIABLE --> ORACLE PLACEHOLDER
-	oci_bind_by_name($stid, ":produkt_id", $_POST['buttonproduktid']);
-	oci_bind_by_name($stid, ":konto_id", $_SESSION['S_KONTO_ID']);
-	oci_bind_by_name($stid, ":sztuk", $sztuk);
-
-	//EXECUTE POLECENIE
-	$result = oci_execute($stid);
-	if (!$result) {
-	    $m = oci_error($stid);
-	    trigger_error('Nie udało się wykonać polecenia: ' . $m['message'], E_USER_ERROR);
-	}
-
-	//ZWOLNIJ ZASOBY
-	oci_free_statement($stid);
-
-
-	  header('Location: sklep.php');
-} 
+oci_free_statement($stid);      
 
 
 
 
+/* ==========       SELECT KATEGORIA      ========== */
+//PARSOWANIE  
+$stid = oci_parse($connection, $queryPokazKategorie);
+if (!$stid) {
+    $m = oci_error($connection);
+    trigger_error('Nie udało się przeanalizować polecenia pl/sql: ' . $m['message'], E_USER_ERROR);
+}
 
+//PHP VARIABLE --> ORACLE PLACEHOLDER
+$cursorKategoria = oci_new_cursor($connection);
+oci_bind_by_name($stid, ":cursor", $cursorKategoria, -1, OCI_B_CURSOR);
 
+//EXECUTE POLECENIE
+$result = oci_execute($stid);
+if (!$result) {
+    $m = oci_error($stid);
+    trigger_error('Nie udało się wykonać polecenia: ' . $m['message'], E_USER_ERROR);
+}
 
+//EXECUTE KURSOR
+$result = oci_execute($cursorKategoria, OCI_DEFAULT);
+if (!$result) {
+    $m = oci_error($stid);
+    trigger_error('Nie udało się wykonać polecenia: ' . $m['message'], E_USER_ERROR);
+}
 
+//ZWOLNIJ ZASOBY
+oci_free_statement($stid);     
+ 
+     
+?> 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <meta name="description" content="">
+        <meta name="author" content="">
+        <title>goFISHINGshop</title>
+        <!-- Bootstrap core CSS -->
+        <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+        <!-- Custom styles for this template -->
+        <link href="css/simple-sidebar.css" rel="stylesheet">
+        <link href="css/mycss.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.10/css/all.css" integrity="sha384-+d0P83n9kaQMCwj8F4RJB66tzIwOKmrdb46+porD/OvrJ+37WqIM7UoBtwHO6Nlg" crossorigin="anonymous">
+    </head>
+    <body>
+       
+        <!-- Navigation -->
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+            <a class="text-left text-info zwin" href="#menu-toggle" id="menu-toggle"><i class="fas fa-minus-square"></i> <span class="pokazukryj">Ukryj</span></a>
+            <div class="container">
+                <a class="navbar-brand" href="#"><i class="fas fa-hands-helping"></i>&nbsp;&nbsp;goFISHINGshop</a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarResponsive">
+                    <ul class="navbar-nav ml-auto">
+                         <?php
+                         if ((isset($_SESSION['S_UPRAWNIENIA'])) && (!strcmp($_SESSION['S_UPRAWNIENIA'], "admin" ))){
+                            echo '<li class="nav-item"><a class="nav-link" href="adminphp/zarzadzaj_pracownikiem.php"><i class="fas fa-gavel"></i>&nbsp;&nbsp;Admin Panel</a></li>';
+                         }
+                         ?>  
+                        <li class="nav-item">
+                            <a class="nav-link" href="index.php"><i class="fas fa-home"></i>&nbsp;&nbsp;Strona Główna                                
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="sklep.php"><i class="fas fa-shopping-basket"></i></i>&nbsp;&nbsp;Sklep</a>
+                        </li>
+                        <li class="nav-item active">
+                            <a class="nav-link" href="koszyk.php"><i class="fas fa-shopping-cart"></i>&nbsp;&nbsp;Koszyk</a>
+                            <span class="sr-only">(current)</span>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#"><i class="fas fa-info"></i>&nbsp;&nbsp;O nas</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#"><i class="fas fa-address-book"></i>&nbsp;&nbsp;Kontakt</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="logikaphp/logout.php"><i class="fas fa-sign-in-alt"></i>&nbsp;&nbsp;Wyloguj</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        <div id="wrapper" class="toggled">
+            <!-- Sidebar -->
+            <div id="sidebar-wrapper">
+                <ul class="sidebar-nav">
+                    <li class="sidebar-brand">
+                        <a href="#">
+                            <strong>Kategorie</strong>
+                        </a>
+                    </li>
+<?php                    
+while (($row = oci_fetch_array($cursorKategoria, OCI_ASSOC + OCI_RETURN_NULLS)) != false) {
+    $KATEGORIA_ID       = $row['KATEGORIA_ID'];
+    $KATEGORIA_NAZWA    = $row['KATEGORIA_NAZWA'];
+echo<<<END
+<li>
+     <a href="kat$KATEGORIA_ID.php">&nbsp;&nbsp;$KATEGORIA_NAZWA</a>
+</li>
+END;
+}
 ?>
+                </ul>
+            </div>
+            <!-- /#sidebar-wrapper -->
+            <!-- Page Content -->
+            <div id="page-content-wrapper">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div id="slider" class="carousel slide container-fluid" data-ride="carousel">
+                            <!-- Indicators -->
+                            <ul class="carousel-indicators">
+                                <li data-target="#slider" data-slide-to="0" class="active"></li>
+                                <li data-target="#slider" data-slide-to="1"></li>
+                                <li data-target="#slider" data-slide-to="2"></li>
+                            </ul>
+                            
+                            <!-- The slideshow -->
+                            <div class="carousel-inner">
+                                <div class="carousel-item active">
+                                    <img src="img/carousel/carousel1.jpg" alt="Slider">
+                                </div>
+                                <div class="carousel-item">
+                                    <img src="img/carousel/carousel2.jpg" alt="Slider">
+                                </div>
+                                <div class="carousel-item">
+                                    <img src="img/carousel/carousel3.jpg" alt="Slider">
+                                </div>
+                            </div>
+                            
+                            <!-- Left and right controls -->
+                            <a class="carousel-control-prev" href="#slider" data-slide="prev">
+                                <span class="carousel-control-prev-icon"></span>
+                            </a>
+                            <a class="carousel-control-next" href="#slider" data-slide="next">
+                                <span class="carousel-control-next-icon"></span>
+                            </a>
+                        </div>
+                    </div>
+                    <!-- /.row -->
+                    <div class="row">
+                    <?php                        
+                        while (($row = oci_fetch_array($cursorProdukty, OCI_ASSOC + OCI_RETURN_NULLS)) != false) {     
+                            $produktid = $row['PRODUKT_ID'];
+                            $producent = $row['PRODUCENT'];
+                            $cena = $row['CENA'];
+                            $numerKat = $row['NUMER_KATALOGOWY'];
+                            $model =  $row['MODEL'];
+                            $szukMagazyn = $row['SZTUK_NA_MAGAZYNIE'];
+                            $opis = $row['OPIS'];
+                            if( ($zdjecie = $row['ZDJECIE']) != null){
+                                $zdjecie = $row['ZDJECIE']->load();
+                            }                                                                                                  
+echo <<<END
+                        <div class="col-lg-4 col-md-6 mb-4">
+                            <div class="card h-100">
+                                <a href="#"> 
+END;
+                        if($zdjecie != null) {   
+                            echo '<div><img class="card-img-top" alt="700x400" src="data:image/jpeg;base64,'.base64_encode($zdjecie).'" /></div>';
+                        } else {
+                            echo '<div><img class="card-img-top" alt="700x400" src="img/brakzdj.jpg" /></div>';
+                        }
+
+echo <<<END
+                                <div class="card-body">
+                                    <h4 class="card-title">
+                                    <a href="#">$producent $model</a>
+                                    </h4>
+                                    <h5><i class="far fa-money-bill-alt"></i> $cena PLN</h5>
+                                    <p class="card-text">$opis</p>
+                                </div>
+
+                                <table class="table table-hover">
+                                    <tbody>
+                                        <tr>
+                                            <td><i class="fas fa-angle-right"></i> <em>Producent</em></td>
+                                            <td><strong>$producent</strong></td>
+                                        </tr>
+                                        <tr>
+                                            <td><i class="fas fa-angle-right"></i> <em>Numer katalogowy</em></td>
+                                            <td><strong>$numerKat</strong></td>
+                                        </tr>
+                                        <tr>
+                                            <td><i class="fas fa-angle-right"></i> <em>Model</em></td>
+                                            <td><strong>$model</strong></td>
+                                        </tr>
+                                        <tr>
+                                            <td><i class="fas fa-angle-right"></i> <em>Sztuk na magazynie</em></td>
+                                            <td><strong>$szukMagazyn</strong></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                  <div class="card-footer">
+                                    <div class="row">
+                                        <div class="col-lg-6"><em class="align-middle">Dodano: 2018-04-29</em></div>
+                                        
+                                            <div class="col-lg-6 text-right">
+                                                <form action="logikaphp/logickoszyk.php" method="post">
+                                                    <button type="submit" name="buttonproduktid" class="btn btn-success" value="
+END;
+?>
+<?php echo htmlspecialchars($produktid);
+echo <<<END
+">
+                                                    <i class="fas fa-shopping-cart"></i> KUP</button>
+                                                  </form>
+                                            </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+END;
+
+                        }
+                    ?>                       
+                    </div>
+                    <!-- /.row -->
+                </div>
+                <!-- ./container-fluid -->
+            </div>
+            <!-- /#page-content-wrapper -->
+        </div>
+        <!-- /#wrapper -->
+        <!-- Bootstrap core JavaScript -->
+        <script src="vendor/jquery/jquery.min.js"></script>
+        <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+        <script src="script/toogle.js"></script>
+        <script src="script/showAndHide.js"></script>
+    </body>
+</html>

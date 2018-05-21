@@ -12,7 +12,7 @@ if (!isset($_SESSION['zalogowany']) OR strcmp($_SESSION['S_UPRAWNIENIA'], "admin
     exit(); //opuszczamy plik nie wykonuje sie reszta
 }
 
-require_once "../connect.php";
+require_once "../logikaphp/connect.php";
 
 
 
@@ -136,11 +136,21 @@ oci_free_statement($stid);
                             <span class="sr-only">(current)</span>
                         </li>
                         <li class="nav-item">
+                            <a class="nav-link" href="../pracownikphp/zarzadzaj_produktem.php"><i class="fas fa-pencil-alt"></i>&nbsp;&nbsp;Pracownik Panel
+                            </a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link" href="../index.php"><i class="fas fa-home"></i>&nbsp;&nbsp;Strona Główna
                             </a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="../sklep.php"><i class="fas fa-shopping-basket"></i></i>&nbsp;&nbsp;Sklep</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="../koszyk.php"><i class="fas fa-shopping-cart"></i>&nbsp;&nbsp;Koszyk</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="../koszyk.php"><i class="fas fa-shopping-cart"></i>&nbsp;&nbsp;Koszyk</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="#"><i class="fas fa-info"></i>&nbsp;&nbsp;O nas</a>
@@ -149,7 +159,7 @@ oci_free_statement($stid);
                             <a class="nav-link" href="#"><i class="fas fa-address-book"></i>&nbsp;&nbsp;Kontakt</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="../logout.php"><i class="fas fa-sign-in-alt"></i>&nbsp;&nbsp;Wyloguj</a>
+                            <a class="nav-link" href="../logikaphp/logout.php"><i class="fas fa-sign-in-alt"></i>&nbsp;&nbsp;Wyloguj</a>
                         </li>
                     </ul>
                 </div>

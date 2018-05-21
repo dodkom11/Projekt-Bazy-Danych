@@ -36,9 +36,6 @@
                             <a class="nav-link" href="index.php"><i class="fas fa-home"></i>&nbsp;&nbsp;Strona Główna                                
                             </a>
                         </li>
-                         <li class="nav-item">
-                            <a class="nav-link" href="sklep.php"><i class="fas fa-shopping-basket"></i></i>&nbsp;&nbsp;Sklep</a>
-                        </li>
                         <li class="nav-item">
                             <a class="nav-link" href="#"><i class="fas fa-info"></i>&nbsp;&nbsp;O nas</a>
                         </li>
@@ -46,7 +43,7 @@
                             <a class="nav-link" href="#"><i class="fas fa-address-book"></i>&nbsp;&nbsp;Kontakt</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link active" href="login.php"><i class="fas fa-sign-in-alt"></i>&nbsp;&nbsp;Login</a>
+                            <a class="nav-link active" href="zalogujsie.php"><i class="fas fa-sign-in-alt"></i>&nbsp;&nbsp;Login</a>
                             <span class="sr-only">(current)</span>
                         </li>
                     </ul>
@@ -58,7 +55,7 @@
             <div class="card card-login mx-auto mt-5">
                 <div class="card-header">Login</div>
                 <div class="card-body">
-                    <form action="zaloguj.php" method="post">
+                    <form action="logikaphp/login.php" method="post">
                         <div class="form-group">
                             <label for="log">Login</label>
                             <input class="form-control" id="log" type="text" name="login" aria-describedby="emailHelp" placeholder="Podaj login">

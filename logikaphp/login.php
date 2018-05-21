@@ -5,10 +5,10 @@
 	*/
 	session_start(); //tworzenie sesji PHP
 	
-	// Wróć do login.php, jeżeli nie nastąpiła próba logowania - zmienne nie ustawione
+	// Wróć do ../zalogujsie.php, jeżeli nie nastąpiła próba logowania - zmienne nie ustawione
 	if ((!isset($_POST['login'])) || (!isset($_POST['haslo'])))
 	{
-		header('Location: login.php');
+		header('Location: ../zalogujsie.php');
 		exit();
 	}
 
@@ -58,11 +58,11 @@
 
     		unset($_SESSION['blad_log']); //usuń z sesji zmienna blad skoro udalo nam sie zalogowac
     		oci_free_statement($stid); //wyczysc z pamieci RAM serwera zwrocone z bazy rezultaty zapytania			
-    		header('Location: sklep.php');
+    		header('Location: ../sklep.php');
 		}
 		else {
 			$_SESSION['blad_log'] = '<span>Nieprawidlowy login lub haslo!</span>';
-			header('Location: login.php');
+			header('Location: ../zalogujsie.php');
 		}
 	}	
 	oci_close($connection); 

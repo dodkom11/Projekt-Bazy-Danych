@@ -280,6 +280,17 @@ BEGIN
 
 END INSERTKOSZYK;
 /
+create or replace PROCEDURE UPDATEKOSZYKINC(PROD_ID IN VARCHAR2, KON_ID IN INT)
+AS 
+BEGIN 
+
+    UPDATE KOSZYK
+        SET ILOSC_SZTUK = ILOSC_SZTUK + 1 
+    WHERE PROD_ID = PROD_ID
+    AND KONTO_ID = KON_ID;
+
+END UPDATEKOSZYKINC;
+/
 
 /* ---------------------------- */
 /* ---------- DELETE ---------- */
