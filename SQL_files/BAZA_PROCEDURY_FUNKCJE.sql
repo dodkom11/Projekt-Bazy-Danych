@@ -245,7 +245,7 @@ END INSERTKURIER;
 /* ---------------------------- */
 /* nie wiem czy to usuwanie oplaca sie w procedurze
 ale przetestowane że działa, wystarczyło do constraintow dac ON DELETE CASCADE */
-
+/
 CREATE OR REPLACE PROCEDURE DELETEKONTO
 (KON_ID IN INT)
 AS 
