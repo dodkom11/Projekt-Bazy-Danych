@@ -1,5 +1,9 @@
 <?php
+    
 
+
+
+    /* ==========       SESJA I WARUNKI DOSTEPU     ========== */
     session_start();
     
     //jezeli nie jestesmy zalogowani wroc do index.php
@@ -11,15 +15,21 @@
 
     require_once "connect.php"; 
 
-    $query = "SELECT * FROM PRODUKT"; 
 
-    //Polaczenie z baza
+
+
+    /* ==========       POLACZENIE Z BAZA       ========== */
     $connection = oci_connect($username, $password, $database);
     if (!$connection) {
         $m = oci_error();
         trigger_error('Nie udało się połaczyć z baza: '. $m['message'], E_USER_ERROR);
     }
 
+
+
+
+    /* ==========       SELECT OSTATNIE 6 PRODUKTÓW       ========== */
+    $query = "SELECT * FROM PRODUKT"; 
     //Parsowanie polecenia pl/sql   
     $stid = oci_parse($connection, $query);
     if (!$stid) {
