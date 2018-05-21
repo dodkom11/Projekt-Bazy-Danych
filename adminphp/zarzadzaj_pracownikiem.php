@@ -40,7 +40,7 @@ $queryLicz = "begin
 
 //SELECT PRACOWNIK PO ID
 $querySelectPracownikID = "begin 
-                            :cursor2 := SELECTPRACOWNIKKONTOID(:konto_id);
+                            :cursor2 := SELECTPRACOWNIKKONTOID(:rekord_id);
                         end;";   
 
 $tablename  = 'KONTO';
@@ -271,7 +271,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         //PHP VARIABLE --> ORACLE PLACEHOLDER        
         $cursorPokazOsobe = oci_new_cursor($connection);
-        oci_bind_by_name($stid, ":konto_id", $_REQUEST['number-input']);
+        oci_bind_by_name($stid, ":rekord_id", $_REQUEST['number-input']);
         oci_bind_by_name($stid, ":cursor2", $cursorPokazOsobe, -1, OCI_B_CURSOR);
 
         //EXECUTE POLECENIE
@@ -474,7 +474,7 @@ if (!empty($_REQUEST['number-input'])) {
 
     //PHP VARIABLE --> ORACLE PLACEHOLDER
     $cursorUsunOsobe = oci_new_cursor($connection);
-    oci_bind_by_name($stid, ":konto_id", $_REQUEST['number-input']);
+    oci_bind_by_name($stid, ":rekord_id", $_REQUEST['number-input']);
     oci_bind_by_name($stid, ":cursor2", $cursorUsunOsobe, -1, OCI_B_CURSOR);
 
 

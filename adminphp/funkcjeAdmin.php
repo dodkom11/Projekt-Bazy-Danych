@@ -30,11 +30,11 @@ if (!$connection) {
 /* ==========		ZMIENNE LOKALNE			========== */
 //SELECT KLIENCI TABELA
 $queryUsunKontoID = "begin 
-              			 	DELETEKONTO(:konto_id);
+              			 	DELETEKONTO(:rekord_id);
           				end;";
 
 $queryDodajPracownikID = "begin 
-              			 	INSERTPRACOWNIK(:konto_id, :pensja, :premia);
+              			 	INSERTPRACOWNIK(:rekord_id, :pensja, :premia);
           				end;";
 
 $queryDodajKurier = "begin 
@@ -42,7 +42,7 @@ $queryDodajKurier = "begin
           			end;";
 
 $queryUsunKurieraID= "begin 
-              			 	DELETEKURIER(:konto_id);
+              			 	DELETEKURIER(:rekord_id);
           			 end;";
 
 
@@ -57,7 +57,7 @@ function funkcjaUsunKonto($connection, $queryUsunKontoID)
 	$stid = oci_parse($connection, $queryUsunKontoID);
 
 	//PHP VARIABLE --> ORACLE PLACEHOLDER
-	oci_bind_by_name($stid, ":konto_id", $_POST['usunkontoid']);
+	oci_bind_by_name($stid, ":rekord_id", $_POST['usunkontoid']);
 
 	//EXECUTE POLECENIE
 	$result = oci_execute($stid);
@@ -81,7 +81,7 @@ function funkcjaDodajPracownik($connection, $queryDodajPracownikID)
 	$stid = oci_parse($connection, $queryDodajPracownikID);
 
 	//PHP VARIABLE --> ORACLE PLACEHOLDER
-	oci_bind_by_name($stid, ":konto_id", $_POST['dodajpracownikid']);
+	oci_bind_by_name($stid, ":rekord_id", $_POST['dodajpracownikid']);
 	oci_bind_by_name($stid, ":pensja", $_POST['pensja']);
 	oci_bind_by_name($stid, ":premia", $_POST['premia']);
 
@@ -136,7 +136,7 @@ function funkcjaUsunKuriera($connection, $queryUsunKurieraID)
 	$stid = oci_parse($connection, $queryUsunKurieraID);
 
 	//PHP VARIABLE --> ORACLE PLACEHOLDER
-	oci_bind_by_name($stid, ":konto_id", $_POST['usunkurieraid']);
+	oci_bind_by_name($stid, ":rekord_id", $_POST['usunkurieraid']);
 
 	//EXECUTE POLECENIE
 	$result = oci_execute($stid);
@@ -243,9 +243,6 @@ function funkcjaUsunKuriera($connection, $queryUsunKurieraID)
 	else if($_SERVER['REQUEST_METHOD'] == "POST" and isset($_POST['usunkurierabutton'])) {
 			funkcjaUsunKuriera($connection, $queryUsunKurieraID);
 	}
-
-
-	
 
 ?>
             <!-- ./container-fluid -->
