@@ -1,50 +1,110 @@
 <?php
-    
-
-
-
-    /* ==========       SESJA I WARUNKI DOSTEPU     ========== */
-    session_start();
-    
-    //jezeli nie jestesmy zalogowani wroc do index.php
-    if (!isset($_SESSION['zalogowany']))
-    {
-        header('Location: index.php');
-        exit(); //opuszczamy plik nie wykonuje sie reszta
-    }
-
-    require_once "connect.php"; 
 
 
 
 
-    /* ==========       POLACZENIE Z BAZA       ========== */
-    $connection = oci_connect($username, $password, $database);
-    if (!$connection) {
-        $m = oci_error();
-        trigger_error('Nie udało się połaczyć z baza: '. $m['message'], E_USER_ERROR);
-    }
+/* ==========       SESJA I WARUNKI DOSTEPU     ========== */
+session_start();
+
+//jezeli nie jestesmy zalogowani wroc do index.php
+if (!isset($_SESSION['zalogowany']))
+{
+    header('Location: index.php');
+    exit(); //opuszczamy plik nie wykonuje sie reszta
+}
+
+require_once "connect.php"; 
 
 
 
 
-    /* ==========       SELECT OSTATNIE 6 PRODUKTÓW       ========== */
-    $query = "SELECT * FROM PRODUKT"; 
-    //Parsowanie polecenia pl/sql   
-    $stid = oci_parse($connection, $query);
-    if (!$stid) {
-        $m = oci_error($connection);
-        trigger_error('Nie udało się przeanalizować polecenia pl/sql: '. $m['message'], E_USER_ERROR);
-    }
+/* ==========       POLACZENIE Z BAZA       ========== */
+$connection = oci_connect($username, $password, $database);
+if (!$connection) {
+    $m = oci_error();
+    trigger_error('Nie udało się połaczyć z baza: '. $m['message'], E_USER_ERROR);
+}
 
-    //Wykonaj polecenie SQL
-    $result = oci_execute($stid);   
-    if (!$result) {
-        $m = oci_error($stid);
-        trigger_error('Nie udało się wykonać polecenia: '. $m['message'], E_USER_ERROR);
-    }        
-    
-?>
+
+
+
+/* ==========       ZMIENNE LOKALNE         ========== */
+//SELECT OSTATNIE 6 PRODUKTÓW 
+$queryOstatnie6Produktow = "begin 
+                                :cursor := LAST6PRODUCTS;
+                            end;";
+
+//SELECT OSTATNIE KATEGORIA
+$queryPokazKategorie =      "begin 
+                                :cursor := SELECTKATEGORIA;
+                            end;";
+
+
+
+
+/* ==========       SELECT OSTATNIE 6 PRODUKTÓW       ========== */
+//PARSOWANIE  
+$stid = oci_parse($connection, $queryOstatnie6Produktow);
+if (!$stid) {
+    $m = oci_error($connection);
+    trigger_error('Nie udało się przeanalizować polecenia pl/sql: ' . $m['message'], E_USER_ERROR);
+}
+
+//PHP VARIABLE --> ORACLE PLACEHOLDER
+$cursorProdukty = oci_new_cursor($connection);
+oci_bind_by_name($stid, ":cursor", $cursorProdukty, -1, OCI_B_CURSOR);
+
+//EXECUTE POLECENIE
+$result = oci_execute($stid);
+if (!$result) {
+    $m = oci_error($stid);
+    trigger_error('Nie udało się wykonać polecenia: ' . $m['message'], E_USER_ERROR);
+}
+
+//EXECUTE KURSOR
+$result = oci_execute($cursorProdukty, OCI_DEFAULT);
+if (!$result) {
+    $m = oci_error($stid);
+    trigger_error('Nie udało się wykonać polecenia: ' . $m['message'], E_USER_ERROR);
+}
+
+//ZWOLNIJ ZASOBY
+oci_free_statement($stid);      
+
+
+
+
+/* ==========       SELECT KATEGORIA      ========== */
+//PARSOWANIE  
+$stid = oci_parse($connection, $queryPokazKategorie);
+if (!$stid) {
+    $m = oci_error($connection);
+    trigger_error('Nie udało się przeanalizować polecenia pl/sql: ' . $m['message'], E_USER_ERROR);
+}
+
+//PHP VARIABLE --> ORACLE PLACEHOLDER
+$cursorKategoria = oci_new_cursor($connection);
+oci_bind_by_name($stid, ":cursor", $cursorKategoria, -1, OCI_B_CURSOR);
+
+//EXECUTE POLECENIE
+$result = oci_execute($stid);
+if (!$result) {
+    $m = oci_error($stid);
+    trigger_error('Nie udało się wykonać polecenia: ' . $m['message'], E_USER_ERROR);
+}
+
+//EXECUTE KURSOR
+$result = oci_execute($cursorKategoria, OCI_DEFAULT);
+if (!$result) {
+    $m = oci_error($stid);
+    trigger_error('Nie udało się wykonać polecenia: ' . $m['message'], E_USER_ERROR);
+}
+
+//ZWOLNIJ ZASOBY
+oci_free_statement($stid);     
+ 
+     
+?> 
 
 <!DOCTYPE html>
 <html lang="en">
@@ -108,27 +168,17 @@
                             <strong>Kategorie</strong>
                         </a>
                     </li>
-                    <li>
-                        <a href="#"><i class="fas fa-check"></i>&nbsp;&nbsp;Wędki</a>
-                    </li>
-                    <li>
-                        <a href="#"><i class="fas fa-check"></i>&nbsp;&nbsp;Przynęty</a>
-                    </li>
-                    <li>
-                        <a href="#"><i class="fas fa-check"></i>&nbsp;&nbsp;Haki</a>
-                    </li>
-                    <li>
-                        <a href="#"><i class="fas fa-check"></i>&nbsp;&nbsp;Kat. 4</a>
-                    </li>
-                    <li>
-                        <a href="#"><i class="fas fa-check"></i>&nbsp;&nbsp;Kat. 5</a>
-                    </li>
-                    <li>
-                        <a href="#"><i class="fas fa-check"></i>&nbsp;&nbsp;Kat. 6</a>
-                    </li>
-                    <li>
-                        <a href="#"><i class="fas fa-check"></i>&nbsp;&nbsp;Kat. 7</a>
-                    </li>
+<?php                    
+while (($row = oci_fetch_array($cursorKategoria, OCI_ASSOC + OCI_RETURN_NULLS)) != false) {
+    $KATEGORIA_ID       = $row['KATEGORIA_ID'];
+    $KATEGORIA_NAZWA    = $row['KATEGORIA_NAZWA'];
+echo<<<END
+<li>
+     <a href="kat$KATEGORIA_ID.php">&nbsp;&nbsp;$KATEGORIA_NAZWA</a>
+</li>
+END;
+}
+?>
                 </ul>
             </div>
             <!-- /#sidebar-wrapper -->
@@ -169,15 +219,16 @@
                     <!-- /.row -->
                     <div class="row">
                     <?php                        
-                        while (oci_fetch($stid)) {         
-                            $producent = oci_result($stid, 'PRODUCENT');
-                            $cena = oci_result($stid, 'CENA');
-                            $numerKat = oci_result($stid, 'NUMER_KATALOGOWY');
-                            $model =  oci_result($stid, 'MODEL');
-                            $szukMagazyn = oci_result($stid, 'SZTUK_NA_MAGAZYNIE');
-                            $opis = oci_result($stid, 'OPIS');
-                            if( ($zdjecie = oci_result($stid, 'ZDJECIE')) != null){
-                                $zdjecie = oci_result($stid, 'ZDJECIE')->load();
+                        while (($row = oci_fetch_array($cursorProdukty, OCI_ASSOC + OCI_RETURN_NULLS)) != false) {     
+                            $produktid = $row['PRODUKT_ID'];
+                            $producent = $row['PRODUCENT'];
+                            $cena = $row['CENA'];
+                            $numerKat = $row['NUMER_KATALOGOWY'];
+                            $model =  $row['MODEL'];
+                            $szukMagazyn = $row['SZTUK_NA_MAGAZYNIE'];
+                            $opis = $row['OPIS'];
+                            if( ($zdjecie = $row['ZDJECIE']) != null){
+                                $zdjecie = $row['ZDJECIE']->load();
                             }                                                                                                  
 echo <<<END
                         <div class="col-lg-4 col-md-6 mb-4">
@@ -222,7 +273,19 @@ echo <<<END
                                   <div class="card-footer">
                                     <div class="row">
                                         <div class="col-lg-6"><em class="align-middle">Dodano: 2018-04-29</em></div>
-                                        <div class="col-lg-6 text-right"><button type="button" class="btn btn-success"><i class="fas fa-shopping-cart"></i> KUP</button></div>
+                                        
+                                            <div class="col-lg-6 text-right">
+                                                <form action="koszyk.php" method="post">
+                                                    <button type="submit" name="buttonproduktid" class="btn btn-success" value="
+END;
+?>
+<?php echo htmlspecialchars($produktid);
+echo <<<END
+">
+                                                    <i class="fas fa-shopping-cart"></i> KUP</button>
+                                                  </form>
+                                            </div>
+
                                     </div>
                                 </div>
                             </div>
@@ -230,8 +293,6 @@ echo <<<END
 END;
 
                         }
-                            oci_free_statement($stid); //wyczysc z pamieci RAM serwera zwrocone z bazy rezultaty zapytania     
-
                     ?>                       
                     </div>
                     <!-- /.row -->
