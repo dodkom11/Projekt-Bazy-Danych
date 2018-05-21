@@ -112,5 +112,5 @@ if($_SERVER['REQUEST_METHOD'] == "POST" and isset($_POST['buttonproduktid'])) {
 	}
 }
 oci_close($connection); 
-header('Location: ../sklep.php');
+header('Location: ../sklep.php');	
 ?>

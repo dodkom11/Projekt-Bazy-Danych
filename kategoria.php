@@ -11,6 +11,9 @@ if (!isset($_SESSION['zalogowany']))
 {
     header('Location: index.php');
     exit(); //opuszczamy plik nie wykonuje sie reszta
+} else if (!isset($_POST['katid'])) {
+    header('Location: sklep.php');
+    exit(); //opuszczamy plik nie wykonuje sie reszta
 }
 
 require_once "logikaphp/connect.php"; 
@@ -29,12 +32,12 @@ if (!$connection) {
 
 
 /* ==========       ZMIENNE LOKALNE         ========== */
-//SELECT OSTATNIE 6 PRODUKTÓW 
-$queryOstatnie6Produktow = "begin 
-                                :cursor := LAST6PRODUCTS;
+//SELECT PRODUKTY Z KATEGORI
+$queryProduktyKategoria = "begin 
+                                :cursor := SELECTPRODUKTYKATEGORIAID(:katid);
                             end;";
 
-//SELECT OSTATNIE KATEGORIA
+//SELECT KATEGORIA
 $queryPokazKategorie =      "begin 
                                 :cursor := SELECTKATEGORIA;
                             end;";
@@ -42,9 +45,9 @@ $queryPokazKategorie =      "begin
 
 
 
-/* ==========       SELECT OSTATNIE 6 PRODUKTÓW       ========== */
+/* ==========       SELECT PRODUKTY Z KATEGORI    ========== */
 //PARSOWANIE  
-$stid = oci_parse($connection, $queryOstatnie6Produktow);
+$stid = oci_parse($connection, $queryProduktyKategoria);
 if (!$stid) {
     $m = oci_error($connection);
     trigger_error('Nie udało się przeanalizować polecenia pl/sql: ' . $m['message'], E_USER_ERROR);
@@ -53,6 +56,7 @@ if (!$stid) {
 //PHP VARIABLE --> ORACLE PLACEHOLDER
 $cursorProdukty = oci_new_cursor($connection);
 oci_bind_by_name($stid, ":cursor", $cursorProdukty, -1, OCI_B_CURSOR);
+oci_bind_by_name($stid, ":katid", $_POST['katid']);
 
 //EXECUTE POLECENIE
 $result = oci_execute($stid);
@@ -323,4 +327,4 @@ END;
         <script src="script/toogle.js"></script>
         <script src="script/showAndHide.js"></script>
     </body>
-</html>
+</html>s
