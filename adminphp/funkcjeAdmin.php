@@ -45,6 +45,13 @@ $queryUsunKurieraID= "begin
               			 	DELETEKURIER(:rekord_id);
           			 end;";
 
+$queryUsunDostawceID = "begin 
+                            DELETEDOSTAWCA(:rekord_id);
+                    end;";
+
+$queryDodajDostawceID= "begin 
+                            DELETEKURIER(:rekord_id);
+                     end;";
 
 
 
@@ -150,6 +157,31 @@ function funkcjaUsunKuriera($connection, $queryUsunKurieraID)
 
 	echo '<div class="alert alert-success" role="alert"><strong>INFORMACJA!</strong> Pomyślnie usunięto kuriera ID: <strong>' . $_POST['usunkurieraid'] . "</strong></div>";
 }
+
+
+
+/* ==========       FUNKCJA Usun Dostawce            ========== */
+
+function funkcjaUsunDostawce($connection, $queryUsunDostawceID)
+{
+    //PARSOWANIE  
+    $stid = oci_parse($connection, $queryUsunKurieraID);
+
+    //PHP VARIABLE --> ORACLE PLACEHOLDER
+    oci_bind_by_name($stid, ":rekord_id", $_POST['usundostawceid']);
+
+    //EXECUTE POLECENIE
+    $result = oci_execute($stid);
+    if (!$result) {
+        $m = oci_error($stid);
+        trigger_error('Nie udało się wykonać polecenia: ' . $m['message'], E_USER_ERROR);
+    }
+
+    //ZWOLNIJ ZASOBY
+    oci_free_statement($stid);
+
+    echo '<div class="alert alert-success" role="alert"><strong>INFORMACJA!</strong> Pomyślnie usunięto Dostawce ID: <strong>' . $_POST['usundostawceid'] . "</strong></div>";
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -250,6 +282,12 @@ function funkcjaUsunKuriera($connection, $queryUsunKurieraID)
 	else if($_SERVER['REQUEST_METHOD'] == "POST" and isset($_POST['usunkurierabutton'])) {
 			funkcjaUsunKuriera($connection, $queryUsunKurieraID);
 	}
+    else if($_SERVER['REQUEST_METHOD'] == "POST" and isset($_POST['usundostawcebutton'])) {
+            funkcjaUsunDostawce($connection, $queryUsunDostawceID);
+    }
+    else if($_SERVER['REQUEST_METHOD'] == "POST" and isset($_POST['dodajdostawcebutton'])) {
+            funkcjaDodajDostawce($connection, $queryDodajDostawceID);
+    }
 
 ?>
             <!-- ./container-fluid -->
