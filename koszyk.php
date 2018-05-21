@@ -137,13 +137,17 @@ oci_free_statement($stid);
                          if ((isset($_SESSION['S_UPRAWNIENIA'])) && (!strcmp($_SESSION['S_UPRAWNIENIA'], "admin" ))){
                             echo '<li class="nav-item"><a class="nav-link" href="adminphp/zarzadzaj_pracownikiem.php"><i class="fas fa-gavel"></i>&nbsp;&nbsp;Admin Panel</a></li>';
                          }
-                         ?>  
+                         ?>
+                         <?php
+                         if ((isset($_SESSION['S_UPRAWNIENIA'])) && (!strcmp($_SESSION['S_UPRAWNIENIA'], "admin" ) OR !strcmp($_SESSION['S_UPRAWNIENIA'], "pracownik" ))){
+                            echo '<li class="nav-item"><a class="nav-link" href="pracownikphp/zarzadzaj_produktem.php"><i class="fas fa-pencil-alt"></i>&nbsp;&nbsp;Pracownik Panel</a></li>';
+                         }
+                         ?>   
                         <li class="nav-item">
-                            <a class="nav-link" href="index.php"><i class="fas fa-home"></i>&nbsp;&nbsp;Strona Główna                                
-                            </a>
+                            <a class="nav-link" href="index.php"><i class="fas fa-home"></i>&nbsp;&nbsp;Strona Główna</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="sklep.php"><i class="fas fa-shopping-basket"></i></i>&nbsp;&nbsp;Sklep</a>
+                            <a class="nav-link" href="sklep.php"><i class="fas fa-shopping-basket"></i></i>&nbsp;&nbsp;Sklep</a>                            
                         </li>
                         <li class="nav-item active">
                             <a class="nav-link" href="koszyk.php"><i class="fas fa-shopping-cart"></i>&nbsp;&nbsp;Koszyk</a>
@@ -170,18 +174,26 @@ oci_free_statement($stid);
                         <a href="#">
                             <strong>Kategorie</strong>
                         </a>
-                    </li>
+  
+                    </li><div class="btn-group-vertical">
 <?php                    
 while (($row = oci_fetch_array($cursorKategoria, OCI_ASSOC + OCI_RETURN_NULLS)) != false) {
     $KATEGORIA_ID       = $row['KATEGORIA_ID'];
     $KATEGORIA_NAZWA    = $row['KATEGORIA_NAZWA'];
 echo<<<END
 <li>
-     <a href="kat$KATEGORIA_ID.php">&nbsp;&nbsp;$KATEGORIA_NAZWA</a>
+    <form action="kategoria.php" method="post">
+        <button type="submit" name="katid" class="btn btn-outline-secondary" style="min-width: 205px;" value="
+END;
+?>
+<?php echo htmlspecialchars($KATEGORIA_ID);
+echo <<<END
+        ">$KATEGORIA_NAZWA</button>        
+     </form>
 </li>
 END;
 }
-?>
+?></div>
                 </ul>
             </div>
             <!-- /#sidebar-wrapper -->
