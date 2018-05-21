@@ -29,8 +29,8 @@ if (!$connection) {
 
 /* ==========       ZMIENNE LOKALNE         ========== */
 //SELECT KLIENCI TABELA
-$querySelectKlienci = "begin 
-                            :cursor := SELECTKLIENCI;
+$querySelectDostawcy = "begin 
+                            :cursor := SELECTDOSTAWCA;
                         end;";
 
 //SELECT LICZBA KLIENTOW
@@ -39,23 +39,18 @@ $queryLicz = "begin
                end;";
 
 //SELECT KLIENT PO ID
-$querySelectKlientID = "begin 
-                            :cursor2 := SELECTKLIENCIKONTOID(:rekord_id);
+$querySelectDostawcaID = "begin 
+                            :cursor2 := SELECTDOSTAWCAID(:rekord_id);
                         end;";   
 
-$tablename  = 'KONTO';
-$columnname = 'KONTO_ID';
-$condition  = "UPRAWNIENIA = 'klient'";
-
-//WARUNEK CZY ISTENIEJE KLIENT 
-$condition2  = "UPRAWNIENIA = 'klient' AND KONTO_ID = '";
-
-
+$tablename  = 'DOSTAWCA';
+$columnname = 'DOSTAWCA_ID';
+$condition  = "'true'='true'";
 
 
 /* ==========       SELECT KLIENCI TABELA       ========== */
 //PARSOWANIE  
-$stid = oci_parse($connection, $querySelectKlienci);
+$stid = oci_parse($connection, $querySelecDostawcyi);
 if (!$stid) {
     $m = oci_error($connection);
     trigger_error('Nie udało się przeanalizować polecenia pl/sql: ' . $m['message'], E_USER_ERROR);
@@ -150,9 +145,6 @@ oci_free_statement($stid);
                             <a class="nav-link" href="../koszyk.php"><i class="fas fa-shopping-cart"></i>&nbsp;&nbsp;Koszyk</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="../koszyk.php"><i class="fas fa-shopping-cart"></i>&nbsp;&nbsp;Koszyk</a>
-                        </li>
-                        <li class="nav-item">
                             <a class="nav-link" href="#"><i class="fas fa-info"></i>&nbsp;&nbsp;O nas</a>
                         </li>
                         <li class="nav-item">
@@ -230,7 +222,7 @@ echo $_SERVER['PHP_SELF'];
 if (!empty($_REQUEST['number-input'])) {
 
 //WARUNEK CZY ISTENIEJE KLIENT 
-$condition2 = $condition2 . $_REQUEST['number-input'] . "'";
+$condition2 = "DOSTAWCA_ID='" . $_REQUEST['number-input'] . "'";
 
 /* ==========       SPRAWDZ CZY KONTO NALEZY DO KLIENT          ========== */
 //PARSOWANIE  
@@ -277,7 +269,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     } else {
 
         //PARSOWANIE 
-        $stid = oci_parse($connection, $querySelectKlientID);
+        $stid = oci_parse($connection, $querySelectDostawcaID);
         if (!$stid) {
             $m = oci_error($connection);
             trigger_error('Nie udało się przeanalizować polecenia pl/sql: ' . $m['message'], E_USER_ERROR);
@@ -479,7 +471,7 @@ END;
                                             <?php
 if (!empty($_REQUEST['number-input'])) { 
     //PARSOWANIE
-    $stid = oci_parse($connection, $querySelectKlientID);
+    $stid = oci_parse($connection, $querySelectDostawcaID);
     if (!$stid) {
         $m = oci_error($connection);
         trigger_error('Nie udało się przeanalizować polecenia pl/sql: ' . $m['message'], E_USER_ERROR);
@@ -536,13 +528,13 @@ if (!empty($_REQUEST['number-input'])) {
 if (!empty($_REQUEST['number-input'])) {
 echo <<<END
 <form action="funkcjeAdmin.php" method="post">
-<input type="hidden" name="usunrekordid" min="1" value="
+<input type="hidden" name="usundostawceid" min="1" value="
 END;
 ?>
 <?php echo htmlspecialchars($_REQUEST['number-input']);
 echo <<<END
 "><br>
-<input type="submit" name="usunkontobutton" class="btn btn-primary" value="POTWIERDZ USUNIECIE" />
+<input type="submit" name="usundostawcebutton" class="btn btn-primary" value="POTWIERDZ USUNIECIE" />
 </form>
 END;
 }
@@ -591,7 +583,7 @@ END;
                                             <?php
 if (!empty($_REQUEST['number-input'])) { 
     //PARSOWANIE
-    $stid = oci_parse($connection, $querySelectKlientID);
+    $stid = oci_parse($connection, $querySelectDostawcaID);
     if (!$stid) {
         $m = oci_error($connection);
         trigger_error('Nie udało się przeanalizować polecenia pl/sql: ' . $m['message'], E_USER_ERROR);
@@ -650,7 +642,7 @@ if (!empty($_REQUEST['number-input'])) {
 
 echo <<<END
 <form action="funkcjeAdmin.php" method="post">
-<input type="hidden" name="dodajpracownikid" min="1" value="
+<input type="hidden" name="dodajdostawceid" min="1" value="
 END;
 ?>
 <?php echo htmlspecialchars($_REQUEST['number-input']);
@@ -672,7 +664,7 @@ echo <<<END
                 <input type="number" class="form-control" id="inputpremiaid" name="premia" placeholder="PLN" required>                  
              </div>                 
       </div>
-      <input type="submit" name="dodajpracownikbutton" class="btn btn-primary" value="POTWIERDZ DODANIE" />
+      <input type="submit" name="dodajdostawcebutton" class="btn btn-primary" value="POTWIERDZ DODANIE" />
 </form>
 END;
 }
