@@ -50,7 +50,7 @@ $condition  = "'true'='true'";
 
 /* ==========       SELECT KLIENCI TABELA       ========== */
 //PARSOWANIE  
-$stid = oci_parse($connection, $querySelecDostawcyi);
+$stid = oci_parse($connection, $querySelectDostawcy);
 if (!$stid) {
     $m = oci_error($connection);
     trigger_error('Nie udało się przeanalizować polecenia pl/sql: ' . $m['message'], E_USER_ERROR);
@@ -304,38 +304,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                         <table class="table table-bordered" id="dataTable2" width="100%" cellspacing="0">
                                             <thead>
                                                 <tr>
-                                                    <th>KONTO_ID</th>
-                                                    <th>IMIE</th>
-                                                    <th>NAZWISKO</th>
-                                                    <th>UPRAWNIENIA</th>
-                                                    <th>MIEJSCOWOSC</th>
-                                                    <th>WOJEWODZTWO</th>
-                                                    <th>KOD_POCZTOWY</th>
-                                                    <th>ULICA</th>
-                                                    <th>NR_DOMU</th>
-                                                    <th>NR_LOKALU</th>
-                                                    <th>EMAIL</th>
-                                                    <th>NR_TEL</th>
+
+        <th>DOSTAWCA_ID</th>
+        <th>NAZWA FIRMY</th>
+
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 <?php
 //WYPEŁNIJ TABELE JEŻELI PODANO ID KONTA
+
 if (!empty($_REQUEST['number-input'])) {
     while (($row = oci_fetch_array($cursorPokazOsobe, OCI_ASSOC + OCI_RETURN_NULLS)) != false) {
-        $KONTO_ID     = $row['KONTO_ID'];
-        $IMIE         = $row['IMIE'];
-        $NAZWISKO     = $row['NAZWISKO'];
-        $UPRAWNIENIA  = $row['UPRAWNIENIA'];
-        $MIEJSCOWOSC  = $row['MIEJSCOWOSC'];
-        $WOJEWODZTWO  = $row['WOJEWODZTWO'];
-        $KOD_POCZTOWY = $row['KOD_POCZTOWY'];
-        $ULICA        = $row['ULICA'];
-        $NR_DOMU      = $row['NR_DOMU'];
-        $NR_LOKALU    = $row['NR_LOKALU'];
-        $EMAIL        = $row['EMAIL'];
-        $NR_TEL       = $row['NR_TEL'];
-        echo "<tr><td>$KONTO_ID</td> <td>$IMIE</td> <td>$NAZWISKO</td> <td>$UPRAWNIENIA</td> <td>$MIEJSCOWOSC</td> <td>$WOJEWODZTWO</td> <td>$KOD_POCZTOWY</td> <td>$ULICA</td> <td>$NR_DOMU</td> <td>$NR_LOKALU</td> <td>$EMAIL</td> <td>$NR_TEL</td></tr>";
+        $DOSTAWCA_ID = $row['DOSTAWCA_ID'];
+$NAZWA_FIRMY  = $row['NAZWA_FIRMY'];
+        echo "<tr><td>$DOSTAWCA_ID</td><td>$NAZWA_FIRMY</td></tr>";
     }
 }
 ?>
@@ -373,54 +356,28 @@ echo $ileOsob;
                                         <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                                             <thead>
                                                 <tr>
-                                                    <th>KONTO_ID</th>
-                                                    <th>IMIE</th>
-                                                    <th>NAZWISKO</th>
-                                                    <th>UPRAWNIENIA</th>
-                                                    <th>MIEJSCOWOSC</th>
-                                                    <th>WOJEWODZTWO</th>
-                                                    <th>KOD_POCZTOWY</th>
-                                                    <th>ULICA</th>
-                                                    <th>NR_DOMU</th>
-                                                    <th>NR_LOKALU</th>
-                                                    <th>EMAIL</th>
-                                                    <th>NR_TEL</th>
+
+        <th>DOSTAWCA_ID</th>
+        <th>NAZWA FIRMY</th>
+
                                                 </tr>
                                             </thead>
                                             <tfoot>
                                             <tr>
-                                                <th>KONTO_ID</th>
-                                                <th>IMIE</th>
-                                                <th>NAZWISKO</th>
-                                                <th>UPRAWNIENIA</th>
-                                                <th>MIEJSCOWOSC</th>
-                                                <th>WOJEWODZTWO</th>
-                                                <th>KOD_POCZTOWY</th>
-                                                <th>ULICA</th>
-                                                <th>NR_DOMU</th>
-                                                <th>NR_LOKALU</th>
-                                                <th>EMAIL</th>
-                                                <th>NR_TEL</th>
+                                       
+        <th>DOSTAWCA_ID</th>
+        <th>NAZWA FIRMY</th>
+
                                             </tr>
                                             </tfoot>
                                             <tbody>
                                                 <?php
 //WYPEŁNIJ TABELE KLIENTAMI Z BAZY                                            
 while (($row = oci_fetch_array($cursorTabela, OCI_ASSOC + OCI_RETURN_NULLS)) != false) {
-    $KONTO_ID     = $row['KONTO_ID'];
-    $IMIE         = $row['IMIE'];
-    $NAZWISKO     = $row['NAZWISKO'];
-    $UPRAWNIENIA  = $row['UPRAWNIENIA'];
-    $MIEJSCOWOSC  = $row['MIEJSCOWOSC'];
-    $WOJEWODZTWO  = $row['WOJEWODZTWO'];
-    $KOD_POCZTOWY = $row['KOD_POCZTOWY'];
-    $ULICA        = $row['ULICA'];
-    $NR_DOMU      = $row['NR_DOMU'];
-    $NR_LOKALU    = $row['NR_LOKALU'];
-    $EMAIL        = $row['EMAIL'];
-    $NR_TEL       = $row['NR_TEL'];
-    echo "<tr><td>$KONTO_ID</td> <td>$IMIE</td> <td>$NAZWISKO</td> <td>$UPRAWNIENIA</td> <td>$MIEJSCOWOSC</td> <td>$WOJEWODZTWO</td> <td>$KOD_POCZTOWY</td> <td>$ULICA</td> <td>$NR_DOMU</td> <td>$NR_LOKALU</td> <td>$EMAIL</td> <td>$NR_TEL</td></tr>";
-}
+        $DOSTAWCA_ID = $row['DOSTAWCA_ID'];
+$NAZWA_FIRMY  = $row['NAZWA_FIRMY'];
+        echo "<tr><td>$DOSTAWCA_ID</td><td>$NAZWA_FIRMY</td></tr>";
+    }
 ?>
                                            </tbody>
                                         </table>
@@ -453,18 +410,10 @@ END;
                                     <table class="table table-bordered" id="dataTable3" width="100%" cellspacing="0">
                                         <thead>
                                             <tr>
-                                                <th>KONTO_ID</th>
-                                                <th>IMIE</th>
-                                                <th>NAZWISKO</th>
-                                                <th>UPRAWNIENIA</th>
-                                                <th>MIEJSCOWOSC</th>
-                                                <th>WOJEWODZTWO</th>
-                                                <th>KOD_POCZTOWY</th>
-                                                <th>ULICA</th>
-                                                <th>NR_DOMU</th>
-                                                <th>NR_LOKALU</th>
-                                                <th>EMAIL</th>
-                                                <th>NR_TEL</th>
+                                       
+        <th>DOSTAWCA_ID</th>
+        <th>NAZWA FIRMY</th>
+
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -498,19 +447,9 @@ if (!empty($_REQUEST['number-input'])) {
 }
 if (!empty($_REQUEST['number-input'])) {
     while (($row = oci_fetch_array($cursorUsunOsobe, OCI_ASSOC + OCI_RETURN_NULLS)) != false) {
-        $KONTO_ID     = $row['KONTO_ID'];
-        $IMIE         = $row['IMIE'];
-        $NAZWISKO     = $row['NAZWISKO'];
-        $UPRAWNIENIA  = $row['UPRAWNIENIA'];
-        $MIEJSCOWOSC  = $row['MIEJSCOWOSC'];
-        $WOJEWODZTWO  = $row['WOJEWODZTWO'];
-        $KOD_POCZTOWY = $row['KOD_POCZTOWY'];
-        $ULICA        = $row['ULICA'];
-        $NR_DOMU      = $row['NR_DOMU'];
-        $NR_LOKALU    = $row['NR_LOKALU'];
-        $EMAIL        = $row['EMAIL'];
-        $NR_TEL       = $row['NR_TEL'];
-        echo "<tr><td>$KONTO_ID</td> <td>$IMIE</td> <td>$NAZWISKO</td> <td>$UPRAWNIENIA</td> <td>$MIEJSCOWOSC</td> <td>$WOJEWODZTWO</td> <td>$KOD_POCZTOWY</td> <td>$ULICA</td> <td>$NR_DOMU</td> <td>$NR_LOKALU</td> <td>$EMAIL</td> <td>$NR_TEL</td></tr>";
+        $DOSTAWCA_ID = $row['DOSTAWCA_ID'];
+$NAZWA_FIRMY  = $row['NAZWA_FIRMY'];
+        echo "<tr><td>$DOSTAWCA_ID</td><td>$NAZWA_FIRMY</td></tr>";
     }
 }
 ?>
@@ -565,18 +504,10 @@ END;
                                     <table class="table table-bordered" id="dataTable3" width="100%" cellspacing="0">
                                         <thead>
                                             <tr>
-                                                <th>KONTO_ID</th>
-                                                <th>IMIE</th>
-                                                <th>NAZWISKO</th>
-                                                <th>UPRAWNIENIA</th>
-                                                <th>MIEJSCOWOSC</th>
-                                                <th>WOJEWODZTWO</th>
-                                                <th>KOD_POCZTOWY</th>
-                                                <th>ULICA</th>
-                                                <th>NR_DOMU</th>
-                                                <th>NR_LOKALU</th>
-                                                <th>EMAIL</th>
-                                                <th>NR_TEL</th>
+                                       
+        <th>DOSTAWCA_ID</th>
+        <th>NAZWA FIRMY</th>
+
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -610,19 +541,9 @@ if (!empty($_REQUEST['number-input'])) {
 }
 if (!empty($_REQUEST['number-input'])) {
     while (($row = oci_fetch_array($cursorUsunOsobe, OCI_ASSOC + OCI_RETURN_NULLS)) != false) {
-        $KONTO_ID     = $row['KONTO_ID'];
-        $IMIE         = $row['IMIE'];
-        $NAZWISKO     = $row['NAZWISKO'];
-        $UPRAWNIENIA  = $row['UPRAWNIENIA'];
-        $MIEJSCOWOSC  = $row['MIEJSCOWOSC'];
-        $WOJEWODZTWO  = $row['WOJEWODZTWO'];
-        $KOD_POCZTOWY = $row['KOD_POCZTOWY'];
-        $ULICA        = $row['ULICA'];
-        $NR_DOMU      = $row['NR_DOMU'];
-        $NR_LOKALU    = $row['NR_LOKALU'];
-        $EMAIL        = $row['EMAIL'];
-        $NR_TEL       = $row['NR_TEL'];
-        echo "<tr><td>$KONTO_ID</td> <td>$IMIE</td> <td>$NAZWISKO</td> <td>$UPRAWNIENIA</td> <td>$MIEJSCOWOSC</td> <td>$WOJEWODZTWO</td> <td>$KOD_POCZTOWY</td> <td>$ULICA</td> <td>$NR_DOMU</td> <td>$NR_LOKALU</td> <td>$EMAIL</td> <td>$NR_TEL</td></tr>";
+        $DOSTAWCA_ID = $row['DOSTAWCA_ID'];
+$NAZWA_FIRMY  = $row['NAZWA_FIRMY'];
+        echo "<tr><td>$DOSTAWCA_ID</td><td>$NAZWA_FIRMY</td></tr>";
     }
 }
 ?>
