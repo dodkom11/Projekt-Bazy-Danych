@@ -33,7 +33,10 @@ $queryUsunProduktID= "begin
                             DELETEPRODUKT(:rekord_id);
                      end;";
 
-
+//DODAJ PRODUKT
+$queryDodajProdukt = "begin 
+                            INSERTPRODUKT(:dostawcaid, :kategoriaid, :producent, :nrkatalogowy, :model, :cena, :sztuk, :opis);
+                     end;";
 
 
 /* ==========       FUNKCJA DELETE PRODUKT            ========== */
@@ -58,6 +61,38 @@ function funkcjaUsunProdukt($connection, $queryUsunProduktID)
 
     echo '<div class="alert alert-success" role="alert"><strong>INFORMACJA!</strong> Pomyślnie usunięto konto ID: <strong>' . $_POST['usunproduktid'] . "</strong></div>";
 }
+
+
+/* ==========       FUNKCJA DODAJ PRACOWNIKA           ========== */
+
+function funkcjaDodajProdukt($connection, $queryDodajProdukt)
+{
+    //PARSOWANIE  
+    $stid = oci_parse($connection, $queryDodajProdukt);
+
+    //PHP VARIABLE --> ORACLE PLACEHOLDER
+    oci_bind_by_name($stid, ":dostawcaid", $_POST['dostawcaid']);
+    oci_bind_by_name($stid, ":kategoriaid", $_POST['kategoriaid']);
+    oci_bind_by_name($stid, ":producent", $_POST['producent']);
+    oci_bind_by_name($stid, ":nrkatalogowy", $_POST['nrkatalogowy']);
+    oci_bind_by_name($stid, ":model", $_POST['model']);
+    oci_bind_by_name($stid, ":cena", $_POST['cena']);
+    oci_bind_by_name($stid, ":sztuk", $_POST['sztuk']);
+    oci_bind_by_name($stid, ":opis", $_POST['opis']);
+
+    //EXECUTE POLECENIE
+    $result = oci_execute($stid);
+    if (!$result) {
+        $m = oci_error($stid);
+        trigger_error('Nie udało się wykonać polecenia: ' . $m['message'], E_USER_ERROR);
+    }
+
+    //ZWOLNIJ ZASOBY
+    oci_free_statement($stid);
+
+        echo '<div class="alert alert-success" role="alert"><strong>INFORMACJA!</strong> Pomyślnie Dodano Produkt: <strong>' . $_POST['producent'] . "</strong></div>";
+}
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -144,6 +179,9 @@ function funkcjaUsunProdukt($connection, $queryUsunProduktID)
     if($_SERVER['REQUEST_METHOD'] == "POST" and isset($_POST['usunproduktbutton'])) {
             funkcjaUsunProdukt($connection, $queryUsunProduktID);
         }
+    else if($_SERVER['REQUEST_METHOD'] == "POST" and isset($_POST['dodajproduktbutton'])) {
+            funkcjaDodajProdukt($connection, $queryDodajProdukt);
+    }
 ?>
             <!-- ./container-fluid -->
         </div>

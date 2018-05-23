@@ -530,126 +530,48 @@ END;
         +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 -->
                     <div class="tab-pane fade" id="nav-zakladka4" role="tabpanel" aria-labelledby="nav-zakladka4-tab">
-                        <?php
-//POKAŻ WYBRANE ID JEŚLI PODANO ID
-if (!empty($_REQUEST['number-input'])) {
-    echo <<<END
-                       <span style="font-size: 25px;">WYBRANE ID:&nbsp;</span> <span class="badge badge-dark" style="font-size: 26px;">
-END;
-    echo $_REQUEST['number-input'] . "</span><br/> <br/>";
-}
-?>                   
-                    <div class="row">
-                        <div class="card mb-3">
-                            <div class="card-header">
-                            <i class="fa fa-table"></i> Wybrany Klient</div>
-                            <div class="card-body">
-                                <div class="table-responsive">
-                                    <table class="table table-bordered" id="dataTable3" width="100%" cellspacing="0">
-                                        <thead>
-                                            <tr>
-                                                    <th>PRODUKT_ID</th>
-                                                    <th>DOSTAWCA</th>
-                                                    <th>KATEGORIA_NAZWA</th>
-                                                    <th>PRODUCENT</th>
-                                                    <th>NUMER_KATALOGOWY</th>
-                                                    <th>MODEL</th>
-                                                    <th>CENA</th>
-                                                    <th>SZTUK_NA_MAGAZYNIE</th>
-                                                    <th>DATA_DODANIA</th>
-                                                    
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <?php
-if (!empty($_REQUEST['number-input'])) { 
-    //PARSOWANIE
-    $stid = oci_parse($connection, $querySelectProduktID);
-    if (!$stid) {
-        $m = oci_error($connection);
-        trigger_error('Nie udało się przeanalizować polecenia pl/sql: ' . $m['message'], E_USER_ERROR);
-    }
-
-    //PHP VARIABLE --> ORACLE PLACEHOLDER
-    $cursorUsunOsobe = oci_new_cursor($connection);
-    oci_bind_by_name($stid, ":rekord_id", $_REQUEST['number-input']);
-    oci_bind_by_name($stid, ":cursor2", $cursorUsunOsobe, -1, OCI_B_CURSOR);
-
-
-    //EXECUTE POLECENIE
-    $result = oci_execute($stid);
-    if (!$result) {
-        $m = oci_error($stid);
-        trigger_error('Nie udało się wykonać polecenia: ' . $m['message'], E_USER_ERROR);
-    }
-
-    //EXECUTE KURSOR
-    oci_execute($cursorUsunOsobe, OCI_DEFAULT);
-
-    //ZWOLNIJ ZASOBY
-    oci_free_statement($stid); 
-}
-if (!empty($_REQUEST['number-input'])) {
-    while (($row = oci_fetch_array($cursorUsunOsobe, OCI_ASSOC + OCI_RETURN_NULLS)) != false) {
-        $PRODUKT_ID                     = $row['PRODUKT_ID'];
-        $NAZWA_FIRMY                    = $row['NAZWA_FIRMY'];
-        $KATEGORIA_NAZWA                = $row['KATEGORIA_NAZWA'];
-        $PRODUCENT                      = $row['PRODUCENT'];
-        $NUMER_KATALOGOWY               = $row['NUMER_KATALOGOWY'];
-        $MODEL                          = $row['MODEL'];
-        $CENA                           = $row['CENA'];
-        $SZTUK_NA_MAGAZYNIE             = $row['SZTUK_NA_MAGAZYNIE'];
-        $DATA_DODANIA                   = $row['DATA_DODANIA'];
-              
-        echo "<tr> <td>$PRODUKT_ID</td> <td>$NAZWA_FIRMY</td> <td>$KATEGORIA_NAZWA</td> <td>$PRODUCENT</td> <td>$NUMER_KATALOGOWY</td> <td>$MODEL</td> <td>$CENA</td> <td>$SZTUK_NA_MAGAZYNIE</td> <td>$DATA_DODANIA</td>  </tr>";
-    }
-}
-?>
-                                       </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    </div>    
-
-   
-
-
-
-<?php
-if (!empty($_REQUEST['number-input'])) {
-
-echo <<<END
-<form action="funkcjeAdmin.php" method="post">
-<input type="hidden" name="dodajpracownikid" min="1" value="
-END;
-?>
-<?php echo htmlspecialchars($_REQUEST['number-input']);
-echo <<<END
-"><br>
-END;
-
-?>
-
-<?php 
-echo <<<END
-	   <div class="form-row">
-     		 <div class="form-group col-3">
-     		 	<label for="inputpensjaid">Pensja</label>
-     			<input type="number" class="form-control" id="inputpensjaid" name="pensja" placeholder="PLN" required>        			
-     		 </div>
-     		 <div class="form-group col-3">
-     		 	<label for="inputpremiaid">Premia</label>
-     			<input type="number" class="form-control" id="inputpremiaid" name="premia" placeholder="PLN" required>        			
-     		 </div>     		 	
-      </div>
-	  <input type="submit" name="dodajpracownikbutton" class="btn btn-primary" value="POTWIERDZ DODANIE" />
-</form>
-END;
-}
-?>
              
-                </div>
+                                    <div class="row">  
+                      
+                    <form action="funkcjePracownik.php" method="post">
+                        <div class="form-row">
+                            <div class="form-group col-3">
+                                <label for="inputdostawcaid">Dostawca ID</label>
+                                <input type="number" class="form-control" id="inputdostawcaid" name="dostawcaid" placeholder="Dostawca IDy" required>
+                            </div>
+                            <div class="form-group col-3">
+                                <label for="inputkategoriaid">Kategoria ID</label>
+                                <input type="number" class="form-control" id="inputkategoriaid" name="kategoriaid" placeholder="Kategoria" required>
+                            </div>
+                            <div class="form-group col-3">
+                                <label for="inputproducentid">Producent</label>
+                                <input type="text" class="form-control" id="inputproducentid" name="producent" placeholder="Producent" required>
+                            </div>
+                            <div class="form-group col-3">
+                                <label for="inputnrkatalogowyid">Numer Katalogowy</label>
+                                <input type="text" class="form-control" id="inputnrkatalogowyid" name="nrkatalogowy" placeholder="Numer Katalogowy" required>
+                            </div>
+                            <div class="form-group col-3">
+                                <label for="inputmodelid">Model</label>
+                                <input type="text" class="form-control" id="inputmodelid" name="model" placeholder="Model" required>
+                            </div>
+                            <div class="form-group col-3">
+                                <label for="inputcenaid">Cena</label>
+                                <input type="number" class="form-control" id="inputcenaid" name="cena" placeholder="Model" required>
+                            </div>
+                            <div class="form-group col-3">
+                                <label for="inputsztukid">Liczba Sztuk</label>
+                                <input type="number" class="form-control" id="inputsztukid" name="sztuk" placeholder="Sztuk" required>
+                            </div>
+                            <div class="form-group col-3">
+                                <label for="inputopisid">Opis</label>
+                                <input type="text" class="form-control" id="inputopisid" name="opis" placeholder="Opis" >
+                            </div>                            
+                        </div>
+                        <input type="submit" name="dodajproduktbutton" class="btn btn-primary" value="POTWIERDZ DODANIE" />
+                    </form>  
+
+                </div> 
                 
                 <!-- /.row -->
             </div>
