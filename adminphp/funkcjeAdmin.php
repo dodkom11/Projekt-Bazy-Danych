@@ -50,7 +50,7 @@ $queryUsunDostawceID = "begin
                     end;";
 
 $queryDodajDostawceID= "begin 
-                            DELETEKURIER(:rekord_id);
+                            INSERTDOSTAWCA(:nazwadostawcy, :miejscowosc, :wojewodztwo, :kodpocztowy, :ulica, :nrdomu, :nrlokalu, :email, :nrtel, :fax, :www);
                      end;";
 
 
@@ -159,16 +159,25 @@ function funkcjaUsunKuriera($connection, $queryUsunKurieraID)
 }
 
 
+/* ==========       FUNKCJA DODAJ DOSTAWCE            ========== */
 
-/* ==========       FUNKCJA Usun Dostawce            ========== */
-
-function funkcjaUsunDostawce($connection, $queryUsunDostawceID)
+function funkcjaDodajDostawce($connection, $queryDodajDostawceID)
 {
     //PARSOWANIE  
-    $stid = oci_parse($connection, $queryUsunKurieraID);
+    $stid = oci_parse($connection, $queryDodajDostawceID);
 
     //PHP VARIABLE --> ORACLE PLACEHOLDER
-    oci_bind_by_name($stid, ":rekord_id", $_POST['usundostawceid']);
+    oci_bind_by_name($stid, ":nazwadostawcy", $_POST['nazwadostawcy']);
+    oci_bind_by_name($stid, ":miejscowosc", $_POST['miejscowosc']);
+    oci_bind_by_name($stid, ":wojewodztwo", $_POST['wojewodztwo']);
+    oci_bind_by_name($stid, ":kodpocztowy", $_POST['kodpocztowy']);
+    oci_bind_by_name($stid, ":ulica", $_POST['ulica']);
+    oci_bind_by_name($stid, ":nrdomu", $_POST['nrdomu']);
+    oci_bind_by_name($stid, ":nrlokalu", $_POST['nrlokalu']);
+    oci_bind_by_name($stid, ":email", $_POST['email']);
+    oci_bind_by_name($stid, ":nrtel", $_POST['nrtel']);
+    oci_bind_by_name($stid, ":fax", $_POST['fax']);
+    oci_bind_by_name($stid, ":www", $_POST['www']);
 
     //EXECUTE POLECENIE
     $result = oci_execute($stid);
@@ -180,6 +189,25 @@ function funkcjaUsunDostawce($connection, $queryUsunDostawceID)
     //ZWOLNIJ ZASOBY
     oci_free_statement($stid);
 
+        echo '<div class="alert alert-success" role="alert"><strong>INFORMACJA!</strong> Pomyślnie Dodano Dostawce: <strong>' . $_POST['nazwadostawcy'] . "</strong></div>";
+}
+
+/* ==========       FUNKCJA Usun Dostawce            ========== */
+
+function funkcjaUsunDostawce($connection, $queryUsunDostawceID)
+{
+    //PARSOWANIE  
+    $stid = oci_parse($connection, $queryUsunKurieraID);
+    //PHP VARIABLE --> ORACLE PLACEHOLDER
+    oci_bind_by_name($stid, ":rekord_id", $_POST['usundostawceid']);
+    //EXECUTE POLECENIE
+    $result = oci_execute($stid);
+    if (!$result) {
+        $m = oci_error($stid);
+        trigger_error('Nie udało się wykonać polecenia: ' . $m['message'], E_USER_ERROR);
+    }
+    //ZWOLNIJ ZASOBY
+    oci_free_statement($stid);
     echo '<div class="alert alert-success" role="alert"><strong>INFORMACJA!</strong> Pomyślnie usunięto Dostawce ID: <strong>' . $_POST['usundostawceid'] . "</strong></div>";
 }
 ?>
