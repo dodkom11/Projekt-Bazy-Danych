@@ -581,7 +581,7 @@ END;
                             </div>
                             <div class="form-group col-3">
                                 <label for="inputnrlokaluid">Nr Lokalu</label>
-                                <input type="number" class="form-control" id="inputnrlokaluid" name="nrlokalu" placeholder="Nr Lokalu" value="null">
+                                <input type="number" class="form-control" id="inputnrlokaluid" name="nrlokalu" placeholder="Nr Lokalu" >
                             </div>
                             <div class="form-group col-3">
                                 <label for="inputemailid">Email</label>
@@ -597,7 +597,7 @@ END;
                             </div>
                             <div class="form-group col-3">
                                 <label for="inputwwwid">Strona WWW</label>
-                                <input type="text" class="form-control" id="inputwwwid" name="www" placeholder="Strona WWW" value="null">
+                                <input type="text" class="form-control" id="inputwwwid" name="www" placeholder="Strona WWW">
                             </div>
                         </div>
                         <input type="submit" name="dodajdostawcebutton" class="btn btn-primary" value="POTWIERDZ DODANIE" />

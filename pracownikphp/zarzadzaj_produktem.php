@@ -29,8 +29,8 @@ if (!$connection) {
 
 /* ==========		ZMIENNE LOKALNE			========== */
 //SELECT KLIENCI TABELA
-$querySelectKlienci = "begin 
-              			 	:cursor := SELECTKLIENCI;
+$querySelectProdukty = "begin 
+              			 	:cursor := SELECTPRODUKTY;
           				end;";
 
 //SELECT LICZBA KLIENTOW
@@ -39,23 +39,20 @@ $queryLicz = "begin
                end;";
 
 //SELECT KLIENT PO ID
-$querySelectKlientID = "begin 
-            				:cursor2 := SELECTKLIENCIKONTOID(:rekord_id);
+$querySelectProduktID = "begin 
+            				:cursor2 := SELECTPRODUKTID(:rekord_id);
             			end;";   
 
-$tablename  = 'KONTO';
-$columnname = 'KONTO_ID';
-$condition  = "UPRAWNIENIA = 'klient'";
-
-//WARUNEK CZY ISTENIEJE KLIENT 
-$condition2  = "UPRAWNIENIA = 'klient' AND KONTO_ID = '";
+$tablename  = 'PRODUKT';
+$columnname = 'PRODUKT_ID';
+$condition  = "'true'='true'";
 
 
 
 
 /* ==========		SELECT KLIENCI TABELA		========== */
 //PARSOWANIE  
-$stid = oci_parse($connection, $querySelectKlienci);
+$stid = oci_parse($connection, $querySelectProdukty);
 if (!$stid) {
     $m = oci_error($connection);
     trigger_error('Nie udało się przeanalizować polecenia pl/sql: ' . $m['message'], E_USER_ERROR);
@@ -186,10 +183,10 @@ oci_free_statement($stid);
                 <div class="container-fluid">
                     <nav>
                         <div class="nav nav-tabs" id="nav-tab" role="tablist">
-                            <a class="nav-item nav-link active" id="nav-zakladka1-tab" data-toggle="tab" href="#nav-zakladka1" role="tab" aria-controls="nav-zakladka1" aria-selected="true">Podaj ID Konta</a>
+                            <a class="nav-item nav-link active" id="nav-zakladka1-tab" data-toggle="tab" href="#nav-zakladka1" role="tab" aria-controls="nav-zakladka1" aria-selected="true">Podaj ID Produktu</a>
                             <a class="nav-item nav-link" id="nav-zakladka2-tab" data-toggle="tab" href="#nav-zakladka2" role="tab" aria-controls="nav-zakladka2" aria-selected="false">Przeglądaj</a>
-                            <a class="nav-item nav-link" id="nav-zakladka3-tab" data-toggle="tab" href="#nav-zakladka3" role="tab" aria-controls="nav-zakladka3" aria-selected="false">Usuń Konto</a>
-                            <a class="nav-item nav-link" id="nav-zakladka4-tab" data-toggle="tab" href="#nav-zakladka4" role="tab" aria-controls="nav-zakladka" aria-selected="false">Utwórz Pracownika</a>
+                            <a class="nav-item nav-link" id="nav-zakladka3-tab" data-toggle="tab" href="#nav-zakladka3" role="tab" aria-controls="nav-zakladka3" aria-selected="false">Usuń Produkt</a>
+                            <a class="nav-item nav-link" id="nav-zakladka4-tab" data-toggle="tab" href="#nav-zakladka4" role="tab" aria-controls="nav-zakladka" aria-selected="false">Utwórz Produkt</a>
                         </div>
                     </nav>
                     <br>
@@ -222,7 +219,7 @@ echo $_SERVER['PHP_SELF'];
 if (!empty($_REQUEST['number-input'])) {
 
 //WARUNEK CZY ISTENIEJE KLIENT 
-$condition2 = $condition2 . $_REQUEST['number-input'] . "'";
+$condition2 = "PRODUKT_ID='" . $_REQUEST['number-input'] . "'";
 
 /* ==========		SPRAWDZ CZY KONTO NALEZY DO KLIENT			========== */
 //PARSOWANIE  
@@ -269,7 +266,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     } else {
 
         //PARSOWANIE 
-        $stid = oci_parse($connection, $querySelectKlientID);
+        $stid = oci_parse($connection, $querySelectProduktID);
         if (!$stid) {
             $m = oci_error($connection);
             trigger_error('Nie udało się przeanalizować polecenia pl/sql: ' . $m['message'], E_USER_ERROR);
@@ -304,18 +301,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                         <table class="table table-bordered" id="dataTable2" width="100%" cellspacing="0">
                                             <thead>
                                                 <tr>
-                                                    <th>KONTO_ID</th>
-                                                    <th>IMIE</th>
-                                                    <th>NAZWISKO</th>
-                                                    <th>UPRAWNIENIA</th>
-                                                    <th>MIEJSCOWOSC</th>
-                                                    <th>WOJEWODZTWO</th>
-                                                    <th>KOD_POCZTOWY</th>
-                                                    <th>ULICA</th>
-                                                    <th>NR_DOMU</th>
-                                                    <th>NR_LOKALU</th>
-                                                    <th>EMAIL</th>
-                                                    <th>NR_TEL</th>
+                                                    <th>PRODUKT_ID</th>
+                                                    <th>DOSTAWCA</th>
+                                                    <th>KATEGORIA_NAZWA</th>
+                                                    <th>PRODUCENT</th>
+                                                    <th>NUMER_KATALOGOWY</th>
+                                                    <th>MODEL</th>
+                                                    <th>CENA</th>
+                                                    <th>SZTUK_NA_MAGAZYNIE</th>
+                                                    <th>DATA_DODANIA</th>
+                                                    
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -323,19 +318,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 //WYPEŁNIJ TABELE JEŻELI PODANO ID KONTA
 if (!empty($_REQUEST['number-input'])) {
     while (($row = oci_fetch_array($cursorPokazOsobe, OCI_ASSOC + OCI_RETURN_NULLS)) != false) {
-        $KONTO_ID     = $row['KONTO_ID'];
-        $IMIE         = $row['IMIE'];
-        $NAZWISKO     = $row['NAZWISKO'];
-        $UPRAWNIENIA  = $row['UPRAWNIENIA'];
-        $MIEJSCOWOSC  = $row['MIEJSCOWOSC'];
-        $WOJEWODZTWO  = $row['WOJEWODZTWO'];
-        $KOD_POCZTOWY = $row['KOD_POCZTOWY'];
-        $ULICA        = $row['ULICA'];
-        $NR_DOMU      = $row['NR_DOMU'];
-        $NR_LOKALU    = $row['NR_LOKALU'];
-        $EMAIL        = $row['EMAIL'];
-        $NR_TEL       = $row['NR_TEL'];
-        echo "<tr><td>$KONTO_ID</td> <td>$IMIE</td> <td>$NAZWISKO</td> <td>$UPRAWNIENIA</td> <td>$MIEJSCOWOSC</td> <td>$WOJEWODZTWO</td> <td>$KOD_POCZTOWY</td> <td>$ULICA</td> <td>$NR_DOMU</td> <td>$NR_LOKALU</td> <td>$EMAIL</td> <td>$NR_TEL</td></tr>";
+        $PRODUKT_ID                     = $row['PRODUKT_ID'];
+        $NAZWA_FIRMY                    = $row['NAZWA_FIRMY'];
+        $KATEGORIA_NAZWA                = $row['KATEGORIA_NAZWA'];
+        $PRODUCENT                      = $row['PRODUCENT'];
+        $NUMER_KATALOGOWY               = $row['NUMER_KATALOGOWY'];
+        $MODEL                          = $row['MODEL'];
+        $CENA                           = $row['CENA'];
+        $SZTUK_NA_MAGAZYNIE             = $row['SZTUK_NA_MAGAZYNIE'];
+        $DATA_DODANIA                   = $row['DATA_DODANIA'];
+              
+        echo "<tr> <td>$PRODUKT_ID</td> <td>$NAZWA_FIRMY</td> <td>$KATEGORIA_NAZWA</td> <td>$PRODUCENT</td> <td>$NUMER_KATALOGOWY</td> <td>$MODEL</td> <td>$CENA</td> <td>$SZTUK_NA_MAGAZYNIE</td> <td>$DATA_DODANIA</td>  </tr>";
     }
 }
 ?>
@@ -373,53 +366,47 @@ echo $ileOsob;
                                         <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                                             <thead>
                                                 <tr>
-                                                    <th>KONTO_ID</th>
-                                                    <th>IMIE</th>
-                                                    <th>NAZWISKO</th>
-                                                    <th>UPRAWNIENIA</th>
-                                                    <th>MIEJSCOWOSC</th>
-                                                    <th>WOJEWODZTWO</th>
-                                                    <th>KOD_POCZTOWY</th>
-                                                    <th>ULICA</th>
-                                                    <th>NR_DOMU</th>
-                                                    <th>NR_LOKALU</th>
-                                                    <th>EMAIL</th>
-                                                    <th>NR_TEL</th>
+                                                    <th>PRODUKT_ID</th>
+                                                    <th>DOSTAWCA</th>
+                                                    <th>KATEGORIA_NAZWA</th>
+                                                    <th>PRODUCENT</th>
+                                                    <th>NUMER_KATALOGOWY</th>
+                                                    <th>MODEL</th>
+                                                    <th>CENA</th>
+                                                    <th>SZTUK_NA_MAGAZYNIE</th>
+                                                    <th>DATA_DODANIA</th>
+                                                    
                                                 </tr>
                                             </thead>
                                             <tfoot>
                                             <tr>
-                                                <th>KONTO_ID</th>
-                                                <th>IMIE</th>
-                                                <th>NAZWISKO</th>
-                                                <th>UPRAWNIENIA</th>
-                                                <th>MIEJSCOWOSC</th>
-                                                <th>WOJEWODZTWO</th>
-                                                <th>KOD_POCZTOWY</th>
-                                                <th>ULICA</th>
-                                                <th>NR_DOMU</th>
-                                                <th>NR_LOKALU</th>
-                                                <th>EMAIL</th>
-                                                <th>NR_TEL</th>
+                                                    <th>PRODUKT_ID</th>
+                                                    <th>DOSTAWCA</th>
+                                                    <th>KATEGORIA_NAZWA</th>
+                                                    <th>PRODUCENT</th>
+                                                    <th>NUMER_KATALOGOWY</th>
+                                                    <th>MODEL</th>
+                                                    <th>CENA</th>
+                                                    <th>SZTUK_NA_MAGAZYNIE</th>
+                                                    <th>DATA_DODANIA</th>
+                                                    
                                             </tr>
                                             </tfoot>
                                             <tbody>
                                                 <?php
 //WYPEŁNIJ TABELE KLIENTAMI Z BAZY                                            
 while (($row = oci_fetch_array($cursorTabela, OCI_ASSOC + OCI_RETURN_NULLS)) != false) {
-    $KONTO_ID     = $row['KONTO_ID'];
-    $IMIE         = $row['IMIE'];
-    $NAZWISKO     = $row['NAZWISKO'];
-    $UPRAWNIENIA  = $row['UPRAWNIENIA'];
-    $MIEJSCOWOSC  = $row['MIEJSCOWOSC'];
-    $WOJEWODZTWO  = $row['WOJEWODZTWO'];
-    $KOD_POCZTOWY = $row['KOD_POCZTOWY'];
-    $ULICA        = $row['ULICA'];
-    $NR_DOMU      = $row['NR_DOMU'];
-    $NR_LOKALU    = $row['NR_LOKALU'];
-    $EMAIL        = $row['EMAIL'];
-    $NR_TEL       = $row['NR_TEL'];
-    echo "<tr><td>$KONTO_ID</td> <td>$IMIE</td> <td>$NAZWISKO</td> <td>$UPRAWNIENIA</td> <td>$MIEJSCOWOSC</td> <td>$WOJEWODZTWO</td> <td>$KOD_POCZTOWY</td> <td>$ULICA</td> <td>$NR_DOMU</td> <td>$NR_LOKALU</td> <td>$EMAIL</td> <td>$NR_TEL</td></tr>";
+        $PRODUKT_ID                     = $row['PRODUKT_ID'];
+        $NAZWA_FIRMY                    = $row['NAZWA_FIRMY'];
+        $KATEGORIA_NAZWA                = $row['KATEGORIA_NAZWA'];
+        $PRODUCENT                      = $row['PRODUCENT'];
+        $NUMER_KATALOGOWY               = $row['NUMER_KATALOGOWY'];
+        $MODEL                          = $row['MODEL'];
+        $CENA                           = $row['CENA'];
+        $SZTUK_NA_MAGAZYNIE             = $row['SZTUK_NA_MAGAZYNIE'];
+        $DATA_DODANIA                   = $row['DATA_DODANIA'];
+              
+        echo "<tr> <td>$PRODUKT_ID</td> <td>$NAZWA_FIRMY</td> <td>$KATEGORIA_NAZWA</td> <td>$PRODUCENT</td> <td>$NUMER_KATALOGOWY</td> <td>$MODEL</td> <td>$CENA</td> <td>$SZTUK_NA_MAGAZYNIE</td> <td>$DATA_DODANIA</td>  </tr>";
 }
 ?>
                                            </tbody>
@@ -453,25 +440,23 @@ END;
                                     <table class="table table-bordered" id="dataTable3" width="100%" cellspacing="0">
                                         <thead>
                                             <tr>
-                                                <th>KONTO_ID</th>
-                                                <th>IMIE</th>
-                                                <th>NAZWISKO</th>
-                                                <th>UPRAWNIENIA</th>
-                                                <th>MIEJSCOWOSC</th>
-                                                <th>WOJEWODZTWO</th>
-                                                <th>KOD_POCZTOWY</th>
-                                                <th>ULICA</th>
-                                                <th>NR_DOMU</th>
-                                                <th>NR_LOKALU</th>
-                                                <th>EMAIL</th>
-                                                <th>NR_TEL</th>
+                                                    <th>PRODUKT_ID</th>
+                                                    <th>DOSTAWCA</th>
+                                                    <th>KATEGORIA_NAZWA</th>
+                                                    <th>PRODUCENT</th>
+                                                    <th>NUMER_KATALOGOWY</th>
+                                                    <th>MODEL</th>
+                                                    <th>CENA</th>
+                                                    <th>SZTUK_NA_MAGAZYNIE</th>
+                                                    <th>DATA_DODANIA</th>
+                                                    
                                             </tr>
                                         </thead>
                                         <tbody>
                                             <?php
 if (!empty($_REQUEST['number-input'])) { 
     //PARSOWANIE
-    $stid = oci_parse($connection, $querySelectKlientID);
+    $stid = oci_parse($connection, $querySelectProduktID);
     if (!$stid) {
         $m = oci_error($connection);
         trigger_error('Nie udało się przeanalizować polecenia pl/sql: ' . $m['message'], E_USER_ERROR);
@@ -498,19 +483,17 @@ if (!empty($_REQUEST['number-input'])) {
 }
 if (!empty($_REQUEST['number-input'])) {
     while (($row = oci_fetch_array($cursorUsunOsobe, OCI_ASSOC + OCI_RETURN_NULLS)) != false) {
-        $KONTO_ID     = $row['KONTO_ID'];
-        $IMIE         = $row['IMIE'];
-        $NAZWISKO     = $row['NAZWISKO'];
-        $UPRAWNIENIA  = $row['UPRAWNIENIA'];
-        $MIEJSCOWOSC  = $row['MIEJSCOWOSC'];
-        $WOJEWODZTWO  = $row['WOJEWODZTWO'];
-        $KOD_POCZTOWY = $row['KOD_POCZTOWY'];
-        $ULICA        = $row['ULICA'];
-        $NR_DOMU      = $row['NR_DOMU'];
-        $NR_LOKALU    = $row['NR_LOKALU'];
-        $EMAIL        = $row['EMAIL'];
-        $NR_TEL       = $row['NR_TEL'];
-        echo "<tr><td>$KONTO_ID</td> <td>$IMIE</td> <td>$NAZWISKO</td> <td>$UPRAWNIENIA</td> <td>$MIEJSCOWOSC</td> <td>$WOJEWODZTWO</td> <td>$KOD_POCZTOWY</td> <td>$ULICA</td> <td>$NR_DOMU</td> <td>$NR_LOKALU</td> <td>$EMAIL</td> <td>$NR_TEL</td></tr>";
+        $PRODUKT_ID                     = $row['PRODUKT_ID'];
+        $NAZWA_FIRMY                    = $row['NAZWA_FIRMY'];
+        $KATEGORIA_NAZWA                = $row['KATEGORIA_NAZWA'];
+        $PRODUCENT                      = $row['PRODUCENT'];
+        $NUMER_KATALOGOWY               = $row['NUMER_KATALOGOWY'];
+        $MODEL                          = $row['MODEL'];
+        $CENA                           = $row['CENA'];
+        $SZTUK_NA_MAGAZYNIE             = $row['SZTUK_NA_MAGAZYNIE'];
+        $DATA_DODANIA                   = $row['DATA_DODANIA'];
+              
+        echo "<tr> <td>$PRODUKT_ID</td> <td>$NAZWA_FIRMY</td> <td>$KATEGORIA_NAZWA</td> <td>$PRODUCENT</td> <td>$NUMER_KATALOGOWY</td> <td>$MODEL</td> <td>$CENA</td> <td>$SZTUK_NA_MAGAZYNIE</td> <td>$DATA_DODANIA</td>  </tr>";
     }
 }
 ?>
@@ -527,14 +510,14 @@ if (!empty($_REQUEST['number-input'])) {
 <?php
 if (!empty($_REQUEST['number-input'])) {
 echo <<<END
-<form action="funkcjeAdmin.php" method="post">
-<input type="hidden" name="usunkontoid" min="1" value="
+<form action="funkcjePracownik.php" method="post">
+<input type="hidden" name="usunproduktid" min="1" value="
 END;
 ?>
 <?php echo htmlspecialchars($_REQUEST['number-input']);
 echo <<<END
 "><br>
-<input type="submit" name="usunkontobutton" class="btn btn-primary" value="POTWIERDZ USUNIECIE" />
+<input type="submit" name="usunproduktbutton" class="btn btn-primary" value="POTWIERDZ USUNIECIE" />
 </form>
 END;
 }
@@ -565,25 +548,23 @@ END;
                                     <table class="table table-bordered" id="dataTable3" width="100%" cellspacing="0">
                                         <thead>
                                             <tr>
-                                                <th>KONTO_ID</th>
-                                                <th>IMIE</th>
-                                                <th>NAZWISKO</th>
-                                                <th>UPRAWNIENIA</th>
-                                                <th>MIEJSCOWOSC</th>
-                                                <th>WOJEWODZTWO</th>
-                                                <th>KOD_POCZTOWY</th>
-                                                <th>ULICA</th>
-                                                <th>NR_DOMU</th>
-                                                <th>NR_LOKALU</th>
-                                                <th>EMAIL</th>
-                                                <th>NR_TEL</th>
+                                                    <th>PRODUKT_ID</th>
+                                                    <th>DOSTAWCA</th>
+                                                    <th>KATEGORIA_NAZWA</th>
+                                                    <th>PRODUCENT</th>
+                                                    <th>NUMER_KATALOGOWY</th>
+                                                    <th>MODEL</th>
+                                                    <th>CENA</th>
+                                                    <th>SZTUK_NA_MAGAZYNIE</th>
+                                                    <th>DATA_DODANIA</th>
+                                                    
                                             </tr>
                                         </thead>
                                         <tbody>
                                             <?php
 if (!empty($_REQUEST['number-input'])) { 
     //PARSOWANIE
-    $stid = oci_parse($connection, $querySelectKlientID);
+    $stid = oci_parse($connection, $querySelectProduktID);
     if (!$stid) {
         $m = oci_error($connection);
         trigger_error('Nie udało się przeanalizować polecenia pl/sql: ' . $m['message'], E_USER_ERROR);
@@ -610,19 +591,17 @@ if (!empty($_REQUEST['number-input'])) {
 }
 if (!empty($_REQUEST['number-input'])) {
     while (($row = oci_fetch_array($cursorUsunOsobe, OCI_ASSOC + OCI_RETURN_NULLS)) != false) {
-        $KONTO_ID     = $row['KONTO_ID'];
-        $IMIE         = $row['IMIE'];
-        $NAZWISKO     = $row['NAZWISKO'];
-        $UPRAWNIENIA  = $row['UPRAWNIENIA'];
-        $MIEJSCOWOSC  = $row['MIEJSCOWOSC'];
-        $WOJEWODZTWO  = $row['WOJEWODZTWO'];
-        $KOD_POCZTOWY = $row['KOD_POCZTOWY'];
-        $ULICA        = $row['ULICA'];
-        $NR_DOMU      = $row['NR_DOMU'];
-        $NR_LOKALU    = $row['NR_LOKALU'];
-        $EMAIL        = $row['EMAIL'];
-        $NR_TEL       = $row['NR_TEL'];
-        echo "<tr><td>$KONTO_ID</td> <td>$IMIE</td> <td>$NAZWISKO</td> <td>$UPRAWNIENIA</td> <td>$MIEJSCOWOSC</td> <td>$WOJEWODZTWO</td> <td>$KOD_POCZTOWY</td> <td>$ULICA</td> <td>$NR_DOMU</td> <td>$NR_LOKALU</td> <td>$EMAIL</td> <td>$NR_TEL</td></tr>";
+        $PRODUKT_ID                     = $row['PRODUKT_ID'];
+        $NAZWA_FIRMY                    = $row['NAZWA_FIRMY'];
+        $KATEGORIA_NAZWA                = $row['KATEGORIA_NAZWA'];
+        $PRODUCENT                      = $row['PRODUCENT'];
+        $NUMER_KATALOGOWY               = $row['NUMER_KATALOGOWY'];
+        $MODEL                          = $row['MODEL'];
+        $CENA                           = $row['CENA'];
+        $SZTUK_NA_MAGAZYNIE             = $row['SZTUK_NA_MAGAZYNIE'];
+        $DATA_DODANIA                   = $row['DATA_DODANIA'];
+              
+        echo "<tr> <td>$PRODUKT_ID</td> <td>$NAZWA_FIRMY</td> <td>$KATEGORIA_NAZWA</td> <td>$PRODUCENT</td> <td>$NUMER_KATALOGOWY</td> <td>$MODEL</td> <td>$CENA</td> <td>$SZTUK_NA_MAGAZYNIE</td> <td>$DATA_DODANIA</td>  </tr>";
     }
 }
 ?>

@@ -176,11 +176,11 @@ oci_free_statement($stid);
                 <ul class="sidebar-nav">
                     <li class="sidebar-brand">
                         <a href="#">
-                            <strong>Kategorie</strong>
+                            <strong>Kategorie<?php echo  $_POST['katid'];   ?></strong>
                         </a>
   
                     </li><div class="btn-group-vertical">
-<?php                    
+<?php                 
 while (($row = oci_fetch_array($cursorKategoria, OCI_ASSOC + OCI_RETURN_NULLS)) != false) {
     $KATEGORIA_ID       = $row['KATEGORIA_ID'];
     $KATEGORIA_NAZWA    = $row['KATEGORIA_NAZWA'];
