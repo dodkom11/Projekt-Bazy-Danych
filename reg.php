@@ -1,12 +1,7 @@
 <?php
     session_start();
     
-    //jezeli zalogowani przekieruj
-    if ((isset($_SESSION['zalogowany'])) && ($_SESSION['zalogowany']==true))
-    {
-        header('Location: sklep.php');
-        exit();
-    }
+   
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -43,11 +38,11 @@
                             <a class="nav-link" href="#"><i class="fas fa-address-book"></i>&nbsp;&nbsp;Kontakt</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link active" href="zalogujsie.php"><i class="fas fa-sign-in-alt"></i>&nbsp;&nbsp;Login</a>
-                            <span class="sr-only">(current)</span>
+                            <a class="nav-link" href="zalogujsie.php"><i class="fas fa-sign-in-alt"></i>&nbsp;&nbsp;Login</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="reg.php"><i class="fa fa-user"></i>&nbsp;&nbsp;Rejestracja</a>
+                            <a class="nav-link active" href="reg.php"><i class="fa fa-user"></i>&nbsp;&nbsp;Rejestracja</a>
+                            <span class="sr-only">(current)</span>
                         </li>
                     </ul>
                 </div>
@@ -56,31 +51,58 @@
 
         <div class="container" id="wrapper">
             <div class="card card-login mx-auto mt-5">
-                <div class="card-header">Login</div>
+                <div class="card-header">Rejestracja</div>
                 <div class="card-body">
-                    <form action="logikaphp/login.php" method="post">
+                    <form action="logikaphp/rejestracja.php" method="post">
                         <div class="form-group">
-                            <label for="log">Login</label>
-                            <input class="form-control" id="log" type="text" name="login" aria-describedby="emailHelp" placeholder="Podaj login">
+                            <input class="form-control" id="imie"  name="imie" type="text" placeholder="Imię">
                         </div>
                         <div class="form-group">
-                            <label for="password">Hasło</label>
-                            <input class="form-control" id="password"  name="haslo" type="password" placeholder="Podaj Hasło">
+                            <input class="form-control" id="nazwisko"  name="nazwisko" type="text" placeholder="Nazwisko">
                         </div>
+                        <div class="form-group">
+                            <input class="form-control" id="login" type="text" name="login" placeholder="Nazwa użytkownika">
+                        </div>
+                        <div class="form-group">
+                            <input class="form-control" id="password"  name="password" type="password" placeholder="Hasło">
+                        </div>
+                        <div class="form-group">
+                            <input class="form-control" id="password2"  name="password2" type="password" placeholder="Potwierdź hasło">
+                        </div>
+                        
                        
-                        <input type="submit" class="btn btn-primary btn-block" value="Zaloguj się"/>
-                        <!-- <a class="btn btn-primary btn-block" href="index.html">Login</a> -->
+                        <input type="submit" class="btn btn-primary btn-block" value="Utwórz konto" name="rejestruj"/>
+                       
                     </form>
-                    <div class="text-center">
-                        <a class="d-block small mt-3" href="reg.php">Register an Account</a>
-                    </div>
-                    <?php
-                        if(isset($_SESSION['blad_log'])){     
-                            echo $_SESSION['blad_log'];
-                            unset($_SESSION['blad_log']); 
-                        }
+                     </div>
+                   <?php
+                        if(isset($_SESSION['error_code'])){  
+
+                            if($_SESSION['error_code'] == 20001){
+                                echo '<p><a>Wypełnij wszystkie pola!</a></p>' ;
+                            }
+                            if($_SESSION['error_code'] == 20002){
+                                echo 'hasla sie od siebie roznia' ;
+                            }
+                            if($_SESSION['error_code'] == 20003){
+                                echo 'Haslo zbyt krotkie (mniej niz 7 znakow)' ;
+                            }
+                            if($_SESSION['error_code'] == 20004){
+                                echo 'haslo zbyt latwe' ;
+                            }
+                            if($_SESSION['error_code'] == 20005){
+                                echo 'haslo powinno miec przynajmniej jedna litere, jedna cyfre i znak przestankowy' ;
+                            }
+
+                  
+
+                            unset($_SESSION['error_code']);
+                        } 
                     ?>
+
                 </div>
+                </div>
+               
             </div>
         </div>
         
@@ -92,3 +114,4 @@
         <script src="script/showAndHide.js"></script>
     </body>
 </html>
+

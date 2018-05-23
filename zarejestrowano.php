@@ -1,8 +1,7 @@
 <?php
-    session_start();
-    
-?>
+session_start();
 
+?>
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -14,13 +13,12 @@
         <!-- Bootstrap core CSS -->
         <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
         <!-- Custom styles for this template -->
-        <link href="css/mycssVegas.css" rel="stylesheet">
-        <link href="vendor/vegas/vegas.min.css" rel="stylesheet">
+        <link href="css/simple-sidebar.css" rel="stylesheet">
+        <link href="css/mycss.css" rel="stylesheet">
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.10/css/all.css" integrity="sha384-+d0P83n9kaQMCwj8F4RJB66tzIwOKmrdb46+porD/OvrJ+37WqIM7UoBtwHO6Nlg" crossorigin="anonymous">
     </head>
-    <body>
-        <!-- Navigation -->
-        <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+    <body class="bg-dark">
+         <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
             <div class="container">
                 <a class="navbar-brand" href="index.php"><i class="fas fa-hands-helping"></i>&nbsp;&nbsp;goFISHINGshop</a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
@@ -28,19 +26,8 @@
                 </button>
                 <div class="collapse navbar-collapse" id="navbarResponsive">
                     <ul class="navbar-nav ml-auto">
-                         <?php
-                         if ((isset($_SESSION['S_UPRAWNIENIA'])) && (!strcmp($_SESSION['S_UPRAWNIENIA'], "admin" ))){
-                            echo '<li class="nav-item"><a class="nav-link" href="adminphp/zarzadzaj_pracownikiem.php"><i class="fas fa-gavel"></i>&nbsp;&nbsp;Admin Panel</a></li>';
-                         }
-                         ?> 
-                         <?php
-                         if ((isset($_SESSION['S_UPRAWNIENIA'])) && (!strcmp($_SESSION['S_UPRAWNIENIA'], "admin" ) OR !strcmp($_SESSION['S_UPRAWNIENIA'], "pracownik" ))){
-                            echo '<li class="nav-item"><a class="nav-link" href="pracownikphp/zarzadzaj_produktem.php"><i class="fas fa-pencil-alt"></i>&nbsp;&nbsp;Pracownik Panel</a></li>';
-                         }
-                         ?>   
-                        <li class="nav-item active">
-                            <a class="nav-link" href="index.php"><i class="fas fa-home"></i>&nbsp;&nbsp;Strona Główna
-                                <span class="sr-only">(current)</span>
+                        <li class="nav-item">
+                            <a class="nav-link" href="index.php"><i class="fas fa-home"></i>&nbsp;&nbsp;Strona Główna                                
                             </a>
                         </li>
                         <li class="nav-item">
@@ -56,29 +43,40 @@
                             <a class="nav-link" href="#"><i class="fas fa-address-book"></i>&nbsp;&nbsp;Kontakt</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="zalogujsie.php"><i class="fas fa-sign-in-alt"></i>&nbsp;&nbsp;Login</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="reg.php"><i class="fa fa-user"></i>&nbsp;&nbsp;Rejestracja</a>
+                            <a class="nav-link active" href="zalogujsie.php"><i class="fas fa-sign-in-alt"></i>&nbsp;&nbsp;Login</a>
+                            <span class="sr-only">(current)</span>
                         </li>
                     </ul>
                 </div>
             </div>
         </nav>
-        <div id="vegasSlide"></div>        
+        
+
+        <div class="container" id="wrapper">
+
+            <div class="card card-login mx-auto mt-5">
+
+                <div class="card-body">
+                	
+                	<div class="text-center">
+                        <a class="d-block small mt-3" >&nbsp;&nbsp;<h2>Pomyślnie Zarejestrowano!</h2>&nbsp;&nbsp;</a>
+                    </div>
+                	
+                    <div class="text-center">
+                        <a class="d-block small mt-3" href="zalogujsie.php"><h4>Zaloguj Sie!<h4></a>
+                    </div>
+
+                </div>
+                
+                </div>
+            </div>
+        </div>
+        
+        <!-- /#wrapper -->
+        <!-- Bootstrap core JavaScript -->
         <script src="vendor/jquery/jquery.min.js"></script>
         <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-        <script src="vendor/vegas/vegas.min.js"></script>
-        <script type="text/javascript">
-        $("#vegasSlide").vegas({
-        slides: [
-            { src: "img/slider/veg1.jpg" },
-            { src: "img/slider/veg2.jpg" },
-            { src: "img/slider/veg3.jpg" },
-            { src: "img/slider/veg4.jpg" }
-            ],
-            overlay: 'vendor/vegas/overlays/01.png'
-        });
-        </script>
+        <script src="script/toogle.js"></script>
+        <script src="script/showAndHide.js"></script>
     </body>
 </html>

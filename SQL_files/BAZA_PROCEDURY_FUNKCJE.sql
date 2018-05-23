@@ -556,3 +556,98 @@ BEGIN
 
     return row_count;
 END COUNTRW;
+/
+
+
+-- REJESTRACJA
+CREATE OR REPLACE PROCEDURE REJESTRACJA( USERNAME VARCHAR2 DEFAULT NULL,
+      PASSWORD VARCHAR2 DEFAULT NULL,
+      PASSWORD2 VARCHAR2 DEFAULT NULL,
+      VIMIE VARCHAR2 DEFAULT NULL,
+      VNAZWISKO VARCHAR2 DEFAULT NULL)
+     IS
+       n BOOLEAN;
+       m INTEGER;
+       DIFFER INTEGER;
+       ISDIGIT BOOLEAN;
+       ISCHAR  BOOLEAN;
+       ISPUNCT BOOLEAN;
+       DIGITARRAY VARCHAR2(20);
+       PUNCTARRAY VARCHAR2(25);
+       CHARARRAY VARCHAR2(52);
+
+
+    BEGIN 
+       DIGITARRAY:= '0123456789';
+       CHARARRAY:= 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+       PUNCTARRAY:='!"#$%&()``*+,-/:;<=>?_.';
+       -- jezeli jakieś pole jest puste
+       IF USERNAME IS NULL OR PASSWORD IS NULL OR PASSWORD2 IS NULL OR VIMIE IS NULL OR VNAZWISKO IS NULL THEN
+         raise_application_error(-20001, 'Wypelnij wszystkie pola');
+       END IF;
+
+       -- Hasla sie roznia
+       IF PASSWORD != PASSWORD2 THEN
+         raise_application_error(-20002, 'hasla sie od siebie roznia');
+       END IF;
+       
+       -- Sprawdz dlugosc hasla
+       IF length(PASSWORD) < 7 THEN
+          raise_application_error(-20003, 'Haslo zbyt krotkie (mniej niz 7 znakow)');
+       END IF;
+
+       -- Sprawdz czy hasla nie ma na blackliscie
+       IF NLS_LOWER(PASSWORD) IN ('welcome', 'database', 'account', 'user', 'password',
+    'oracle', 'goFISHINGshop', 'admin', 'login') THEN
+          raise_application_error(-20004, 'haslo zbyt latwe');
+       END IF;
+
+       -- Sprawdz zzy haslo ma przynajmniej jedna litere, jedna cyfre i znak przestankowy
+
+       -- 1. Szukaj cyfry
+       ISDIGIT:=FALSE;
+       m := length(PASSWORD);
+       FOR i IN 1..10 LOOP 
+          FOR j IN 1..m LOOP 
+             IF substr(PASSWORD,j,1) = substr(DIGITARRAY,i,1) THEN
+                ISDIGIT:=TRUE;
+                 GOTO findchar;
+             END IF;
+          END LOOP;
+       END LOOP;
+     IF ISDIGIT = FALSE THEN
+          raise_application_error(-20005, 'haslo powinno miec przynajmniej jedna litere, jedna cyfre i znak przestankowy');
+       END IF;
+<<findchar>>
+       -- 2. Szukaj litery
+       ISCHAR:=FALSE;
+       FOR i IN 1..length(CHARARRAY) LOOP 
+          FOR j IN 1..m LOOP 
+             IF substr(PASSWORD,j,1) = substr(CHARARRAY,i,1) THEN
+                ISCHAR:=TRUE;
+                 GOTO findpunct;
+             END IF;
+          END LOOP;
+       END LOOP;
+       IF ISCHAR = FALSE THEN
+          raise_application_error(-20005, 'haslo powinno miec przynajmniej jedna litere, jedna cyfre i znak przestankowy');
+       END IF;
+<<findpunct>>
+       -- 3. Szukaj znaku przestankowego
+       ISPUNCT:=FALSE;
+       FOR i IN 1..length(PUNCTARRAY) LOOP 
+          FOR j IN 1..m LOOP 
+             IF substr(PASSWORD,j,1) = substr(PUNCTARRAY,i,1) THEN
+                ISPUNCT:=TRUE;
+                 GOTO endsearch;
+             END IF;
+          END LOOP;
+       END LOOP;
+       IF ISPUNCT = FALSE THEN
+          raise_application_error(-20005, 'haslo powinno miec przynajmniej jedna litere, jedna cyfre i znak przestankowy');
+       END IF;
+<<endsearch>>
+       INSERT INTO KONTO(LOGIN, HASLO, IMIE, NAZWISKO) VALUES(USERNAME, PASSWORD, VIMIE, VNAZWISKO);
+    END;
+
+
