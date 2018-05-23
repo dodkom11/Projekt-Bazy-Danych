@@ -39,6 +39,17 @@ $queryDodajProdukt = "begin
                      end;";
 
 
+//DELTE KATEGORIA
+$queryDeleteKategoria = "begin 
+                            DELETEKATEGORIA(:rekord_id);
+                        end;"; 
+
+//INSERT KATEGORIA
+$queryInsertKategoria = "begin 
+                            INSERTKATEGORIA(:nazwa, :opis);
+                        end;"; 
+
+
 /* ==========       FUNKCJA DELETE PRODUKT            ========== */
 
 function funkcjaUsunProdukt($connection, $queryUsunProduktID)
@@ -91,6 +102,54 @@ function funkcjaDodajProdukt($connection, $queryDodajProdukt)
     oci_free_statement($stid);
 
         echo '<div class="alert alert-success" role="alert"><strong>INFORMACJA!</strong> Pomyślnie Dodano Produkt: <strong>' . $_POST['producent'] . "</strong></div>";
+}
+
+/* ==========       FUNKCJA DELETE KATEGORIA            ========== */
+
+function funkcjaUsunKategorie($connection, $queryDeleteKategoria)
+{
+    //PARSOWANIE  
+    $stid = oci_parse($connection, $queryDeleteKategoria);
+
+    //PHP VARIABLE --> ORACLE PLACEHOLDER
+    oci_bind_by_name($stid, ":rekord_id", $_POST['usunkategorieid']);
+
+    //EXECUTE POLECENIE
+    $result = oci_execute($stid);
+    if (!$result) {
+        $m = oci_error($stid);
+        trigger_error('Nie udało się wykonać polecenia: ' . $m['message'], E_USER_ERROR);
+    }
+
+    //ZWOLNIJ ZASOBY
+    oci_free_statement($stid);
+
+    echo '<div class="alert alert-success" role="alert"><strong>INFORMACJA!</strong> Pomyślnie usunięto kategorie ID: <strong>' . $_POST['usunkategorieid'] . "</strong></div>";
+}
+
+
+/* ==========       FUNKCJA DODAJ KATEGORIA           ========== */
+
+function funkcjaDodajKategorie($connection, $queryInsertKategoria)
+{
+    //PARSOWANIE  
+    $stid = oci_parse($connection, $queryInsertKategoria);
+
+    //PHP VARIABLE --> ORACLE PLACEHOLDER
+    oci_bind_by_name($stid, ":nazwa", $_POST['nazwakategori']);
+    oci_bind_by_name($stid, ":opis", $_POST['opis']);
+
+    //EXECUTE POLECENIE
+    $result = oci_execute($stid);
+    if (!$result) {
+        $m = oci_error($stid);
+        trigger_error('Nie udało się wykonać polecenia: ' . $m['message'], E_USER_ERROR);
+    }
+
+    //ZWOLNIJ ZASOBY
+    oci_free_statement($stid);
+
+        echo '<div class="alert alert-success" role="alert"><strong>INFORMACJA!</strong> Pomyślnie Dodano Kategorie: <strong>' . $_POST['nazwakategori'] . "</strong></div>";
 }
 
 ?>
@@ -161,7 +220,7 @@ function funkcjaDodajProdukt($connection, $queryDodajProdukt)
                         </a>
                     </li>
                     <li class="aria-selected">
-                        <a href="zarzadzaj_produktem.php" class="nav-active">&nbsp;&nbsp;Zarządaj Produktem</a>
+                        <a href="zarzadzaj_produktem.php">&nbsp;&nbsp;Zarządaj Produktem</a>
                     </li>
                     <li>
                         <a href="zarzadzaj_zamowieniem.php">&nbsp;&nbsp;Zarządaj Zamówieniem</a>
@@ -181,6 +240,12 @@ function funkcjaDodajProdukt($connection, $queryDodajProdukt)
         }
     else if($_SERVER['REQUEST_METHOD'] == "POST" and isset($_POST['dodajproduktbutton'])) {
             funkcjaDodajProdukt($connection, $queryDodajProdukt);
+    }
+    else if($_SERVER['REQUEST_METHOD'] == "POST" and isset($_POST['dodajkategoriebutton'])) {
+            funkcjaDodajKategorie($connection, $queryInsertKategoria);
+    }
+    else if($_SERVER['REQUEST_METHOD'] == "POST" and isset($_POST['usunkategoriebutton'])) {
+            funkcjaUsunKategorie($connection, $queryDeleteKategoria);
     }
 ?>
             <!-- ./container-fluid -->

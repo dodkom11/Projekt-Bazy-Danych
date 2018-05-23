@@ -47,6 +47,11 @@ $tablename  = 'PRODUKT';
 $columnname = 'PRODUKT_ID';
 $condition  = "'true'='true'";
 
+//SELECT KLIENCI TABELA
+$querySelectDostawcy = "begin 
+                            :cursor := SELECTDOSTAWCA;
+                        end;";
+
 
 
 
@@ -78,6 +83,40 @@ if (!$result) {
 
 //ZWOLNIJ ZASOBY
 oci_free_statement($stid);
+
+
+/* ==========       SELECT DOSTAWCY TABELA       ========== */
+//PARSOWANIE  
+$stid = oci_parse($connection, $querySelectDostawcy);
+if (!$stid) {
+    $m = oci_error($connection);
+    trigger_error('Nie udało się przeanalizować polecenia pl/sql: ' . $m['message'], E_USER_ERROR);
+}
+
+//PHP VARIABLE --> ORACLE PLACEHOLDER
+$cursorTabela1 = oci_new_cursor($connection);
+oci_bind_by_name($stid, ":cursor", $cursorTabela1, -1, OCI_B_CURSOR);
+
+//EXECUTE POLECENIE
+$result = oci_execute($stid);
+if (!$result) {
+    $m = oci_error($stid);
+    trigger_error('Nie udało się wykonać polecenia: ' . $m['message'], E_USER_ERROR);
+}
+
+//EXECUTE KURSOR
+$result = oci_execute($cursorTabela1, OCI_DEFAULT);
+if (!$result) {
+    $m = oci_error($stid);
+    trigger_error('Nie udało się wykonać polecenia: ' . $m['message'], E_USER_ERROR);
+}
+
+//ZWOLNIJ ZASOBY
+oci_free_statement($stid);
+
+
+
+
 
 /* ==========		SELECT LICZBA KLIENTOW			========== */
 //PARSOWANIE  
@@ -504,9 +543,6 @@ if (!empty($_REQUEST['number-input'])) {
                         </div>
                     </div>    
 
-   
-
-
 <?php
 if (!empty($_REQUEST['number-input'])) {
 echo <<<END
@@ -529,49 +565,118 @@ END;
                             >>>>>>>>>>      ZAKLADKA 4     <<<<<<<<<<
         +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 -->
-                    <div class="tab-pane fade" id="nav-zakladka4" role="tabpanel" aria-labelledby="nav-zakladka4-tab">
-             
-                                    <div class="row">  
-                      
-                    <form action="funkcjePracownik.php" method="post">
-                        <div class="form-row">
-                            <div class="form-group col-3">
-                                <label for="inputdostawcaid">Dostawca ID</label>
-                                <input type="number" class="form-control" id="inputdostawcaid" name="dostawcaid" placeholder="Dostawca IDy" required>
-                            </div>
-                            <div class="form-group col-3">
-                                <label for="inputkategoriaid">Kategoria ID</label>
-                                <input type="number" class="form-control" id="inputkategoriaid" name="kategoriaid" placeholder="Kategoria" required>
-                            </div>
-                            <div class="form-group col-3">
-                                <label for="inputproducentid">Producent</label>
-                                <input type="text" class="form-control" id="inputproducentid" name="producent" placeholder="Producent" required>
-                            </div>
-                            <div class="form-group col-3">
-                                <label for="inputnrkatalogowyid">Numer Katalogowy</label>
-                                <input type="text" class="form-control" id="inputnrkatalogowyid" name="nrkatalogowy" placeholder="Numer Katalogowy" required>
-                            </div>
-                            <div class="form-group col-3">
-                                <label for="inputmodelid">Model</label>
-                                <input type="text" class="form-control" id="inputmodelid" name="model" placeholder="Model" required>
-                            </div>
-                            <div class="form-group col-3">
-                                <label for="inputcenaid">Cena</label>
-                                <input type="number" class="form-control" id="inputcenaid" name="cena" placeholder="Model" required>
-                            </div>
-                            <div class="form-group col-3">
-                                <label for="inputsztukid">Liczba Sztuk</label>
-                                <input type="number" class="form-control" id="inputsztukid" name="sztuk" placeholder="Sztuk" required>
-                            </div>
-                            <div class="form-group col-3">
-                                <label for="inputopisid">Opis</label>
-                                <input type="text" class="form-control" id="inputopisid" name="opis" placeholder="Opis" >
-                            </div>                            
-                        </div>
-                        <input type="submit" name="dodajproduktbutton" class="btn btn-primary" value="POTWIERDZ DODANIE" />
-                    </form>  
+<div class="tab-pane fade" id="nav-zakladka4" role="tabpanel" aria-labelledby="nav-zakladka4-tab">
+    
+    <div class="row">
+        
+        <form action="funkcjePracownik.php" method="post">
+            <div class="form-row">
+                <div class="form-group col-3">
+                    <label for="inputdostawcaid">Dostawca ID</label>
+                    <input type="number" class="form-control" id="inputdostawcaid" name="dostawcaid" placeholder="Dostawca IDy" required>
+                </div>
+                <div class="form-group col-3">
+                    <label for="inputkategoriaid">Kategoria ID</label>
+                    <input type="number" class="form-control" id="inputkategoriaid" name="kategoriaid" placeholder="Kategoria" required>
+                </div>
+                <div class="form-group col-3">
+                    <label for="inputproducentid">Producent</label>
+                    <input type="text" class="form-control" id="inputproducentid" name="producent" placeholder="Producent" required>
+                </div>
+                <div class="form-group col-3">
+                    <label for="inputnrkatalogowyid">Numer Katalogowy</label>
+                    <input type="text" class="form-control" id="inputnrkatalogowyid" name="nrkatalogowy" placeholder="Numer Katalogowy" required>
+                </div>
+                <div class="form-group col-3">
+                    <label for="inputmodelid">Model</label>
+                    <input type="text" class="form-control" id="inputmodelid" name="model" placeholder="Model" required>
+                </div>
+                <div class="form-group col-3">
+                    <label for="inputcenaid">Cena</label>
+                    <input type="number" class="form-control" id="inputcenaid" name="cena" placeholder="Model" required>
+                </div>
+                <div class="form-group col-3">
+                    <label for="inputsztukid">Liczba Sztuk</label>
+                    <input type="number" class="form-control" id="inputsztukid" name="sztuk" placeholder="Sztuk" required>
+                </div>
+                <div class="form-group col-3">
+                    <label for="inputopisid">Opis</label>
+                    <input type="text" class="form-control" id="inputopisid" name="opis" placeholder="Opis" >
+                </div>
+            </div>
+            <input type="submit" name="dodajproduktbutton" class="btn btn-primary" value="POTWIERDZ DODANIE" />
+        </form>
+    </div>
+    <br/> <br/>
+    <div class="row">
+        <div class="card mb-3">
+            <div class="card-header">
+                <i class="fa fa-table"></i> Klienci [<?php
+                //WYŚWIETL LICZBE KLIENTÓW
+                echo $ileOsob;
+            ?>]</div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>DOSTAWCA_ID</th>
+                                <th>NAZWA FIRMY</th>
+                                <th>MIEJSCOWOSC</th>
+                                <th>WOJEWODZTWO</th>
+                                <th>KOD_POCZTOWY</th>
+                                <th>ULICA</th>
+                                <th>NR_DOMU</th>
+                                <th>NR_LOKALU</th>
+                                <th>EMAIL</th>
+                                <th>NR_TEL</th>
+                                <th>TELEFAKS</th>
+                                <th>WWW</th>
+                            </tr>
+                        </thead>
+                        <tfoot>
+                        <tr>
+                            
+                            <th>DOSTAWCA_ID</th>
+                            <th>NAZWA FIRMY</th>
+                            <th>MIEJSCOWOSC</th>
+                            <th>WOJEWODZTWO</th>
+                            <th>KOD_POCZTOWY</th>
+                            <th>ULICA</th>
+                            <th>NR_DOMU</th>
+                            <th>NR_LOKALU</th>
+                            <th>EMAIL</th>
+                            <th>NR_TEL</th>
+                            <th>TELEFAKS</th>
+                            <th>WWW</th>
+                        </tr>
+                        </tfoot>
+                        <tbody>
+                                                <?php
+//WYPEŁNIJ TABELE KLIENTAMI Z BAZY                                            
+while (($row = oci_fetch_array($cursorTabela1, OCI_ASSOC + OCI_RETURN_NULLS)) != false) {
+        $DOSTAWCA_ID  = $row['DOSTAWCA_ID'];
+        $NAZWA_FIRMY  = $row['NAZWA_FIRMY'];
+        $MIEJSCOWOSC  = $row['MIEJSCOWOSC'];
+        $WOJEWODZTWO  = $row['WOJEWODZTWO'];
+        $KOD_POCZTOWY = $row['KOD_POCZTOWY'];
+        $ULICA        = $row['ULICA'];
+        $NR_DOMU      = $row['NR_DOMU'];
+        $NR_LOKALU    = $row['NR_LOKALU'];
+        $EMAIL        = $row['EMAIL'];
+        $NR_TEL       = $row['NR_TEL'];
+        $FAX          = $row['FAX'];
+        $WWW          = $row['WWW'];
 
-                </div> 
+        echo "<tr> <td>$DOSTAWCA_ID</td> <td>$NAZWA_FIRMY</td> <td>$MIEJSCOWOSC</td> <td>$WOJEWODZTWO</td> <td>$KOD_POCZTOWY</td> <td>$ULICA</td> <td>$NR_DOMU</td> <td>$NR_LOKALU</td> <td>$EMAIL</td> <td>$NR_TEL</td> <td>$FAX</td> <td>$WWW</td> </tr>";
+    }
+?>
+                                           </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                 
                 <!-- /.row -->
             </div>
