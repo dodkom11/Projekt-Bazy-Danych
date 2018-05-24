@@ -55,13 +55,34 @@
                 <div class="card-body">
                     <form action="logikaphp/rejestracja.php" method="post">
                         <div class="form-group">
-                            <input class="form-control" id="imie"  name="imie" type="text" placeholder="Imię">
+                            <input class="form-control" id="imie"  name="imie" type="text" placeholder="Imię" 
+                            <?php
+                            if (isset($_SESSION['imie'])){  
+                                $imie = $_SESSION['imie'];   
+                                echo "value = $imie";
+                                unset($_SESSION['imie']); 
+                                 }
+                          ?>>
                         </div>
                         <div class="form-group">
-                            <input class="form-control" id="nazwisko"  name="nazwisko" type="text" placeholder="Nazwisko">
+                            <input class="form-control" id="nazwisko"  name="nazwisko" type="text" placeholder="Nazwisko"
+                            <?php
+                            if (isset($_SESSION['nazwisko'])){  
+                                $nazwisko = $_SESSION['nazwisko'];   
+                                echo "value = $nazwisko";
+                                unset($_SESSION['nazwisko']); 
+                                 }
+                          ?>>
                         </div>
                         <div class="form-group">
-                            <input class="form-control" id="login" type="text" name="login" placeholder="Nazwa użytkownika">
+                            <input class="form-control" id="login" type="text" name="login" placeholder="Nazwa użytkownika"
+                            <?php
+                            if (isset($_SESSION['login'])){  
+                                $login = $_SESSION['login'];   
+                                echo "value = $login";
+                                unset($_SESSION['login']); 
+                                 }
+                          ?>>
                         </div>
                         <div class="form-group">
                             <input class="form-control" id="password"  name="password" type="password" placeholder="Hasło">
@@ -72,28 +93,30 @@
                         
                        
                         <input type="submit" class="btn btn-primary btn-block" value="Utwórz konto" name="rejestruj"/>
-                       
+                      
                     </form>
                      </div>
                    <?php
                         if(isset($_SESSION['error_code'])){  
 
                             if($_SESSION['error_code'] == 20001){
-                                echo '<p><a>Wypełnij wszystkie pola!</a></p>' ;
+                                echo '<p>Wypełnij wszystkie pola!</p>' ;
                             }
                             if($_SESSION['error_code'] == 20002){
-                                echo 'hasla sie od siebie roznia' ;
+                                echo '<p>Gasla sie od siebie roznia</p>' ;
                             }
                             if($_SESSION['error_code'] == 20003){
-                                echo 'Haslo zbyt krotkie (mniej niz 7 znakow)' ;
+                                echo '<p>Haslo zbyt krotkie (mniej niz 7 znakow)</p>' ;
                             }
                             if($_SESSION['error_code'] == 20004){
-                                echo 'haslo zbyt latwe' ;
+                                echo '<p>Haslo zbyt latwe</p>' ;
                             }
                             if($_SESSION['error_code'] == 20005){
-                                echo 'haslo powinno miec przynajmniej jedna litere, jedna cyfre i znak przestankowy' ;
+                                echo '<p>Haslo powinno miec przynajmniej jedna litere, jedna cyfre i znak przestankowy</p>' ;
                             }
-
+                            if($_SESSION['error_code'] == 20006){
+                                echo '<p>Login jest zajęty, proszę wybierz inny</p>' ;
+                            }
                   
 
                             unset($_SESSION['error_code']);

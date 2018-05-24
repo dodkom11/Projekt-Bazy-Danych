@@ -575,12 +575,23 @@ CREATE OR REPLACE PROCEDURE REJESTRACJA( USERNAME VARCHAR2 DEFAULT NULL,
        DIGITARRAY VARCHAR2(20);
        PUNCTARRAY VARCHAR2(25);
        CHARARRAY VARCHAR2(52);
-
+       num_rows number:=0;
 
     BEGIN 
        DIGITARRAY:= '0123456789';
        CHARARRAY:= 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
        PUNCTARRAY:='!"#$%&()``*+,-/:;<=>?_.';
+       
+       
+       -- Sprawdz czy nazwa uzytkownika jest w systemie
+       SELECT COUNT(*) INTO num_rows
+            FROM KONTO
+            WHERE LOGIN = USERNAME;
+
+        IF num_rows > 0 THEN
+            raise_application_error(-20006, 'Nazwa uzytkownika jest juz w systemie');
+        END IF;
+       
        -- jezeli jakieś pole jest puste
        IF USERNAME IS NULL OR PASSWORD IS NULL OR PASSWORD2 IS NULL OR VIMIE IS NULL OR VNAZWISKO IS NULL THEN
          raise_application_error(-20001, 'Wypelnij wszystkie pola');
@@ -647,7 +658,9 @@ CREATE OR REPLACE PROCEDURE REJESTRACJA( USERNAME VARCHAR2 DEFAULT NULL,
           raise_application_error(-20005, 'haslo powinno miec przynajmniej jedna litere, jedna cyfre i znak przestankowy');
        END IF;
 <<endsearch>>
-       INSERT INTO KONTO(LOGIN, HASLO, IMIE, NAZWISKO) VALUES(USERNAME, PASSWORD, VIMIE, VNAZWISKO);
-    END;
+
+ 
+ INSERT INTO KONTO(LOGIN, HASLO, IMIE, NAZWISKO) VALUES(USERNAME, PASSWORD, VIMIE, VNAZWISKO);
+ END;
 
 

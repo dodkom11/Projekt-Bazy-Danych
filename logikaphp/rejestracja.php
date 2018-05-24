@@ -13,6 +13,11 @@ header('Location: ../reg.php');
 	$imie = $_POST['imie'];
 	$nazwisko = $_POST['nazwisko'];
 
+
+	$_SESSION['login'] = $login;
+	$_SESSION['imie'] = $imie;
+	$_SESSION['nazwisko'] = $nazwisko;
+
 	//Polaczenie z baza
 	$conn = oci_connect($username, $password, $database);
 	if (!$conn) {
