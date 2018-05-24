@@ -148,6 +148,9 @@ oci_free_statement($stid);
                             <a class="nav-link" href="../sklep.php"><i class="fas fa-shopping-basket"></i></i>&nbsp;&nbsp;Sklep</a>
                         </li>
                         <li class="nav-item">
+                            <a class="nav-link" href="../koszyk.php"><i class="fas fa-shopping-cart"></i>&nbsp;&nbsp;Koszyk</a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link" href="#"><i class="fas fa-info"></i>&nbsp;&nbsp;O nas</a>
                         </li>
                         <li class="nav-item">
