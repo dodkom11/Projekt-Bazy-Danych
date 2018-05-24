@@ -36,21 +36,31 @@ $queryLicz = "begin
 
 $tablename  = 'KOSZYK';
 $columnname = 'PRODUKT_ID';
-$condition  = "PRODUKT_ID = '" . $_POST['buttonproduktid'] . "' AND KONTO_ID = '" . $_SESSION['S_KONTO_ID'] . "'";
 
+if($_SERVER['REQUEST_METHOD'] == "POST" and isset($_POST['buttonproduktid'])) {
+		$condition  = "PRODUKT_ID = '" . $_POST['buttonproduktid'] . "' AND KONTO_ID = '" . $_SESSION['S_KONTO_ID'] . "'";
+
+}
 //DODAJ PRODUKT DO KOSZYKA
 $queryDodajDoKoszyka = "begin 
-              			 	INSERTKOSZYK(:produkt_id, :konto_id, :sztuk);
+              				INSERTKOSZYK(:produkt_id, :konto_id, :sztuk);
           				end;";
 
 //ZWIEKSZ ILOSC PRODUKTOW O 1
-$queryProduktInkrementuj = "begin 
-              			 	UPDATEKOSZYKINC(:produkt_id, :konto_id);
-          				end;";
+$queryProduktInkrementuj =  "begin 
+              			 		UPDATEKOSZYKINC(:produkt_id, :konto_id);
+          				    end;";
+
+//ZMNIEJSZ ILOSC PRODUKTOW O 1
+$queryProduktDekrementuj=  "begin 
+              			 		UPDATEKOSZYKDEC(:produkt_id, :konto_id);
+          				    end;";
 
 
+
+/* ==========		DOADAJ ZE SKLEPU			========== */
 if($_SERVER['REQUEST_METHOD'] == "POST" and isset($_POST['buttonproduktid'])) {
-	/* ==========		SELECT LICZBA KLIENTOW			========== */
+	/* ==========		SELECT LICZBA produktow			========== */
 	//PARSOWANIE  
 	$stid = oci_parse($connection, $queryLicz);
 
@@ -105,12 +115,64 @@ if($_SERVER['REQUEST_METHOD'] == "POST" and isset($_POST['buttonproduktid'])) {
 		    $m = oci_error($stid);
 		    trigger_error('Nie udało się wykonać polecenia: ' . $m['message'], E_USER_ERROR);
 		}
+		//ZWOLNIJ ZASOBY
+		oci_free_statement($stid);		
+	}
+}
+
+
+
+
+/* ==========		DODAJ Z KOSZYKA			========== */
+if($_SERVER['REQUEST_METHOD'] == "POST" and isset($_POST['buttonproduktidkoszyk'])) {	
+		//PARSOWANIE  
+		$stid = oci_parse($connection, $queryProduktInkrementuj);
+
+		//PHP VARIABLE --> ORACLE PLACEHOLDER
+		oci_bind_by_name($stid, ":produkt_id", $_POST['buttonproduktidkoszyk']);
+		oci_bind_by_name($stid, ":konto_id", $_SESSION['S_KONTO_ID']);
+
+		//EXECUTE POLECENIE
+		$result = oci_execute($stid);
+		if (!$result) {
+		    $m = oci_error($stid);
+		    trigger_error('Nie udało się wykonać polecenia: ' . $m['message'], E_USER_ERROR);
+		}
 
 		//ZWOLNIJ ZASOBY
 		oci_free_statement($stid);
+		oci_close($connection); 
+		header('Location: ../koszyk.php');
+		exit();
+	}	
 
-	}
-}
-oci_close($connection); 
-header('Location: ../sklep.php');	
+/* ==========		USUN Z KOSZYKA			========== */
+if($_SERVER['REQUEST_METHOD'] == "POST" and isset($_POST['buttonproduktidkoszykdec'])) {	
+		//PARSOWANIE  
+		$stid = oci_parse($connection, $queryProduktDekrementuj);
+
+		//PHP VARIABLE --> ORACLE PLACEHOLDER
+		oci_bind_by_name($stid, ":produkt_id", $_POST['buttonproduktidkoszykdec']);
+		oci_bind_by_name($stid, ":konto_id", $_SESSION['S_KONTO_ID']);
+
+		//EXECUTE POLECENIE
+		$result = oci_execute($stid);
+		if (!$result) {
+		    $m = oci_error($stid);
+		    trigger_error('Nie udało się wykonać polecenia: ' . $m['message'], E_USER_ERROR);
+		}
+
+		//ZWOLNIJ ZASOBY
+		oci_free_statement($stid);
+		oci_close($connection); 
+		header('Location: ../koszyk.php');
+		exit();
+	}	
+
+
+
+
+
+	oci_close($connection); 
+	header('Location: ../sklep.php');
 ?>

@@ -29,9 +29,9 @@ if (!$connection) {
 
 
 /* ==========       ZMIENNE LOKALNE         ========== */
-//SELECT OSTATNIE 6 PRODUKTÓW 
-$queryOstatnie6Produktow = "begin 
-                                :cursor := LAST6PRODUCTS;
+//SELECT PRODUKTY w koszyku
+$queryProduktyKoszyk =     "begin 
+                                :cursor := POKAZKOSZYK(:kontoid);
                             end;";
 
 //SELECT OSTATNIE KATEGORIA
@@ -40,19 +40,18 @@ $queryPokazKategorie =      "begin
                             end;";
 
 
-
-
-/* ==========       SELECT OSTATNIE 6 PRODUKTÓW       ========== */
+/* ==========       SELECT Produkty       ========== */
 //PARSOWANIE  
-$stid = oci_parse($connection, $queryOstatnie6Produktow);
+$stid = oci_parse($connection, $queryProduktyKoszyk);
 if (!$stid) {
     $m = oci_error($connection);
     trigger_error('Nie udało się przeanalizować polecenia pl/sql: ' . $m['message'], E_USER_ERROR);
 }
 
 //PHP VARIABLE --> ORACLE PLACEHOLDER
-$cursorProdukty = oci_new_cursor($connection);
-oci_bind_by_name($stid, ":cursor", $cursorProdukty, -1, OCI_B_CURSOR);
+$cursorKoszyk = oci_new_cursor($connection);
+oci_bind_by_name($stid, ":kontoid", $_SESSION['S_KONTO_ID']);
+oci_bind_by_name($stid, ":cursor", $cursorKoszyk, -1, OCI_B_CURSOR);
 
 //EXECUTE POLECENIE
 $result = oci_execute($stid);
@@ -62,14 +61,15 @@ if (!$result) {
 }
 
 //EXECUTE KURSOR
-$result = oci_execute($cursorProdukty, OCI_DEFAULT);
+$result = oci_execute($cursorKoszyk, OCI_DEFAULT);
 if (!$result) {
     $m = oci_error($stid);
     trigger_error('Nie udało się wykonać polecenia: ' . $m['message'], E_USER_ERROR);
 }
 
 //ZWOLNIJ ZASOBY
-oci_free_statement($stid);      
+oci_free_statement($stid);
+   
 
 
 
@@ -201,114 +201,51 @@ END;
             <div id="page-content-wrapper">
                 <div class="container-fluid">
                     <div class="row">
-                        <div id="slider" class="carousel slide container-fluid" data-ride="carousel">
-                            <!-- Indicators -->
-                            <ul class="carousel-indicators">
-                                <li data-target="#slider" data-slide-to="0" class="active"></li>
-                                <li data-target="#slider" data-slide-to="1"></li>
-                                <li data-target="#slider" data-slide-to="2"></li>
-                            </ul>
-                            
-                            <!-- The slideshow -->
-                            <div class="carousel-inner">
-                                <div class="carousel-item active">
-                                    <img src="img/carousel/carousel1.jpg" alt="Slider">
-                                </div>
-                                <div class="carousel-item">
-                                    <img src="img/carousel/carousel2.jpg" alt="Slider">
-                                </div>
-                                <div class="carousel-item">
-                                    <img src="img/carousel/carousel3.jpg" alt="Slider">
-                                </div>
-                            </div>
-                            
-                            <!-- Left and right controls -->
-                            <a class="carousel-control-prev" href="#slider" data-slide="prev">
-                                <span class="carousel-control-prev-icon"></span>
-                            </a>
-                            <a class="carousel-control-next" href="#slider" data-slide="next">
-                                <span class="carousel-control-next-icon"></span>
-                            </a>
-                        </div>
-                    </div>
-                    <!-- /.row -->
-                    <div class="row">
-                    <?php                        
-                        while (($row = oci_fetch_array($cursorProdukty, OCI_ASSOC + OCI_RETURN_NULLS)) != false) {     
-                            $produktid = $row['PRODUKT_ID'];
-                            $producent = $row['PRODUCENT'];
-                            $cena = $row['CENA'];
-                            $numerKat = $row['NUMER_KATALOGOWY'];
-                            $model =  $row['MODEL'];
-                            $szukMagazyn = $row['SZTUK_NA_MAGAZYNIE'];
-                            $opis = $row['OPIS'];
-                            if( ($zdjecie = $row['ZDJECIE']) != null){
-                                $zdjecie = $row['ZDJECIE']->load();
-                            }                                                                                                  
-echo <<<END
-                        <div class="col-lg-4 col-md-6 mb-4">
-                            <div class="card h-100">
-                                <a href="#"> 
-END;
-                        if($zdjecie != null) {   
-                            echo '<div><img class="card-img-top" alt="700x400" src="data:image/jpeg;base64,'.base64_encode($zdjecie).'" /></div>';
-                        } else {
-                            echo '<div><img class="card-img-top" alt="700x400" src="img/brakzdj.jpg" /></div>';
-                        }
 
-echo <<<END
+                                                    <div class="card mb-3">
+                                <div class="card-header">
+                                <i class="fa fa-table"></i> KOSZYK</div>
                                 <div class="card-body">
-                                    <h4 class="card-title">
-                                    <a href="#">$producent $model</a>
-                                    </h4>
-                                    <h5><i class="far fa-money-bill-alt"></i> $cena PLN</h5>
-                                    <p class="card-text">$opis</p>
-                                </div>
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered" width="100%" cellspacing="0">
+                                              <thead>
+                                                <tr>
+                                                    <th>PRODUCENT</th>
+                                                    <th>MODEL</th>
+                                                    <th>NUMER_KATALOGOWY</th>
+                                                    <th>CENA</th>
+                                                    <th>ILOSC_SZTUK</th>
+                                                    <th>ŁĄCZNIE</th>
+                                                   
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <?php
+//WYPEŁNIJ TABELE JEŻELI PODANO ID KONTA
+    $SUMA = 0;                                                
+    while (($row = oci_fetch_array($cursorKoszyk, OCI_ASSOC + OCI_RETURN_NULLS)) != false) {
+                    $PRODUKT_ID          = $row['PRODUKT_ID'];
+                    $PRODUCENT           = $row['PRODUCENT'];
+                    $MODEL               = $row['MODEL'];
+                    $NUMER_KATALOGOWY    = $row['NUMER_KATALOGOWY'];
+                    $CENA                = $row['CENA'];
+                    $ILOSC_SZTUK         = $row['ILOSC_SZTUK'];
+                    $ILOCZYN             = $row['ILOCZYN'];
+                    $SUMA                += $row['ILOCZYN'];
+                    echo "<tr><td>$PRODUCENT</td> <td>$MODEL</td><td>$NUMER_KATALOGOWY</td><td>$CENA</td><td>$ILOSC_SZTUK</td><td>$ILOCZYN</td>";
 
-                                <table class="table table-hover">
-                                    <tbody>
-                                        <tr>
-                                            <td><i class="fas fa-angle-right"></i> <em>Producent</em></td>
-                                            <td><strong>$producent</strong></td>
-                                        </tr>
-                                        <tr>
-                                            <td><i class="fas fa-angle-right"></i> <em>Numer katalogowy</em></td>
-                                            <td><strong>$numerKat</strong></td>
-                                        </tr>
-                                        <tr>
-                                            <td><i class="fas fa-angle-right"></i> <em>Model</em></td>
-                                            <td><strong>$model</strong></td>
-                                        </tr>
-                                        <tr>
-                                            <td><i class="fas fa-angle-right"></i> <em>Sztuk na magazynie</em></td>
-                                            <td><strong>$szukMagazyn</strong></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                                  <div class="card-footer">
-                                    <div class="row">
-                                        <div class="col-lg-6"><em class="align-middle">Dodano: 2018-04-29</em></div>
-                                        
-                                            <div class="col-lg-6 text-right">
-                                                <form action="logikaphp/logickoszyk.php" method="post">
-                                                    <button type="submit" name="buttonproduktid" class="btn btn-success" value="
-END;
+                    echo "<td><form action=\"logikaphp/logickoszyk.php\" method=\"post\"><button type=\"submit\" name=\"buttonproduktidkoszyk\" class=\"btn btn-primary btn-sm\" value=\"" . htmlspecialchars($PRODUKT_ID). "\">+</button></form></td>";
+                    echo "<td><form action=\"logikaphp/logickoszyk.php\" method=\"post\"><button type=\"submit\" name=\"buttonproduktidkoszykdec\"class=\"btn btn-danger btn-sm\" value=\"" . htmlspecialchars($PRODUKT_ID) . "\">-</button></form></td></tr>";                   
+        }       
 ?>
-<?php echo htmlspecialchars($produktid);
-echo <<<END
-">
-                                                    <i class="fas fa-shopping-cart"></i> KUP</button>
-                                                  </form>
-                                            </div>
-
+                                           </tbody>
+                                        </table>
+                                        <?php echo "Do zapłaty: <strong>" . $SUMA . " PLN </strong>"; ?>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-END;
 
-                        }
-                    ?>                       
+                                     
                     </div>
                     <!-- /.row -->
                 </div>

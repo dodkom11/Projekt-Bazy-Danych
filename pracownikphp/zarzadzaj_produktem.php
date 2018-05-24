@@ -184,6 +184,9 @@ oci_free_statement($stid);
                             <a class="nav-link" href="../sklep.php"><i class="fas fa-shopping-basket"></i></i>&nbsp;&nbsp;Sklep</a>
                         </li>
                         <li class="nav-item">
+                            <a class="nav-link" href="../koszyk.php"><i class="fas fa-shopping-cart"></i>&nbsp;&nbsp;Koszyk</a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link" href="#"><i class="fas fa-info"></i>&nbsp;&nbsp;O nas</a>
                         </li>
                         <li class="nav-item">
@@ -573,7 +576,7 @@ END;
             <div class="form-row">
                 <div class="form-group col-3">
                     <label for="inputdostawcaid">Dostawca ID</label>
-                    <input type="number" class="form-control" id="inputdostawcaid" name="dostawcaid" placeholder="Dostawca IDy" required>
+                    <input type="number" class="form-control" id="inputdostawcaid" name="dostawcaid" placeholder="Dostawca ID" required>
                 </div>
                 <div class="form-group col-3">
                     <label for="inputkategoriaid">Kategoria ID</label>
@@ -611,10 +614,7 @@ END;
     <div class="row">
         <div class="card mb-3">
             <div class="card-header">
-                <i class="fa fa-table"></i> Klienci [<?php
-                //WYŚWIETL LICZBE KLIENTÓW
-                echo $ileOsob;
-            ?>]</div>
+                <i class="fa fa-table"></i> Dostawcy</div>
             <div class="card-body">
                 <div class="table-responsive">
                     <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
