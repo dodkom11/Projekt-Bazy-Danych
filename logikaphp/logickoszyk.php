@@ -56,6 +56,13 @@ $queryProduktDekrementuj=  "begin
               			 		UPDATEKOSZYKDEC(:produkt_id, :konto_id);
           				    end;";
 
+//STWORZ ZAMOWIENIE
+$queryStworzZamowienie =   "begin 
+              			 		STWORZ_ZAMOWIENIE(:konto_id, :kurier_id, :koszt_zamowienia, :metoda_platnosci, :dokument_sprzedazy);
+          				    end;";
+
+
+
 
 
 /* ==========		DOADAJ ZE SKLEPU			========== */
@@ -167,11 +174,34 @@ if($_SERVER['REQUEST_METHOD'] == "POST" and isset($_POST['buttonproduktidkoszykd
 		oci_close($connection); 
 		header('Location: ../koszyk.php');
 		exit();
-	}	
+	}
 
 
+/* ==========		DODAJ ZAMOWIENIE			========== */
+if($_SERVER['REQUEST_METHOD'] == "POST" and isset($_POST['zamow'])) {	
+		//PARSOWANIE  
+		$stid = oci_parse($connection, $queryStworzZamowienie);
 
+		//PHP VARIABLE --> ORACLE PLACEHOLDER
+		oci_bind_by_name($stid, ":konto_id", $_SESSION['S_KONTO_ID']);
+		oci_bind_by_name($stid, ":kurier_id", $_POST['skurier']);
+		oci_bind_by_name($stid, ":koszt_zamowienia", $_SESSION['S_SUMA']);
+		oci_bind_by_name($stid, ":metoda_platnosci", $_POST['splatnosc']);
+		oci_bind_by_name($stid, ":dokument_sprzedazy", $_POST['sdokument']);
 
+		//EXECUTE POLECENIE
+		$result = oci_execute($stid);
+		if (!$result) {
+		    $m = oci_error($stid);
+		    trigger_error('Nie udało się wykonać polecenia: ' . $m['message'], E_USER_ERROR);
+		}
+
+		//ZWOLNIJ ZASOBY
+		oci_free_statement($stid);
+		oci_close($connection); 
+		header('Location: ../koszyk.php'); //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		exit();
+	}
 
 	oci_close($connection); 
 	header('Location: ../sklep.php');

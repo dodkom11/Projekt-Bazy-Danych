@@ -187,11 +187,9 @@ oci_free_statement($stid);
                             <a class="nav-link" href="../koszyk.php"><i class="fas fa-shopping-cart"></i>&nbsp;&nbsp;Koszyk</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#"><i class="fas fa-info"></i>&nbsp;&nbsp;O nas</a>
+                            <a class="nav-link" href="../zamowienie.php"><i class="fas fa-history"></i>&nbsp;&nbsp;Zamówienia</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#"><i class="fas fa-address-book"></i>&nbsp;&nbsp;Kontakt</a>
-                        </li>
+
                         <li class="nav-item">
                             <a class="nav-link" href="../logikaphp/logout.php"><i class="fas fa-sign-in-alt"></i>&nbsp;&nbsp;Wyloguj</a>
                         </li>
@@ -446,7 +444,7 @@ while (($row = oci_fetch_array($cursorTabela, OCI_ASSOC + OCI_RETURN_NULLS)) != 
         $MODEL                          = $row['MODEL'];
         $CENA                           = $row['CENA'];
         $SZTUK_NA_MAGAZYNIE             = $row['SZTUK_NA_MAGAZYNIE'];
-        $DATA_DODANIA                   = $row['DATA_DODANIA'];
+        $DATA_DODANIA                   = $row['DATA_DOD'];
               
         echo "<tr> <td>$PRODUKT_ID</td> <td>$NAZWA_FIRMY</td> <td>$KATEGORIA_NAZWA</td> <td>$PRODUCENT</td> <td>$NUMER_KATALOGOWY</td> <td>$MODEL</td> <td>$CENA</td> <td>$SZTUK_NA_MAGAZYNIE</td> <td>$DATA_DODANIA</td>  </tr>";
 }

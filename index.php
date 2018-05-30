@@ -1,6 +1,5 @@
 <?php
-    session_start();
-    
+    session_start();    
 ?>
 
 <!DOCTYPE html>
@@ -43,24 +42,27 @@
                                 <span class="sr-only">(current)</span>
                             </a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="sklep.php"><i class="fas fa-shopping-basket"></i></i>&nbsp;&nbsp;Sklep</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="koszyk.php"><i class="fas fa-shopping-cart"></i>&nbsp;&nbsp;Koszyk</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#"><i class="fas fa-info"></i>&nbsp;&nbsp;O nas</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#"><i class="fas fa-address-book"></i>&nbsp;&nbsp;Kontakt</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="zalogujsie.php"><i class="fas fa-sign-in-alt"></i>&nbsp;&nbsp;Login</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="reg.php"><i class="fa fa-user"></i>&nbsp;&nbsp;Rejestracja</a>
-                        </li>
+                        <?php if(isset($_SESSION['zalogowany'])){ ?>
+                                <li class="nav-item">
+                                        <a class="nav-link" href="sklep.php"><i class="fas fa-shopping-basket"></i></i>&nbsp;&nbsp;Sklep</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="koszyk.php"><i class="fas fa-shopping-cart"></i>&nbsp;&nbsp;Koszyk</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="../zamowienie.php"><i class="fas fa-history"></i>&nbsp;&nbsp;Zamówienia</a>
+                                    </li>
+
+                        <?php } ?>  
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="zalogujsie.php"><i class="fas fa-sign-in-alt"></i>&nbsp;&nbsp;Login</a>
+                                    </li>
+                             
+                        <?php if(!isset($_SESSION['zalogowany'])){ ?>
+                            <li class="nav-item">
+                                <a class="nav-link" href="reg.php"><i class="fa fa-user"></i>&nbsp;&nbsp;Rejestracja</a>
+                            </li>
+                        <?php } ?>
                     </ul>
                 </div>
             </div>

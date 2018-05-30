@@ -39,6 +39,20 @@ $queryPokazKategorie =      "begin
                                 :cursor := SELECTKATEGORIA;
                             end;";
 
+//SELECT KURIERZY TABELA
+$querySelectKurierzy = "begin 
+                            :cursor := SELECTKURIERZY;
+                        end;";
+
+//PRODUKTY W KOSZYKU
+$queryLicz = "begin 
+                :bv := COUNTRW(:tabl, :colm, :cond);    
+               end;";
+
+$tablename  = 'KOSZYK';
+$columnname = 'PRODUKT_ID';
+$condition  = "KONTO_ID = '" . $_SESSION['S_KONTO_ID'] . "'";
+
 
 /* ==========       SELECT Produkty       ========== */
 //PARSOWANIE  
@@ -102,7 +116,62 @@ if (!$result) {
 
 //ZWOLNIJ ZASOBY
 oci_free_statement($stid);     
- 
+
+
+
+
+/* ==========       SELECT KURIERZY TABELA       ========== */
+//PARSOWANIE  
+$stid = oci_parse($connection, $querySelectKurierzy);
+if (!$stid) {
+    $m = oci_error($connection);
+    trigger_error('Nie udało się przeanalizować polecenia pl/sql: ' . $m['message'], E_USER_ERROR);
+}
+
+//PHP VARIABLE --> ORACLE PLACEHOLDER
+$cursorTabela = oci_new_cursor($connection);
+oci_bind_by_name($stid, ":cursor", $cursorTabela, -1, OCI_B_CURSOR);
+
+//EXECUTE POLECENIE
+$result = oci_execute($stid);
+if (!$result) {
+    $m = oci_error($stid);
+    trigger_error('Nie udało się wykonać polecenia: ' . $m['message'], E_USER_ERROR);
+}
+
+//EXECUTE KURSOR
+$result = oci_execute($cursorTabela, OCI_DEFAULT);
+if (!$result) {
+    $m = oci_error($stid);
+    trigger_error('Nie udało się wykonać polecenia: ' . $m['message'], E_USER_ERROR);
+}
+
+//ZWOLNIJ ZASOBY
+oci_free_statement($stid);
+
+
+
+
+/* ==========       SELECT LICZBA produktow         ========== */
+//PARSOWANIE  
+$stid = oci_parse($connection, $queryLicz);
+
+//PHP VARIABLE --> ORACLE PLACEHOLDER
+oci_bind_by_name($stid, ":tabl", $tablename);
+oci_bind_by_name($stid, ":colm", $columnname);
+oci_bind_by_name($stid, ":cond", $condition);
+oci_bind_by_name($stid, ":bv", $liczProdukt, 10);
+
+//EXECUTE POLECENIE
+$result = oci_execute($stid);
+if (!$result) {
+    $m = oci_error($stid);
+    trigger_error('Nie udało się wykonać polecenia: ' . $m['message'], E_USER_ERROR);
+}
+
+//ZWOLNIJ ZASOBY
+oci_free_statement($stid);
+
      
 ?> 
 
@@ -154,11 +223,9 @@ oci_free_statement($stid);
                             <span class="sr-only">(current)</span>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#"><i class="fas fa-info"></i>&nbsp;&nbsp;O nas</a>
+                            <a class="nav-link" href="../zamowienie.php"><i class="fas fa-history"></i>&nbsp;&nbsp;Zamówienia</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#"><i class="fas fa-address-book"></i>&nbsp;&nbsp;Kontakt</a>
-                        </li>
+
                         <li class="nav-item">
                             <a class="nav-link" href="logikaphp/logout.php"><i class="fas fa-sign-in-alt"></i>&nbsp;&nbsp;Wyloguj</a>
                         </li>
@@ -204,7 +271,10 @@ END;
 
                                                     <div class="card mb-3">
                                 <div class="card-header">
-                                <i class="fa fa-table"></i> KOSZYK</div>
+                                <i class="fa fa-table"></i> KOSZYK [<?php
+//WYŚWIETL LICZBE KLIENTÓW
+echo $liczProdukt;
+?>]</div>
                                 <div class="card-body">
                                     <div class="table-responsive">
                                         <table class="table table-bordered" width="100%" cellspacing="0">
@@ -243,12 +313,60 @@ END;
                                         <?php echo "Do zapłaty: <strong>" . $SUMA . " PLN </strong>"; ?>
                                     </div>
                                 </div>
-                            </div>
-
-                                     
+                            </div>                                
                     </div>
+
+                    <?php $_SESSION['S_SUMA'] = $SUMA; ?>
+                    <?php if($liczProdukt > 0) { ?>
+
+                        <form action="logikaphp/logickoszyk.php" method="post">
+                        <div class="form-group">
+                            <div class="form-row">
+                                <div class="col-lg-2">
+                                  <label for="sel1">Wybierz Kuriera</label>
+                                  <select class="form-control" id="sel1" name="skurier">
+                                   <?php
+                                        //WYPEŁNIJ TABELE KLIENTAMI Z BAZY                                            
+                                        while (($row = oci_fetch_array($cursorTabela, OCI_ASSOC + OCI_RETURN_NULLS)) != false) {
+                                            $KURIER_ID           = $row['KURIER_ID'];
+                                            $NAZWA_FIRMY         = $row['NAZWA_FIRMY'];                                        
+                                            echo '<option value="' . $KURIER_ID .' ">' . $NAZWA_FIRMY. '</option>'; 
+                                        }
+                                    ?>
+                                  </select>  
+                                </div> 
+                                <div class="col-lg-2">
+                                     <label for="sel1">Wybierz Rodzaj płatności</label>
+                                      <select class="form-control" id="sel1" name="splatnosc">
+                                        <option value="karta">Płatność kartą</option>
+                                        <option value="przelew">Płatność przelewem</option>
+                                        <option value="gotowka">Płatność przy odbiorze</option>
+                                      </select>  
+                                </div>
+                                   <div class="col-lg-2">
+                                     <label for="sel1">Wybierz dokument sprzedaży</label>
+                                      <select class="form-control" id="sel1" name="sdokument">
+                                        <option value="paragon">Paragon</option>
+                                        <option value="faktura">Faktura</option>
+                                      </select>  
+                                </div>
+                            </div>                           
+                        </div> 
+
+                        <div class="form-group">
+                              <input type="submit" name="zamow" class="btn btn-primary" value="Zamów" />                               
+                        </div> 
+
+                        <?php/*
+                            if (isset($_POST['zamow'])) {
+                                echo $_POST['skurier'];
+                            }   */                          
+                        ?>
+                        </form>     
+
+                        <?php } ?>          
                     <!-- /.row -->
-                </div>
+               
                 <!-- ./container-fluid -->
             </div>
             <!-- /#page-content-wrapper -->
