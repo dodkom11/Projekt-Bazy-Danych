@@ -223,7 +223,7 @@ oci_free_statement($stid);
                             <span class="sr-only">(current)</span>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="../zamowienie.php"><i class="fas fa-history"></i>&nbsp;&nbsp;Zamówienia</a>
+                            <a class="nav-link" href="zamowienie.php"><i class="fas fa-history"></i>&nbsp;&nbsp;Zamówienia</a>
                         </li>
 
                         <li class="nav-item">
@@ -356,12 +356,6 @@ echo $liczProdukt;
                         <div class="form-group">
                               <input type="submit" name="zamow" class="btn btn-primary" value="Zamów" />                               
                         </div> 
-
-                        <?php/*
-                            if (isset($_POST['zamow'])) {
-                                echo $_POST['skurier'];
-                            }   */                          
-                        ?>
                         </form>     
 
                         <?php } ?>          
