@@ -49,6 +49,11 @@ $queryInsertKategoria = "begin
                             INSERTKATEGORIA(:nazwa, :opis);
                         end;"; 
 
+//EDYTUJ ZAMOWIENIE
+$queryEdytujZamowienie = "begin 
+                            UPDATEZAMOWIENIE(:rekord_id, :data, :zaakaceptowano, :zaplacnono, :zrealizowano);
+                         end;";                       
+
 
 /* ==========       FUNKCJA DELETE PRODUKT            ========== */
 
@@ -152,6 +157,37 @@ function funkcjaDodajKategorie($connection, $queryInsertKategoria)
         echo '<div class="alert alert-success" role="alert"><strong>INFORMACJA!</strong> Pomyślnie Dodano Kategorie: <strong>' . $_POST['nazwakategori'] . "</strong></div>";
 }
 
+
+
+
+/* ==========       FUNKCJA EDYTUJ ZAMOWIENIE          ========== */
+
+function funkcjaEdytujZamowienie($connection, $queryEdytujZamowienie)
+{
+    //PARSOWANIE  
+    $stid = oci_parse($connection, $queryEdytujZamowienie);
+
+    //PHP VARIABLE --> ORACLE PLACEHOLDER
+    oci_bind_by_name($stid, ":rekord_id", $_POST['edytujzamowieniebutton']);
+    oci_bind_by_name($stid, ":data", $_POST['datarealizacji']);
+    oci_bind_by_name($stid, ":zaakaceptowano", $_POST['zaakceptowane']);
+    oci_bind_by_name($stid, ":zaplacnono", $_POST['zaplacono']);
+    oci_bind_by_name($stid, ":zrealizowano", $_POST['zrealizowano']);
+
+    //EXECUTE POLECENIE
+    $result = oci_execute($stid);
+    if (!$result) {
+        $m = oci_error($stid);
+        trigger_error('Nie udało się wykonać polecenia: ' . $m['message'], E_USER_ERROR);
+    }
+
+    //ZWOLNIJ ZASOBY
+    oci_free_statement($stid);
+
+    echo '<div class="alert alert-success" role="alert"><strong>INFORMACJA!</strong> Pomyślna edycja zamówienia ID: <strong>' . $_POST['edytujzamowieniebutton'] . "</strong></div>";
+}
+
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -247,6 +283,9 @@ function funkcjaDodajKategorie($connection, $queryInsertKategoria)
     }
     else if($_SERVER['REQUEST_METHOD'] == "POST" and isset($_POST['usunkategoriebutton'])) {
             funkcjaUsunKategorie($connection, $queryDeleteKategoria);
+    }
+    else if($_SERVER['REQUEST_METHOD'] == "POST" and isset($_POST['edytujzamowieniebutton'])) {
+        funkcjaEdytujZamowienie($connection, $queryEdytujZamowienie);
     }
 ?>
             <!-- ./container-fluid -->

@@ -101,7 +101,7 @@ $stid = oci_parse($connection, $queryLicz);
 oci_bind_by_name($stid, ":tabl", $tablename);
 oci_bind_by_name($stid, ":colm", $columnname);
 oci_bind_by_name($stid, ":cond", $condition);
-oci_bind_by_name($stid, ":bv", $ileOsob, 10);
+oci_bind_by_name($stid, ":bv", $ile, 10);
 
 //EXECUTE POLECENIE
 $result = oci_execute($stid);
@@ -142,13 +142,13 @@ oci_free_statement($stid);
                 </button>
                 <div class="collapse navbar-collapse" id="navbarResponsive">
                     <ul class="navbar-nav ml-auto">
-                         <?php
-                         if ((isset($_SESSION['S_UPRAWNIENIA'])) && (!strcmp($_SESSION['S_UPRAWNIENIA'], "admin" ))){
-                            echo '<li class="nav-item"><a class="nav-link" href="../adminphp/zarzadzaj_pracownikiem.php"><i class="fas fa-gavel"></i>&nbsp;&nbsp;Admin Panel</a></li>';
-                         }
-                         ?>
+                        <?php
+                        if ((isset($_SESSION['S_UPRAWNIENIA'])) && (!strcmp($_SESSION['S_UPRAWNIENIA'], "admin" ))){
+                        echo '<li class="nav-item"><a class="nav-link" href="../adminphp/zarzadzaj_pracownikiem.php"><i class="fas fa-gavel"></i>&nbsp;&nbsp;Admin Panel</a></li>';
+                        }
+                        ?>
                         <li class="nav-item active">
-                             <a class="nav-link" href="zarzadzaj_produktem.php"><i class="fas fa-pencil-alt"></i>&nbsp;&nbsp;Pracownik Panel</a>
+                            <a class="nav-link" href="zarzadzaj_produktem.php"><i class="fas fa-pencil-alt"></i>&nbsp;&nbsp;Pracownik Panel</a>
                             <span class="sr-only">(current)</span>
                         </li>
                         <li class="nav-item">
@@ -164,7 +164,6 @@ oci_free_statement($stid);
                         <li class="nav-item">
                             <a class="nav-link" href="../zamowienie.php"><i class="fas fa-history"></i>&nbsp;&nbsp;Zamówienia</a>
                         </li>
-
                         <li class="nav-item">
                             <a class="nav-link" href="../logikaphp/logout.php"><i class="fas fa-sign-in-alt"></i>&nbsp;&nbsp;Wyloguj</a>
                         </li>
@@ -198,10 +197,7 @@ oci_free_statement($stid);
                 <div class="container-fluid">
                     <nav>
                         <div class="nav nav-tabs" id="nav-tab" role="tablist">
-                            <a class="nav-item nav-link active" id="nav-zakladka1-tab" data-toggle="tab" href="#nav-zakladka1" role="tab" aria-controls="nav-zakladka1" aria-selected="true">Podaj ID Zamówienia</a>
-                            <a class="nav-item nav-link" id="nav-zakladka2-tab" data-toggle="tab" href="#nav-zakladka2" role="tab" aria-controls="nav-zakladka2" aria-selected="false">Przeglądaj</a>
-                            <a class="nav-item nav-link" id="nav-zakladka3-tab" data-toggle="tab" href="#nav-zakladka3" role="tab" aria-controls="nav-zakladka3" aria-selected="false">qqq </a>
-                            <a class="nav-item nav-link" id="nav-zakladka4-tab" data-toggle="tab" href="#nav-zakladka4" role="tab" aria-controls="nav-zakladka" aria-selected="false">qqq</a>
+                            <a class="nav-item nav-link active" id="nav-zakladka1-tab" data-toggle="tab" href="#nav-zakladka1" role="tab" aria-controls="nav-zakladka1" aria-selected="true">Zarządaj</a>
                         </div>
                     </nav>
                     <br>
@@ -211,232 +207,70 @@ oci_free_statement($stid);
                             >>>>>>>>>>      ZAKLADKA 1      <<<<<<<<<<
         +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 -->
-                        <div class="tab-pane fade show active" id="nav-zakladka1" role="tabpanel" aria-labelledby="nav-zakladka1-tab">
-                            <form method="post" action="<?php
-echo $_SERVER['PHP_SELF'];
-?>">
-                                <div class="row">
-                                    <div class="col-6">
-                                        <div class="form-group row">
-                                            <label for="example-number-input" class="col-3 col-form-label">Podaj ID KONTA</label>
-                                            <div class="col-9">
-                                                <input class="form-control" type="number" name="number-input" min="1">
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-2">
-                                        <button type="submit" class="btn btn-primary">AKCEPTUJ</button>
-                                    </div>
-                                    <div class="col-4">
-   
-                                        <?php
-// POKAŻ WYBRANE ID JEŚLI PODANO ID
-if (!empty($_REQUEST['number-input'])) {
-
-//WARUNEK CZY ISTENIEJE KLIENT 
-$condition2 = $condition2 . $_REQUEST['number-input'] . "'";
-
-/* ==========		SPRAWDZ CZY KONTO NALEZY DO KLIENT			========== */
-//PARSOWANIE  
-$stid = oci_parse($connection, $queryLicz);
-
-//PHP VARIABLE --> ORACLE PLACEHOLDER
-oci_bind_by_name($stid, ":tabl", $tablename);
-oci_bind_by_name($stid, ":colm", $columnname);
-oci_bind_by_name($stid, ":cond", $condition2);
-oci_bind_by_name($stid, ":bv", $istniejeKonto, 10);
-
-//EXECUTE POLECENIE
-$result = oci_execute($stid);
-if (!$result) {
-    $m = oci_error($stid);
-    trigger_error('Nie udało się wykonać polecenia: ' . $m['message'], E_USER_ERROR);
-}
-
-//ZWOLNIJ ZASOBY
-oci_free_statement($stid);
-	if($istniejeKonto > 0) {
-echo <<<END
-<span style="font-size: 25px;">WYBRANE ID: </span> <span class="badge badge-dark" style="font-size: 26px;">
-END;
-    echo $_REQUEST['number-input'] . "</span>";
-	}
-	else {
-		$_REQUEST['number-input'] = 0;
-	}
-}
-?>
-                               </div>
-                            </div>
-                        </form>
-                        <?php
-if ($_SERVER["REQUEST_METHOD"] == "POST" && empty($_REQUEST['szczegoly'])) {
-    
-    // ZBIERAMY DANE Z INPUT
-    htmlspecialchars($_REQUEST['number-input']);
-    
-    if (empty($_REQUEST['number-input'])) { 	//JEŻELI INPUT PUSTY LUB NIEPOPRAWNE ID   	
-        $message = "PODAJ POPRAWNE KONTO_ID!";        
-        echo "<script type='text/javascript'>alert('$message');</script>";
-    } else {
-
-        //PARSOWANIE 
-        $stid = oci_parse($connection, $querySelectKlientID);
-        if (!$stid) {
-            $m = oci_error($connection);
-            trigger_error('Nie udało się przeanalizować polecenia pl/sql: ' . $m['message'], E_USER_ERROR);
-        }
-
-        //PHP VARIABLE --> ORACLE PLACEHOLDER        
-        $cursorPokazOsobe = oci_new_cursor($connection);
-        oci_bind_by_name($stid, ":rekord_id", $_REQUEST['number-input']);
-        oci_bind_by_name($stid, ":cursor2", $cursorPokazOsobe, -1, OCI_B_CURSOR);
-
-        //EXECUTE POLECENIE
-        $result = oci_execute($stid);
-        if (!$result) {
-            $m = oci_error($stid);
-            trigger_error('Nie udało się wykonać polecenia: ' . $m['message'], E_USER_ERROR);
-        }
-
-        //EXECUTE KURSOR
-        oci_execute($cursorPokazOsobe, OCI_DEFAULT);
-
-        //ZWOLNIJ ZASOBY
-		oci_free_statement($stid);
-    }
-}
-?>
-                       <div class="row">
-                            <div class="card mb-3">
-                                <div class="card-header">
-                                <i class="fa fa-table"></i> Wybrany Klient</div>
-                                <div class="card-body">
-                                    <div class="table-responsive">
-                                        <table class="table table-bordered" id="dataTable2" width="100%" cellspacing="0">
-                                            <thead>
-                                                <tr>
-                                                    <th>KONTO_ID</th>
-                                                    <th>IMIE</th>
-                                                    <th>NAZWISKO</th>
-                                                    <th>UPRAWNIENIA</th>
-                                                    <th>MIEJSCOWOSC</th>
-                                                    <th>WOJEWODZTWO</th>
-                                                    <th>KOD_POCZTOWY</th>
-                                                    <th>ULICA</th>
-                                                    <th>NR_DOMU</th>
-                                                    <th>NR_LOKALU</th>
-                                                    <th>EMAIL</th>
-                                                    <th>NR_TEL</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <?php
-//WYPEŁNIJ TABELE JEŻELI PODANO ID KONTA
-if (!empty($_REQUEST['number-input'])) {
-    while (($row = oci_fetch_array($cursorPokazOsobe, OCI_ASSOC + OCI_RETURN_NULLS)) != false) {
-        $KONTO_ID     = $row['KONTO_ID'];
-        $IMIE         = $row['IMIE'];
-        $NAZWISKO     = $row['NAZWISKO'];
-        $UPRAWNIENIA  = $row['UPRAWNIENIA'];
-        $MIEJSCOWOSC  = $row['MIEJSCOWOSC'];
-        $WOJEWODZTWO  = $row['WOJEWODZTWO'];
-        $KOD_POCZTOWY = $row['KOD_POCZTOWY'];
-        $ULICA        = $row['ULICA'];
-        $NR_DOMU      = $row['NR_DOMU'];
-        $NR_LOKALU    = $row['NR_LOKALU'];
-        $EMAIL        = $row['EMAIL'];
-        $NR_TEL       = $row['NR_TEL'];
-        echo "<tr><td>$KONTO_ID</td> <td>$IMIE</td> <td>$NAZWISKO</td> <td>$UPRAWNIENIA</td> <td>$MIEJSCOWOSC</td> <td>$WOJEWODZTWO</td> <td>$KOD_POCZTOWY</td> <td>$ULICA</td> <td>$NR_DOMU</td> <td>$NR_LOKALU</td> <td>$EMAIL</td> <td>$NR_TEL</td></tr>";
-    }
-}
-?>
-                                           </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>             
-                    </div>
-<!-- 
-        +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++    
-                            >>>>>>>>>>      ZAKLADKA 2      <<<<<<<<<<
-        +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
--->
-                    <div class="tab-pane fade" id="nav-zakladka2" role="tabpanel" aria-labelledby="nav-zakladka2-tab">
-                        <?php
-//POKAŻ WYBRANE ID JEŚLI PODANO ID
-if (!empty($_REQUEST['number-input'])) {
-    echo <<<END
-                       <span style="font-size: 25px;">WYBRANE ID:&nbsp;</span> <span class="badge badge-dark" style="font-size: 26px;">
-END;
-    echo $_REQUEST['number-input'] . "</span><br/> <br/>";
-}
-?>
-                        <div class="row">
-                            <div class="card mb-3">
-                                <div class="card-header">
-                                <i class="fa fa-table"></i> Klienci [<?php
-//WYŚWIETL LICZBE KLIENTÓW
-echo $ileOsob;
-?>]</div>
-
-                                <div class="card-body">
-                                    <div class="table-responsive">
-                                        <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                                            <thead>
-                                                    <tr>
-                                                    <th>SCZEGOLY</th>
-                                                    <th>ZAMOWIENIE_ID</th>
-                                                    <th>KONTO_ID</th>
-                                                    <th>IMIE</th>
-                                                    <th>NAZWISKO</th>
-                                                    <th>NAZWA_FIRMY</th>
-                                                    <th>DATA_PRZYJECIA</th>
-                                                    <th>DATA_REALIZACJI</th>
-                                                    <th>ZAAKCEPTOWANE</th>
-                                                    <th>ZAPLACONO</th>
-                                                    <th>ZREALIZOWANO</th>
-                                                    <th>KOSZT_ZAMOWIENIA</th>
-                                                    <th>METODA_PLATNOSCI</th>
-                                                    <th>DOKUMENT_SPRZEDAZY</th>
-                                                    <th>MIEJSCOWOSC</th>
-                                                    <th>WOJEWODZTWO</th>
-                                                    <th>KOD_POCZTOWY</th>
-                                                    <th>ULICA</th>
-                                                    <th>NR_DOMU</th>
-                                                    <th>NR_LOKALU</th>
-                                                    <th>NR_TEL</th>
-                                                    <th>EMAIL</th>
-                                                </tr>
-                                            </thead>
-                                            <tfoot>
-                                            <tr>    
-                                                    <th>SCZEGOLY</th>
-                                                    <th>ZAMOWIENIE_ID</th>
-                                                    <th>KONTO_ID</th>
-                                                    <th>IMIE</th>
-                                                    <th>NAZWISKO</th>
-                                                    <th>NAZWA_FIRMY</th>
-                                                    <th>DATA_PRZYJECIA</th>
-                                                    <th>DATA_REALIZACJI</th>
-                                                    <th>ZAAKCEPTOWANE</th>
-                                                    <th>ZAPLACONO</th>
-                                                    <th>ZREALIZOWANO</th>
-                                                    <th>KOSZT_ZAMOWIENIA</th>
-                                                    <th>METODA_PLATNOSCI</th>
-                                                    <th>DOKUMENT_SPRZEDAZY</th>
-                                                    <th>MIEJSCOWOSC</th>
-                                                    <th>WOJEWODZTWO</th>
-                                                    <th>KOD_POCZTOWY</th>
-                                                    <th>ULICA</th>
-                                                    <th>NR_DOMU</th>
-                                                    <th>NR_LOKALU</th>
-                                                    <th>NR_TEL</th>
-                                                    <th>EMAIL</th>
-                                            </tr>
-                                            </tfoot>
-                                            <tbody>
+                        
+<div class="tab-pane fade show active" id="nav-zakladka1" role="tabpanel" aria-labelledby="nav-zakladka1-tab">
+<div class="row">
+    <div class="card mb-3">
+        <div class="card-header">
+            <i class="fa fa-table"></i> Zamówienia [<?php
+            echo $ile;
+        ?>]</div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>SCZEGOLY</th>
+                            <th>ZAMOWIENIE_ID</th>
+                            <th>KONTO_ID</th>
+                            <th>IMIE</th>
+                            <th>NAZWISKO</th>
+                            <th>NAZWA_FIRMY</th>
+                            <th>DATA_PRZYJECIA</th>
+                            <th>DATA_REALIZACJI</th>
+                            <th>ZAAKCEPTOWANE</th>
+                            <th>ZAPLACONO</th>
+                            <th>ZREALIZOWANO</th>
+                            <th>KOSZT_ZAMOWIENIA</th>
+                            <th>METODA_PLATNOSCI</th>
+                            <th>DOKUMENT_SPRZEDAZY</th>
+                            <th>MIEJSCOWOSC</th>
+                            <th>WOJEWODZTWO</th>
+                            <th>KOD_POCZTOWY</th>
+                            <th>ULICA</th>
+                            <th>NR_DOMU</th>
+                            <th>NR_LOKALU</th>
+                            <th>NR_TEL</th>
+                            <th>EMAIL</th>
+                        </tr>
+                    </thead>
+                    <tfoot>
+                    <tr>
+                        <th>SCZEGOLY</th>
+                        <th>ZAMOWIENIE_ID</th>
+                        <th>KONTO_ID</th>
+                        <th>IMIE</th>
+                        <th>NAZWISKO</th>
+                        <th>NAZWA_FIRMY</th>
+                        <th>DATA_PRZYJECIA</th>
+                        <th>DATA_REALIZACJI</th>
+                        <th>ZAAKCEPTOWANE</th>
+                        <th>ZAPLACONO</th>
+                        <th>ZREALIZOWANO</th>
+                        <th>KOSZT_ZAMOWIENIA</th>
+                        <th>METODA_PLATNOSCI</th>
+                        <th>DOKUMENT_SPRZEDAZY</th>
+                        <th>MIEJSCOWOSC</th>
+                        <th>WOJEWODZTWO</th>
+                        <th>KOD_POCZTOWY</th>
+                        <th>ULICA</th>
+                        <th>NR_DOMU</th>
+                        <th>NR_LOKALU</th>
+                        <th>NR_TEL</th>
+                        <th>EMAIL</th>
+                    </tr>
+                    </tfoot>
+                    <tbody>
 
 
                                                 <?php
@@ -477,6 +311,7 @@ $EMAIL                       = $row['EMAIL'];
 
 
 <?php 
+
 /* ==========       SELECT SZCZEGOLY ZAMOWIENIA      ========== */
 if(isset($_REQUEST['szczegoly'])) {
 //PARSOWANIE  
@@ -514,304 +349,78 @@ if (!$result) {
 oci_free_statement($stid);
 ?>
 
-
-                         <div class="row">
-                            <div class="card mb-3">
-                                <div class="card-header">
-                                <i class="fa fa-table"></i> Zamówienie <strong>ID: <?php echo $_REQUEST['szczegoly']; ?></strong></div>
-
-                                <div class="card-body">
-                                    <div class="table-responsive">
-                                        <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                                            <thead>
-                                                    <tr>
-                                                    <th>PRODUKT_ID</th>
-                                                    <th>PRODUCENT</th>
-                                                    <th>MODEL</th>
-                                                    <th>NUMER_KATALOGOWY</th>
-                                                    <th>ILOSC_SZTUK</th>
-                                                    <th>KOSZT</th>
-                                                </tr>
-                                            </thead>
-                                            <tfoot>
-                                            <tr>    
-                                                    <th>PRODUKT_ID</th>
-                                                    <th>PRODUCENT</th>
-                                                    <th>MODEL</th>
-                                                    <th>NUMER_KATALOGOWY</th>
-                                                    <th>ILOSC_SZTUK</th>
-                                                    <th>KOSZT</th>
+                    <div class="row">
+                        <div class="card mb-3">
+                            <div class="card-header">
+                            <i class="fa fa-table"></i> Zamówienie <strong>ID: <?php echo $_REQUEST['szczegoly']; ?></strong></div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered" width="100%" cellspacing="0">
+                                        <thead>
+                                            <tr>
+                                                <th>PRODUKT_ID</th>
+                                                <th>PRODUCENT</th>
+                                                <th>MODEL</th>
+                                                <th>NUMER_KATALOGOWY</th>
+                                                <th>ILOSC_SZTUK</th>
+                                                <th>KOSZT</th>
                                             </tr>
-                                            </tfoot>
-                                            <tbody>
-
+                                        </thead>
+                                        <tbody>
 
                                                 <?php
 
 //WYPEŁNIJ TABELE KLIENTAMI Z BAZY
 while (($row = oci_fetch_array($cursorSzczegoly, OCI_ASSOC + OCI_RETURN_NULLS)) != false) {
-$PRODUKT_ID                  = $row['PRODUKT_ID'];
-$PRODUCENT                   = $row['PRODUCENT'];
-$MODEL                       = $row['MODEL'];
-$NUMER_KATALOGOWY            = $row['NUMER_KATALOGOWY'];
-$ILOSC_SZTUK                 = $row['ILOSC_SZTUK'];
-$KOSZT                       = $row['KOSZT'];
+    $PRODUKT_ID                  = $row['PRODUKT_ID'];
+    $PRODUCENT                   = $row['PRODUCENT'];
+    $MODEL                       = $row['MODEL'];
+    $NUMER_KATALOGOWY            = $row['NUMER_KATALOGOWY'];
+    $ILOSC_SZTUK                 = $row['ILOSC_SZTUK'];
+    $KOSZT                       = $row['KOSZT'];
 
-    echo "<tr><td>$PRODUKT_ID</td> <td>$PRODUCENT</td> <td>$MODEL</td> <td>$NUMER_KATALOGOWY</td> <td>$ILOSC_SZTUK</td> <td>$KOSZT</td></tr>";
-}
-}
+        echo "<tr><td>$PRODUKT_ID</td> <td>$PRODUCENT</td> <td>$MODEL</td> <td>$NUMER_KATALOGOWY</td> <td>$ILOSC_SZTUK</td> <td>$KOSZT</td></tr>";
+    }
 ?>
                                            </tbody>
                                         </table>
                                     </div>
                                 </div>
-                            </div>
+                            </div>                        
+                        </div>               
+                <div class="row">
+                    <div class="card">
+                        <div class="card-header">
+                            EDYTUJ ZAMÓWIENIE <strong>ID: <?php echo $_REQUEST['szczegoly']; ?></strong>
                         </div>
+                        <div class="card-body">
+                            <form action="funkcjePracownik.php" method="post">
+                                <div class="form-row">
+                                    <div class="form-group col-3">
+                                        <label for="inputeralizacjadata">DATA_REALIZACJI</label>
+                                        <input type="date" class="form-control" id="inputeralizacjadata" name="datarealizacji" >
+                                    </div>
+                                    <div class="form-group col-3">
+                                        <label for="inputzaakceptowano">ZAAKCEPTOWANE</label>
+                                        <input type="number" class="form-control" id="inputzaakceptowano" name="zaakceptowane" placeholder="1/0" min="0" max="1" >
+                                    </div>
+                                    <div class="form-group col-3">
+                                        <label for="inputzaplacono">ZAPLACONO</label>
+                                        <input type="number" class="form-control" id="inputzaplacono" name="zaplacono" placeholder="1/0" min="0" max="1">
+                                    </div>
+                                    <div class="form-group col-3">
+                                        <label for="inputzrealizowano">ZREALIZOWANO</label>
+                                        <input type="number" class="form-control" id="inputzrealizowano" name="zrealizowano" placeholder="1/0" min="0" max="1" >
+                                    </div>
+                                </div>
+                                <?php 
+                                    echo "<button type=\"submit\" name=\"edytujzamowieniebutton\" class=\"btn btn-primary btn-sm\" value=\"" . htmlspecialchars($_REQUEST['szczegoly']). "\">Potwierdź</button>";
+                                ?>
+                            </form>
+                        </div>                        
                     </div>
-<!-- 
-        +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++    
-                            >>>>>>>>>>      ZAKLADKA 3      <<<<<<<<<<
-        +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
--->
-                    <div class="tab-pane fade" id="nav-zakladka3" role="tabpanel" aria-labelledby="nav-zakladka3-tab">
-                        <?php
-//POKAŻ WYBRANE ID JEŚLI PODANO ID
-if (!empty($_REQUEST['number-input'])) {
-    echo <<<END
-                       <span style="font-size: 25px;">WYBRANE ID:&nbsp;</span> <span class="badge badge-dark" style="font-size: 26px;">
-END;
-    echo $_REQUEST['number-input'] . "</span><br/> <br/>";
-}
-?>
-                    <div class="row">
-                        <div class="card mb-3">
-                            <div class="card-header">
-                            <i class="fa fa-table"></i> Wybrany Klient</div>
-                            <div class="card-body">
-                                <div class="table-responsive">
-                                    <table class="table table-bordered" id="dataTable3" width="100%" cellspacing="0">
-                                        <thead>
-                                            <tr>
-                                                <th>KONTO_ID</th>
-                                                <th>IMIE</th>
-                                                <th>NAZWISKO</th>
-                                                <th>UPRAWNIENIA</th>
-                                                <th>MIEJSCOWOSC</th>
-                                                <th>WOJEWODZTWO</th>
-                                                <th>KOD_POCZTOWY</th>
-                                                <th>ULICA</th>
-                                                <th>NR_DOMU</th>
-                                                <th>NR_LOKALU</th>
-                                                <th>EMAIL</th>
-                                                <th>NR_TEL</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <?php
-if (!empty($_REQUEST['number-input'])) { 
-    //PARSOWANIE
-    $stid = oci_parse($connection, $querySelectKlientID);
-    if (!$stid) {
-        $m = oci_error($connection);
-        trigger_error('Nie udało się przeanalizować polecenia pl/sql: ' . $m['message'], E_USER_ERROR);
-    }
-
-    //PHP VARIABLE --> ORACLE PLACEHOLDER
-    $cursorUsunOsobe = oci_new_cursor($connection);
-    oci_bind_by_name($stid, ":rekord_id", $_REQUEST['number-input']);
-    oci_bind_by_name($stid, ":cursor2", $cursorUsunOsobe, -1, OCI_B_CURSOR);
-
-
-    //EXECUTE POLECENIE
-    $result = oci_execute($stid);
-    if (!$result) {
-        $m = oci_error($stid);
-        trigger_error('Nie udało się wykonać polecenia: ' . $m['message'], E_USER_ERROR);
-    }
-
-    //EXECUTE KURSOR
-    oci_execute($cursorUsunOsobe, OCI_DEFAULT);
-
-    //ZWOLNIJ ZASOBY
-	oci_free_statement($stid); 
-}
-if (!empty($_REQUEST['number-input'])) {
-    while (($row = oci_fetch_array($cursorUsunOsobe, OCI_ASSOC + OCI_RETURN_NULLS)) != false) {
-        $KONTO_ID     = $row['KONTO_ID'];
-        $IMIE         = $row['IMIE'];
-        $NAZWISKO     = $row['NAZWISKO'];
-        $UPRAWNIENIA  = $row['UPRAWNIENIA'];
-        $MIEJSCOWOSC  = $row['MIEJSCOWOSC'];
-        $WOJEWODZTWO  = $row['WOJEWODZTWO'];
-        $KOD_POCZTOWY = $row['KOD_POCZTOWY'];
-        $ULICA        = $row['ULICA'];
-        $NR_DOMU      = $row['NR_DOMU'];
-        $NR_LOKALU    = $row['NR_LOKALU'];
-        $EMAIL        = $row['EMAIL'];
-        $NR_TEL       = $row['NR_TEL'];
-        echo "<tr><td>$KONTO_ID</td> <td>$IMIE</td> <td>$NAZWISKO</td> <td>$UPRAWNIENIA</td> <td>$MIEJSCOWOSC</td> <td>$WOJEWODZTWO</td> <td>$KOD_POCZTOWY</td> <td>$ULICA</td> <td>$NR_DOMU</td> <td>$NR_LOKALU</td> <td>$EMAIL</td> <td>$NR_TEL</td></tr>";
-    }
-}
-?>
-                                       </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    </div>    
-
-   
-
-
-<?php
-if (!empty($_REQUEST['number-input'])) {
-echo <<<END
-<form action="funkcjeAdmin.php" method="post">
-<input type="hidden" name="usunkontoid" min="1" value="
-END;
-?>
-<?php echo htmlspecialchars($_REQUEST['number-input']);
-echo <<<END
-"><br>
-<input type="submit" name="usunkontobutton" class="btn btn-primary" value="POTWIERDZ USUNIECIE" />
-</form>
-END;
-}
-?>
-             
                 </div>
-<!-- 
-        +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++    
-                            >>>>>>>>>>      ZAKLADKA 4     <<<<<<<<<<
-        +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
--->
-                    <div class="tab-pane fade" id="nav-zakladka4" role="tabpanel" aria-labelledby="nav-zakladka4-tab">
-                        <?php
-//POKAŻ WYBRANE ID JEŚLI PODANO ID
-if (!empty($_REQUEST['number-input'])) {
-    echo <<<END
-                       <span style="font-size: 25px;">WYBRANE ID:&nbsp;</span> <span class="badge badge-dark" style="font-size: 26px;">
-END;
-    echo $_REQUEST['number-input'] . "</span><br/> <br/>";
-}
-?>                   
-                    <div class="row">
-                        <div class="card mb-3">
-                            <div class="card-header">
-                            <i class="fa fa-table"></i> Wybrany Klient</div>
-                            <div class="card-body">
-                                <div class="table-responsive">
-                                    <table class="table table-bordered" id="dataTable3" width="100%" cellspacing="0">
-                                        <thead>
-                                            <tr>
-                                                <th>KONTO_ID</th>
-                                                <th>IMIE</th>
-                                                <th>NAZWISKO</th>
-                                                <th>UPRAWNIENIA</th>
-                                                <th>MIEJSCOWOSC</th>
-                                                <th>WOJEWODZTWO</th>
-                                                <th>KOD_POCZTOWY</th>
-                                                <th>ULICA</th>
-                                                <th>NR_DOMU</th>
-                                                <th>NR_LOKALU</th>
-                                                <th>EMAIL</th>
-                                                <th>NR_TEL</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <?php
-if (!empty($_REQUEST['number-input'])) { 
-    //PARSOWANIE
-    $stid = oci_parse($connection, $querySelectKlientID);
-    if (!$stid) {
-        $m = oci_error($connection);
-        trigger_error('Nie udało się przeanalizować polecenia pl/sql: ' . $m['message'], E_USER_ERROR);
-    }
-
-    //PHP VARIABLE --> ORACLE PLACEHOLDER
-    $cursorUsunOsobe = oci_new_cursor($connection);
-    oci_bind_by_name($stid, ":rekord_id", $_REQUEST['number-input']);
-    oci_bind_by_name($stid, ":cursor2", $cursorUsunOsobe, -1, OCI_B_CURSOR);
-
-
-    //EXECUTE POLECENIE
-    $result = oci_execute($stid);
-    if (!$result) {
-        $m = oci_error($stid);
-        trigger_error('Nie udało się wykonać polecenia: ' . $m['message'], E_USER_ERROR);
-    }
-
-    //EXECUTE KURSOR
-    oci_execute($cursorUsunOsobe, OCI_DEFAULT);
-
-    //ZWOLNIJ ZASOBY
-    oci_free_statement($stid); 
-}
-if (!empty($_REQUEST['number-input'])) {
-    while (($row = oci_fetch_array($cursorUsunOsobe, OCI_ASSOC + OCI_RETURN_NULLS)) != false) {
-        $KONTO_ID     = $row['KONTO_ID'];
-        $IMIE         = $row['IMIE'];
-        $NAZWISKO     = $row['NAZWISKO'];
-        $UPRAWNIENIA  = $row['UPRAWNIENIA'];
-        $MIEJSCOWOSC  = $row['MIEJSCOWOSC'];
-        $WOJEWODZTWO  = $row['WOJEWODZTWO'];
-        $KOD_POCZTOWY = $row['KOD_POCZTOWY'];
-        $ULICA        = $row['ULICA'];
-        $NR_DOMU      = $row['NR_DOMU'];
-        $NR_LOKALU    = $row['NR_LOKALU'];
-        $EMAIL        = $row['EMAIL'];
-        $NR_TEL       = $row['NR_TEL'];
-        echo "<tr><td>$KONTO_ID</td> <td>$IMIE</td> <td>$NAZWISKO</td> <td>$UPRAWNIENIA</td> <td>$MIEJSCOWOSC</td> <td>$WOJEWODZTWO</td> <td>$KOD_POCZTOWY</td> <td>$ULICA</td> <td>$NR_DOMU</td> <td>$NR_LOKALU</td> <td>$EMAIL</td> <td>$NR_TEL</td></tr>";
-    }
-}
-?>
-                                       </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    </div>    
-
-   
-
-
-
-<?php
-if (!empty($_REQUEST['number-input'])) {
-
-echo <<<END
-<form action="funkcjeAdmin.php" method="post">
-<input type="hidden" name="dodajpracownikid" min="1" value="
-END;
-?>
-<?php echo htmlspecialchars($_REQUEST['number-input']);
-echo <<<END
-"><br>
-END;
-
-?>
-
-<?php 
-echo <<<END
-	   <div class="form-row">
-     		 <div class="form-group col-3">
-     		 	<label for="inputpensjaid">Pensja</label>
-     			<input type="number" class="form-control" id="inputpensjaid" name="pensja" placeholder="PLN" required>        			
-     		 </div>
-     		 <div class="form-group col-3">
-     		 	<label for="inputpremiaid">Premia</label>
-     			<input type="number" class="form-control" id="inputpremiaid" name="premia" placeholder="PLN" required>        			
-     		 </div>     		 	
-      </div>
-	  <input type="submit" name="dodajpracownikbutton" class="btn btn-primary" value="POTWIERDZ DODANIE" />
-</form>
-END;
-}
-?>
-             
-                </div>
-                
-                <!-- /.row -->
+<?php } ?>  
             </div>
             <!-- ./container-fluid -->
         </div>
@@ -827,15 +436,6 @@ END;
     <script src="../vendor/datatables/jquery.dataTables.js"></script>
     <script src="../vendor/datatables/dataTables.bootstrap4.js"></script>
     <script src="../vendor/datatables/callDataTables.js"></script>
-    <?php if(isset($_REQUEST['szczegoly'])) { ?>
-
-    <script type="text/javascript">
-            $( document ).ready(function() {
-                $('[href="#nav-zakladka2"]').tab('show');
-            });
-    </script>
-
-    <?php }  ?>
 
 </body>
 </html>
