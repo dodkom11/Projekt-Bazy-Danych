@@ -575,6 +575,48 @@ END SELECTSZCZEGOLYZAMOWIENIA;
 
 
 
+
+-- UPDATE ZAMOWIENIE
+CREATE OR REPLACE PROCEDURE UPDATEZAMOWIENIE
+       (
+          ZAM_ID IN INT, 
+          VDATAREALIZACJI IN VARCHAR2,
+          VZAAKCEPTOWANO IN INT,
+          VZAPLACONO IN INT,
+          VZREALIZOWANO IN INT      
+       )
+AS 
+
+BEGIN 
+
+    IF VDATAREALIZACJI IS NOT NULL THEN        
+            UPDATE ZAMOWIENIE
+                SET DATA_REALIZACJI_ZAMOWIENIA =  TO_DATE(VDATAREALIZACJI, 'yyyy/mm/dd')
+            WHERE ZAMOWIENIE_ID = ZAM_ID;
+    END IF;      
+    
+    IF VZAAKCEPTOWANO IS NOT NULL THEN        
+            UPDATE ZAMOWIENIE
+                SET ZAMOWIENIE_ZAAKCEPTOWANE = VZAAKCEPTOWANO
+            WHERE ZAMOWIENIE_ID = ZAM_ID;
+    END IF;   
+    
+    IF VZAPLACONO IS NOT NULL THEN        
+            UPDATE ZAMOWIENIE
+                SET ZAPLACONO = VZAPLACONO
+            WHERE ZAMOWIENIE_ID = ZAM_ID;
+    END IF;   
+    
+    IF VZREALIZOWANO IS NOT NULL THEN        
+            UPDATE ZAMOWIENIE
+                SET ZREALIZOWANO = VZREALIZOWANO
+            WHERE ZAMOWIENIE_ID = ZAM_ID;
+    END IF;   
+
+END UPDATEZAMOWIENIE;
+/
+
+
 /* #########################    ADRES    ######################### */ 
 
 -- TWORZY NOWY ADRES I DODAJE GO DO KONTA(KON_ID)
@@ -651,13 +693,6 @@ BEGIN
     return row_count;
 END COUNTRW;
 /
-oci_bind_by_name($stid,':email',$email);
-oci_bind_by_name($stid,':woj',$woj);
-oci_bind_by_name($stid,':miejsc',$miejsc);
-oci_bind_by_name($stid,':poczt',$poczt);
-oci_bind_by_name($stid,':ulica',$ulica);
-oci_bind_by_name($stid,':nr_domu',$nr_domu);
-oci_bind_by_name($stid,':nr_tel',$nr_tel);
 
 -- REJESTRACJA
 CREATE OR REPLACE PROCEDURE REJESTRACJA( USERNAME VARCHAR2 DEFAULT NULL,
