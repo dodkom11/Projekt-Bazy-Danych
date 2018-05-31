@@ -72,6 +72,19 @@
                                  }
                           ?>>
                         </div>
+
+                         <div class="form-group">
+                            <input class="form-control" id="email" type="text" name="email" placeholder="E-mail"
+                            <?php
+                            if (isset($_SESSION['email'])){  
+                                $email = $_SESSION['email'];   
+                                echo "value = $email";
+                                unset($_SESSION['email']); 
+                                 }
+                          ?>>
+                        </div>
+
+
                         <div class="form-group">
                             <input class="form-control" id="login" type="text" name="login" placeholder="Nazwa użytkownika"
                             <?php
@@ -87,21 +100,96 @@
                         </div>
                         <div class="form-group">
                             <input class="form-control" id="password2"  name="password2" type="password" placeholder="Potwierdź hasło">
-                        </div>
                         
+                        
+
+                        </div>
+                        <div class="form-group">
+                            <input class="form-control" id="woj" type="text" name="woj" placeholder="Województwo"
+                            <?php
+                            if (isset($_SESSION['woj'])){  
+                                $woj = $_SESSION['woj'];   
+                                echo "value = $woj";
+                                unset($_SESSION['woj']); 
+                                 }
+                          ?>>
+                        </div>
+
+                        
+                        <div class="form-group">
+                            <input class="form-control" id="miejsc" type="text" name="miejsc" placeholder="Miejscowosc"
+                            <?php
+                            if (isset($_SESSION['miejsc'])){  
+                                $miejsc = $_SESSION['miejsc'];   
+                                echo "value = $miejsc";
+                                unset($_SESSION['miejsc']); 
+                                 }
+                          ?>>
+                        </div>
+
+                        
+                        <div class="form-group">
+                            <input class="form-control" id="poczt" type="text" name="poczt" placeholder="Kod pocztowy"
+                            <?php
+                            if (isset($_SESSION['poczt'])){  
+                                $poczt = $_SESSION['poczt'];   
+                                echo "value = $poczt";
+                                unset($_SESSION['poczt']); 
+                                 }
+                          ?>>
+                        </div>
+
+                        
+                        <div class="form-group">
+                            <input class="form-control" id="ulica" type="text" name="ulica" placeholder="Ulica"
+                            <?php
+                            if (isset($_SESSION['ulica'])){  
+                                $ulica = $_SESSION['ulica'];   
+                                echo "value = $ulica";
+                                unset($_SESSION['ulica']); 
+                                 }
+                          ?>>
+                        </div>
+
+
+                        <div class="form-group">
+                            <input class="form-control" id="nr_domu" type="text" name="nr_domu" placeholder="Nr. domu"
+                            <?php
+                            if (isset($_SESSION['nr_domu'])){  
+                                $nr_domu = $_SESSION['nr_domu'];   
+                                echo "value = $nr_domu";
+                                unset($_SESSION['nr_domu']); 
+                                 }
+                          ?>>
+                        </div>
+
+                         <div class="form-group">
+                            <input class="form-control" id="nr_tel" type="text" name="nr_tel" placeholder="Nr. Telefonu"
+                            <?php
+                            if (isset($_SESSION['nr_tel'])){  
+                                $nr_tel = $_SESSION['nr_tel'];   
+                                echo "value = $nr_tel";
+                                unset($_SESSION['nr_tel']); 
+                                 }
+                          ?>>
+                        </div>
+
+
+
                        
                         <input type="submit" class="btn btn-primary btn-block" value="Utwórz konto" name="rejestruj"/>
                       
                     </form>
                      </div>
                    <?php
+
                         if(isset($_SESSION['error_code'])){  
 
                             if($_SESSION['error_code'] == 20001){
                                 echo '<p>Wypełnij wszystkie pola!</p>' ;
                             }
                             if($_SESSION['error_code'] == 20002){
-                                echo '<p>Gasla sie od siebie roznia</p>' ;
+                                echo '<p>Hasla sie od siebie roznia</p>' ;
                             }
                             if($_SESSION['error_code'] == 20003){
                                 echo '<p>Haslo zbyt krotkie (mniej niz 7 znakow)</p>' ;
@@ -115,10 +203,11 @@
                             if($_SESSION['error_code'] == 20006){
                                 echo '<p>Login jest zajęty, proszę wybierz inny</p>' ;
                             }
-                  
-
+                            
+                                
                             unset($_SESSION['error_code']);
                         } 
+                        
                     ?>
 
                 </div>

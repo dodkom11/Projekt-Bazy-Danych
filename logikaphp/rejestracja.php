@@ -13,10 +13,27 @@ header('Location: ../reg.php');
 	$imie = $_POST['imie'];
 	$nazwisko = $_POST['nazwisko'];
 
+	$email = $_POST['email'];
+	$woj = $_POST['woj'];
+	$miejsc = $_POST['miejsc'];
+	$poczt = $_POST['poczt'];
+	$ulica = $_POST['ulica'];
+	$nr_domu = $_POST['nr_domu'];
+	$nr_tel = $_POST['nr_tel'];
+
 
 	$_SESSION['login'] = $login;
 	$_SESSION['imie'] = $imie;
 	$_SESSION['nazwisko'] = $nazwisko;
+
+	$_SESSION['email'] = $email;
+	$_SESSION['woj'] = $woj;
+	$_SESSION['miejsc'] = $miejsc;
+	$_SESSION['poczt'] = $poczt;
+	$_SESSION['ulica'] = $ulica;
+	$_SESSION['nr_domu'] = $nr_domu;
+	$_SESSION['nr_tel'] = $nr_tel;
+
 
 	//Polaczenie z baza
 	$conn = oci_connect($username, $password, $database);
@@ -30,7 +47,7 @@ header('Location: ../reg.php');
 
 
 
-$sql = 'BEGIN REJESTRACJA(:login, :haslo, :haslo2, :imie, :nazwisko); END;';
+$sql = 'BEGIN REJESTRACJA(:login, :haslo, :haslo2, :imie, :nazwisko, :email, :woj, :miejsc, :poczt, :ulica, :nr_domu, :nr_tel); END;';
 
 $stid = oci_parse($conn,$sql);
 
@@ -40,15 +57,23 @@ oci_bind_by_name($stid,':haslo2',$haslo2);
 oci_bind_by_name($stid,':imie',$imie);
 oci_bind_by_name($stid,':nazwisko',$nazwisko);
 
+oci_bind_by_name($stid,':email',$email);
+oci_bind_by_name($stid,':woj',$woj);
+oci_bind_by_name($stid,':miejsc',$miejsc);
+oci_bind_by_name($stid,':poczt',$poczt);
+oci_bind_by_name($stid,':ulica',$ulica);
+oci_bind_by_name($stid,':nr_domu',$nr_domu);
+oci_bind_by_name($stid,':nr_tel',$nr_tel);
+
 
 $r = oci_execute($stid);
 
 
 if (!$r) {
-	$e = oci_error($stid);  
-    $_SESSION['error_code'] = $e['code'];	
+	$e = oci_error($stid); 
+    $_SESSION['error_code'] = $e['code'];
+    $_SESSION['msg'] = $e['message'];
 }else{
-	$_SESSION['asd'] = $login;
 	header('Location: ../zarejestrowano.php');
 
 }
