@@ -29,8 +29,8 @@ if (!$connection) {
 
 /* ==========		ZMIENNE LOKALNE			========== */
 //SELECT KLIENCI TABELA
-$querySelectKlienci = "begin 
-              			 	:cursor := SELECTKLIENCI;
+$querySelectZamowienia = "begin 
+              			 	:cursor := SELECTZAMOWIENIA;
           				end;";
 
 //SELECT LICZBA KLIENTOW
@@ -55,7 +55,7 @@ $condition2  = "UPRAWNIENIA = 'klient' AND KONTO_ID = '";
 
 /* ==========		SELECT KLIENCI TABELA		========== */
 //PARSOWANIE  
-$stid = oci_parse($connection, $querySelectKlienci);
+$stid = oci_parse($connection, $querySelectZamowienia);
 if (!$stid) {
     $m = oci_error($connection);
     trigger_error('Nie udało się przeanalizować polecenia pl/sql: ' . $m['message'], E_USER_ERROR);
@@ -374,34 +374,48 @@ echo $ileOsob;
                                         <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                                             <thead>
                                                 <tr>
+                                                    <th>ZAMOWIENIE_ID</th>
                                                     <th>KONTO_ID</th>
                                                     <th>IMIE</th>
                                                     <th>NAZWISKO</th>
-                                                    <th>UPRAWNIENIA</th>
+                                                    <th>NAZWA_FIRMY</th>
+                                                    <th>DATA_PRZYJECIA_ZAMOWIENIA</th>
+                                                    <th>DATA_REALIZACJI_ZAMOWIENIA</th>
+                                                    <th>ZAMOWIENIE_ZAAKCEPTOWANE</th>
+                                                    <th>KOSZT_ZAMOWIENIA</th>
+                                                    <th>METODA_PLATNOSCI</th>
+                                                    <th>DOKUMENT_SPRZEDAZY</th>
                                                     <th>MIEJSCOWOSC</th>
                                                     <th>WOJEWODZTWO</th>
                                                     <th>KOD_POCZTOWY</th>
                                                     <th>ULICA</th>
                                                     <th>NR_DOMU</th>
                                                     <th>NR_LOKALU</th>
-                                                    <th>EMAIL</th>
                                                     <th>NR_TEL</th>
+                                                    <th>EMAIL</th>
                                                 </tr>
                                             </thead>
                                             <tfoot>
                                             <tr>
-                                                <th>KONTO_ID</th>
-                                                <th>IMIE</th>
-                                                <th>NAZWISKO</th>
-                                                <th>UPRAWNIENIA</th>
-                                                <th>MIEJSCOWOSC</th>
-                                                <th>WOJEWODZTWO</th>
-                                                <th>KOD_POCZTOWY</th>
-                                                <th>ULICA</th>
-                                                <th>NR_DOMU</th>
-                                                <th>NR_LOKALU</th>
-                                                <th>EMAIL</th>
-                                                <th>NR_TEL</th>
+                                                    <th>ZAMOWIENIE_ID</th>
+                                                    <th>KONTO_ID</th>
+                                                    <th>IMIE</th>
+                                                    <th>NAZWISKO</th>
+                                                    <th>NAZWA_FIRMY</th>
+                                                    <th>DATA_PRZYJECIA_ZAMOWIENIA</th>
+                                                    <th>DATA_REALIZACJI_ZAMOWIENIA</th>
+                                                    <th>ZAMOWIENIE_ZAAKCEPTOWANE</th>
+                                                    <th>KOSZT_ZAMOWIENIA</th>
+                                                    <th>METODA_PLATNOSCI</th>
+                                                    <th>DOKUMENT_SPRZEDAZY</th>
+                                                    <th>MIEJSCOWOSC</th>
+                                                    <th>WOJEWODZTWO</th>
+                                                    <th>KOD_POCZTOWY</th>
+                                                    <th>ULICA</th>
+                                                    <th>NR_DOMU</th>
+                                                    <th>NR_LOKALU</th>
+                                                    <th>NR_TEL</th>
+                                                    <th>EMAIL</th>
                                             </tr>
                                             </tfoot>
                                             <tbody>
