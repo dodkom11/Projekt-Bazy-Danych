@@ -33,6 +33,10 @@ $querySelectZamowienia = "begin
               			 	:cursor := SELECTZAMOWIENIA;
           				end;";
 
+$querySzczegoly        = "begin 
+                            :cursor3 := SELECTSZCZEGOLYZAMOWIENIA(:rekord_id);
+                        end;";
+
 //SELECT LICZBA KLIENTOW
 $queryLicz = "begin 
                 :bv := COUNTRW(:tabl, :colm, :cond);    
@@ -43,12 +47,13 @@ $querySelectKlientID = "begin
             				:cursor2 := SELECTKLIENCIKONTOID(:rekord_id);
             			end;";   
 
-$tablename  = 'KONTO';
-$columnname = 'KONTO_ID';
-$condition  = "UPRAWNIENIA = 'klient'";
+$tablename  = 'ZAMOWIENIE';
+$columnname = 'ZAMOWIENIE_ID';
+$condition  = "'TRUE'='TRUE'";
 
 //WARUNEK CZY ISTENIEJE KLIENT 
 $condition2  = "UPRAWNIENIA = 'klient' AND KONTO_ID = '";
+
 
 
 
@@ -82,7 +87,13 @@ if (!$result) {
 //ZWOLNIJ ZASOBY
 oci_free_statement($stid);
 
-/* ==========		SELECT LICZBA KLIENTOW			========== */
+
+
+
+
+
+
+/* ==========		SELECT LICZBA Zamowien			========== */
 //PARSOWANIE  
 $stid = oci_parse($connection, $queryLicz);
 
@@ -259,7 +270,7 @@ END;
                             </div>
                         </form>
                         <?php
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
+if ($_SERVER["REQUEST_METHOD"] == "POST" && empty($_REQUEST['szczegoly'])) {
     
     // ZBIERAMY DANE Z INPUT
     htmlspecialchars($_REQUEST['number-input']);
@@ -369,19 +380,23 @@ END;
 //WYŚWIETL LICZBE KLIENTÓW
 echo $ileOsob;
 ?>]</div>
+
                                 <div class="card-body">
                                     <div class="table-responsive">
                                         <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                                             <thead>
-                                                <tr>
+                                                    <tr>
+                                                    <th>SCZEGOLY</th>
                                                     <th>ZAMOWIENIE_ID</th>
                                                     <th>KONTO_ID</th>
                                                     <th>IMIE</th>
                                                     <th>NAZWISKO</th>
                                                     <th>NAZWA_FIRMY</th>
-                                                    <th>DATA_PRZYJECIA_ZAMOWIENIA</th>
-                                                    <th>DATA_REALIZACJI_ZAMOWIENIA</th>
-                                                    <th>ZAMOWIENIE_ZAAKCEPTOWANE</th>
+                                                    <th>DATA_PRZYJECIA</th>
+                                                    <th>DATA_REALIZACJI</th>
+                                                    <th>ZAAKCEPTOWANE</th>
+                                                    <th>ZAPLACONO</th>
+                                                    <th>ZREALIZOWANO</th>
                                                     <th>KOSZT_ZAMOWIENIA</th>
                                                     <th>METODA_PLATNOSCI</th>
                                                     <th>DOKUMENT_SPRZEDAZY</th>
@@ -396,15 +411,18 @@ echo $ileOsob;
                                                 </tr>
                                             </thead>
                                             <tfoot>
-                                            <tr>
+                                            <tr>    
+                                                    <th>SCZEGOLY</th>
                                                     <th>ZAMOWIENIE_ID</th>
                                                     <th>KONTO_ID</th>
                                                     <th>IMIE</th>
                                                     <th>NAZWISKO</th>
                                                     <th>NAZWA_FIRMY</th>
-                                                    <th>DATA_PRZYJECIA_ZAMOWIENIA</th>
-                                                    <th>DATA_REALIZACJI_ZAMOWIENIA</th>
-                                                    <th>ZAMOWIENIE_ZAAKCEPTOWANE</th>
+                                                    <th>DATA_PRZYJECIA</th>
+                                                    <th>DATA_REALIZACJI</th>
+                                                    <th>ZAAKCEPTOWANE</th>
+                                                    <th>ZAPLACONO</th>
+                                                    <th>ZREALIZOWANO</th>
                                                     <th>KOSZT_ZAMOWIENIA</th>
                                                     <th>METODA_PLATNOSCI</th>
                                                     <th>DOKUMENT_SPRZEDAZY</th>
@@ -419,22 +437,128 @@ echo $ileOsob;
                                             </tr>
                                             </tfoot>
                                             <tbody>
+
+
                                                 <?php
-//WYPEŁNIJ TABELE KLIENTAMI Z BAZY                                            
+//WYPEŁNIJ TABELE KLIENTAMI Z BAZY
 while (($row = oci_fetch_array($cursorTabela, OCI_ASSOC + OCI_RETURN_NULLS)) != false) {
-    $KONTO_ID     = $row['KONTO_ID'];
-    $IMIE         = $row['IMIE'];
-    $NAZWISKO     = $row['NAZWISKO'];
-    $UPRAWNIENIA  = $row['UPRAWNIENIA'];
-    $MIEJSCOWOSC  = $row['MIEJSCOWOSC'];
-    $WOJEWODZTWO  = $row['WOJEWODZTWO'];
-    $KOD_POCZTOWY = $row['KOD_POCZTOWY'];
-    $ULICA        = $row['ULICA'];
-    $NR_DOMU      = $row['NR_DOMU'];
-    $NR_LOKALU    = $row['NR_LOKALU'];
-    $EMAIL        = $row['EMAIL'];
-    $NR_TEL       = $row['NR_TEL'];
-    echo "<tr><td>$KONTO_ID</td> <td>$IMIE</td> <td>$NAZWISKO</td> <td>$UPRAWNIENIA</td> <td>$MIEJSCOWOSC</td> <td>$WOJEWODZTWO</td> <td>$KOD_POCZTOWY</td> <td>$ULICA</td> <td>$NR_DOMU</td> <td>$NR_LOKALU</td> <td>$EMAIL</td> <td>$NR_TEL</td></tr>";
+$ZAMOWIENIE_ID               = $row['ZAMOWIENIE_ID'];
+$KONTO_ID                    = $row['KONTO_ID'];
+$IMIE                        = $row['IMIE'];
+$NAZWISKO                    = $row['NAZWISKO'];
+$NAZWA_FIRMY                 = $row['NAZWA_FIRMY'];
+$DATA_PRZYJECIA_ZAMOWIENIA   = $row['DATA_PRZYJECIA_ZAMOWIENIA'];
+$DATA_REALIZACJI_ZAMOWIENIA  = $row['DATA_REALIZACJI_ZAMOWIENIA'];
+$ZAMOWIENIE_ZAAKCEPTOWANE    = $row['ZAMOWIENIE_ZAAKCEPTOWANE'];
+$ZAPLACONO                   = $row['ZAPLACONO'];
+$ZREALIZOWANO                = $row['ZREALIZOWANO'];
+$KOSZT_ZAMOWIENIA            = $row['KOSZT_ZAMOWIENIA'];
+$METODA_PLATNOSCI            = $row['METODA_PLATNOSCI'];
+$DOKUMENT_SPRZEDAZY          = $row['DOKUMENT_SPRZEDAZY'];
+$MIEJSCOWOSC                 = $row['MIEJSCOWOSC'];
+$WOJEWODZTWO                 = $row['WOJEWODZTWO'];
+$KOD_POCZTOWY                = $row['KOD_POCZTOWY'];
+$ULICA                       = $row['ULICA'];
+$NR_DOMU                     = $row['NR_DOMU'];
+$NR_LOKALU                   = $row['NR_LOKALU'];
+$NR_TEL                      = $row['NR_TEL'];
+$EMAIL                       = $row['EMAIL'];
+ 
+    echo "<tr><td><form action=\"" . $_SERVER['PHP_SELF'] . "\" method=\"post\"><button type=\"submit\" name=\"szczegoly\" class=\"btn btn-primary btn-sm\" value=\"" . htmlspecialchars($ZAMOWIENIE_ID). "\">szczegoly</button></form></td>";
+    echo "<td>$ZAMOWIENIE_ID</td> <td>$KONTO_ID</td> <td>$IMIE</td> <td>$NAZWISKO</td> <td>$NAZWA_FIRMY</td> <td>$DATA_PRZYJECIA_ZAMOWIENIA</td> <td>$DATA_REALIZACJI_ZAMOWIENIA</td> <td>$ZAMOWIENIE_ZAAKCEPTOWANE</td> <td>$ZAPLACONO</td> <td>$ZREALIZOWANO</td> <td>$KOSZT_ZAMOWIENIA</td> <td>$METODA_PLATNOSCI</td> <td>$DOKUMENT_SPRZEDAZY</td><td>$MIEJSCOWOSC</td> <td>$WOJEWODZTWO</td> <td>$KOD_POCZTOWY</td><td>$ULICA</td><td>$NR_DOMU</td><td>$NR_LOKALU</td> <td>$NR_TEL</td> <td>$EMAIL</td></tr>";
+}
+?>
+                                           </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+<?php 
+/* ==========       SELECT SZCZEGOLY ZAMOWIENIA      ========== */
+if(isset($_REQUEST['szczegoly'])) {
+//PARSOWANIE  
+$stid = oci_parse($connection, $querySzczegoly);
+if (!$stid) {
+    $m = oci_error($connection);
+    trigger_error('Nie udało się przeanalizować polecenia pl/sql: ' . $m['message'], E_USER_ERROR);
+}
+
+// ZBIERAMY DANE Z INPUT
+htmlspecialchars($_REQUEST['szczegoly']);
+
+
+$v=$_REQUEST['szczegoly'];
+//PHP VARIABLE --> ORACLE PLACEHOLDER
+$cursorSzczegoly = oci_new_cursor($connection);
+oci_bind_by_name($stid, ":rekord_id", $v);////////////////
+oci_bind_by_name($stid, ":cursor3", $cursorSzczegoly, -1, OCI_B_CURSOR);
+
+//EXECUTE POLECENIE
+$result = oci_execute($stid);
+if (!$result) {
+    $m = oci_error($stid);
+    trigger_error('Nie udało się wykonać polecenia: ' . $m['message'], E_USER_ERROR);
+}
+
+//EXECUTE KURSOR
+$result = oci_execute($cursorSzczegoly, OCI_DEFAULT);
+if (!$result) {
+    $m = oci_error($stid);
+    trigger_error('Nie udało się wykonać polecenia: ' . $m['message'], E_USER_ERROR);
+}
+
+//ZWOLNIJ ZASOBY
+oci_free_statement($stid);
+?>
+
+
+                         <div class="row">
+                            <div class="card mb-3">
+                                <div class="card-header">
+                                <i class="fa fa-table"></i> Zamówienie <strong>ID: <?php echo $_REQUEST['szczegoly']; ?></strong></div>
+
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                                            <thead>
+                                                    <tr>
+                                                    <th>PRODUKT_ID</th>
+                                                    <th>PRODUCENT</th>
+                                                    <th>MODEL</th>
+                                                    <th>NUMER_KATALOGOWY</th>
+                                                    <th>ILOSC_SZTUK</th>
+                                                    <th>KOSZT</th>
+                                                </tr>
+                                            </thead>
+                                            <tfoot>
+                                            <tr>    
+                                                    <th>PRODUKT_ID</th>
+                                                    <th>PRODUCENT</th>
+                                                    <th>MODEL</th>
+                                                    <th>NUMER_KATALOGOWY</th>
+                                                    <th>ILOSC_SZTUK</th>
+                                                    <th>KOSZT</th>
+                                            </tr>
+                                            </tfoot>
+                                            <tbody>
+
+
+                                                <?php
+
+//WYPEŁNIJ TABELE KLIENTAMI Z BAZY
+while (($row = oci_fetch_array($cursorSzczegoly, OCI_ASSOC + OCI_RETURN_NULLS)) != false) {
+$PRODUKT_ID                  = $row['PRODUKT_ID'];
+$PRODUCENT                   = $row['PRODUCENT'];
+$MODEL                       = $row['MODEL'];
+$NUMER_KATALOGOWY            = $row['NUMER_KATALOGOWY'];
+$ILOSC_SZTUK                 = $row['ILOSC_SZTUK'];
+$KOSZT                       = $row['KOSZT'];
+
+    echo "<tr><td>$PRODUKT_ID</td> <td>$PRODUCENT</td> <td>$MODEL</td> <td>$NUMER_KATALOGOWY</td> <td>$ILOSC_SZTUK</td> <td>$KOSZT</td></tr>";
+}
 }
 ?>
                                            </tbody>
@@ -695,6 +819,7 @@ END;
     </div>
     <!-- /#wrapper -->
     <!-- Bootstrap core JavaScript -->
+
     <script src="../vendor/jquery/jquery.min.js"></script>
     <script src="../vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="../script/toogle.js"></script>
@@ -702,6 +827,15 @@ END;
     <script src="../vendor/datatables/jquery.dataTables.js"></script>
     <script src="../vendor/datatables/dataTables.bootstrap4.js"></script>
     <script src="../vendor/datatables/callDataTables.js"></script>
+    <?php if(isset($_REQUEST['szczegoly'])) { ?>
+
+    <script type="text/javascript">
+            $( document ).ready(function() {
+                $('[href="#nav-zakladka2"]').tab('show');
+            });
+    </script>
+
+    <?php }  ?>
 
 </body>
 </html>
