@@ -32,10 +32,6 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="../zamowienie.php"><i class="fas fa-history"></i>&nbsp;&nbsp;Zamówienia</a>
-                        </li>
-
-                        <li class="nav-item">
                             <a class="nav-link" href="zalogujsie.php"><i class="fas fa-sign-in-alt"></i>&nbsp;&nbsp;Login</a>
                         </li>
                         <li class="nav-item">
@@ -52,8 +48,9 @@
                 <div class="card-header">Rejestracja</div>
                 <div class="card-body">
                     <form action="logikaphp/rejestracja.php" method="post">
-                        <div class="form-group">
-                            <input class="form-control" id="imie"  name="imie" type="text" placeholder="Imię" 
+                       <div class="form-group">
+                            <label>Imię</label>
+                            <input required class="form-control" id="imie"  name="imie" type="text" placeholder="Imię" 
                             <?php
                             if (isset($_SESSION['imie'])){  
                                 $imie = $_SESSION['imie'];   
@@ -62,8 +59,9 @@
                                  }
                           ?>>
                         </div>
-                        <div class="form-group">
-                            <input class="form-control" id="nazwisko"  name="nazwisko" type="text" placeholder="Nazwisko"
+                       <div class="form-group">
+                            <label>Nazwisko</label>
+                            <input required class="form-control" id="nazwisko"  name="nazwisko" type="text" placeholder="Nazwisko"
                             <?php
                             if (isset($_SESSION['nazwisko'])){  
                                 $nazwisko = $_SESSION['nazwisko'];   
@@ -73,8 +71,10 @@
                           ?>>
                         </div>
 
-                         <div class="form-group">
-                            <input class="form-control" id="email" type="text" name="email" placeholder="E-mail"
+                        <div class="form-group">
+                            <label>E-mail</label>   
+                                                
+                            <input required class="form-control" id="email" type="email" name="email" placeholder="E-mail"
                             <?php
                             if (isset($_SESSION['email'])){  
                                 $email = $_SESSION['email'];   
@@ -85,8 +85,9 @@
                         </div>
 
 
-                        <div class="form-group">
-                            <input class="form-control" id="login" type="text" name="login" placeholder="Nazwa użytkownika"
+                       <div class="form-group">
+                            <label>Nazwa użytkownika</label>
+                            <input required class="form-control" id="login" type="text" name="login" placeholder="Nazwa użytkownika"
                             <?php
                             if (isset($_SESSION['login'])){  
                                 $login = $_SESSION['login'];   
@@ -95,17 +96,20 @@
                                  }
                           ?>>
                         </div>
-                        <div class="form-group">
-                            <input class="form-control" id="password"  name="password" type="password" placeholder="Hasło">
+                       <div class="form-group">
+                            <label>Hasło</label>
+                            <input required class="form-control" id="password"  name="password" type="password" placeholder="Hasło">
                         </div>
-                        <div class="form-group">
-                            <input class="form-control" id="password2"  name="password2" type="password" placeholder="Potwierdź hasło">
+                       <div class="form-group">
+                            <label>Potwierdź hasło</label>
+                            <input required class="form-control" id="password2"  name="password2" type="password" placeholder="Potwierdź hasło">
                         
                         
 
                         </div>
-                        <div class="form-group">
-                            <input class="form-control" id="woj" type="text" name="woj" placeholder="Województwo"
+                       <div class="form-group">
+                            <label>Województwo</label>
+                            <input required class="form-control" id="woj" type="text" name="woj" placeholder="Województwo"
                             <?php
                             if (isset($_SESSION['woj'])){  
                                 $woj = $_SESSION['woj'];   
@@ -116,8 +120,9 @@
                         </div>
 
                         
-                        <div class="form-group">
-                            <input class="form-control" id="miejsc" type="text" name="miejsc" placeholder="Miejscowosc"
+                       <div class="form-group">
+                            <label>Miejscowosc</label>
+                            <input required class="form-control" id="miejsc" type="text" name="miejsc" placeholder="Miejscowosc"
                             <?php
                             if (isset($_SESSION['miejsc'])){  
                                 $miejsc = $_SESSION['miejsc'];   
@@ -128,8 +133,9 @@
                         </div>
 
                         
-                        <div class="form-group">
-                            <input class="form-control" id="poczt" type="text" name="poczt" placeholder="Kod pocztowy"
+                       <div class="form-group">
+                            <label>Kod pocztowy</label>
+                            <input required class="form-control" id="poczt" type="text" name="poczt" placeholder="Kod pocztowy"
                             <?php
                             if (isset($_SESSION['poczt'])){  
                                 $poczt = $_SESSION['poczt'];   
@@ -140,8 +146,9 @@
                         </div>
 
                         
-                        <div class="form-group">
-                            <input class="form-control" id="ulica" type="text" name="ulica" placeholder="Ulica"
+                       <div class="form-group">
+                            <label>Ulica</label>
+                            <input required class="form-control" id="ulica" type="text" name="ulica" placeholder="Ulica"
                             <?php
                             if (isset($_SESSION['ulica'])){  
                                 $ulica = $_SESSION['ulica'];   
@@ -152,8 +159,9 @@
                         </div>
 
 
-                        <div class="form-group">
-                            <input class="form-control" id="nr_domu" type="text" name="nr_domu" placeholder="Nr. domu"
+                       <div class="form-group">
+                            <label>Nr domu</label>
+                            <input required class="form-control" id="nr_domu" type="number" name="nr_domu" placeholder="Nr domu"
                             <?php
                             if (isset($_SESSION['nr_domu'])){  
                                 $nr_domu = $_SESSION['nr_domu'];   
@@ -163,8 +171,9 @@
                           ?>>
                         </div>
 
-                         <div class="form-group">
-                            <input class="form-control" id="nr_tel" type="text" name="nr_tel" placeholder="Nr. Telefonu"
+                        <div class="form-group">
+                            <label>Nr telefonu</label>
+                            <input required class="form-control" id="nr_tel" type="number" name="nr_tel" placeholder="Nr telefonu"
                             <?php
                             if (isset($_SESSION['nr_tel'])){  
                                 $nr_tel = $_SESSION['nr_tel'];   

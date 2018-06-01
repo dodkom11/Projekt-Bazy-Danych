@@ -201,7 +201,7 @@ ADD CONSTRAINT ZAMOWIENIE_KONTO_FK
 
 /* AUTO INCREMENT */
 CREATE SEQUENCE KATEGORIA_SEQ;
-CREATE TRIGGER KATEGORIA_TRIG BEFORE INSERT ON KATEGORIA FOR EACH ROW
+CREATE OR REPLACE TRIGGER KATEGORIA_TRIG BEFORE INSERT ON KATEGORIA FOR EACH ROW
 BEGIN
     :NEW.KATEGORIA_ID := KATEGORIA_SEQ.NEXTVAL;
 END;
@@ -215,21 +215,21 @@ END;
 /
 
 CREATE SEQUENCE KARTA_SEQ;
-CREATE TRIGGER KARTA_TRIG BEFORE INSERT ON KARTA FOR EACH ROW
+CREATE OR REPLACE TRIGGER KARTA_TRIG BEFORE INSERT ON KARTA FOR EACH ROW
 BEGIN
     :NEW.KARTA_ID := KARTA_SEQ.NEXTVAL;
 END;
 /
 
 CREATE SEQUENCE KONTO_SEQ;
-CREATE TRIGGER KONTO_TRIG BEFORE INSERT ON KONTO FOR EACH ROW
+CREATE OR REPLACE TRIGGER KONTO_TRIG BEFORE INSERT ON KONTO FOR EACH ROW
 BEGIN
     :NEW.KONTO_ID := KONTO_SEQ.NEXTVAL;
 END;
 /
 
 CREATE SEQUENCE PRACOWNIK_SEQ;
-CREATE TRIGGER PRACOWNIK_TRIG BEFORE INSERT ON PRACOWNIK FOR EACH ROW
+CREATE OR REPLACE TRIGGER PRACOWNIK_TRIG BEFORE INSERT ON PRACOWNIK FOR EACH ROW
 BEGIN
     :NEW.PRACOWNIK_ID := PRACOWNIK_SEQ.NEXTVAL;
 END;
@@ -250,14 +250,14 @@ END;
 /
 
 CREATE SEQUENCE DOSTAWCA_SEQ;
-CREATE TRIGGER DOSTAWCA_TRIG BEFORE INSERT ON DOSTAWCA FOR EACH ROW
+CREATE OR REPLACE TRIGGER DOSTAWCA_TRIG BEFORE INSERT ON DOSTAWCA FOR EACH ROW
 BEGIN
     :NEW.DOSTAWCA_ID := DOSTAWCA_SEQ.NEXTVAL;
 END;
 /
 
 CREATE SEQUENCE PRODUKT_SEQ;
-CREATE TRIGGER PRODUKT_TRIG BEFORE INSERT ON PRODUKT FOR EACH ROW
+CREATE OR REPLACE TRIGGER  PRODUKT_TRIG BEFORE INSERT ON PRODUKT FOR EACH ROW
 BEGIN
     :NEW.PRODUKT_ID := PRODUKT_SEQ.NEXTVAL;
 END;
@@ -278,14 +278,14 @@ END;
 /
 
 /* DODAJ PRACOWNIKA */
-CREATE TRIGGER DODAJPRACOWNIKA_TRIG AFTER INSERT ON PRACOWNIK FOR EACH ROW
+CREATE OR REPLACE TRIGGER DODAJPRACOWNIKA_TRIG AFTER INSERT ON PRACOWNIK FOR EACH ROW
 BEGIN
   UPDATE KONTO SET KONTO.UPRAWNIENIA = 'pracownik' WHERE KONTO.KONTO_ID = :NEW.KONTO_ID;
 END;
 /
 
 /* DATA ZATRUDNIENIA */
-CREATE TRIGGER PRACOWNIK_TIMESTAMP_TRIG BEFORE INSERT ON PRACOWNIK FOR EACH ROW
+CREATE OR REPLACE TRIGGER PRACOWNIK_TIMESTAMP_TRIG BEFORE INSERT ON PRACOWNIK FOR EACH ROW
 BEGIN
   :NEW.DATA_ZATRUDNIENIA := SYSDATE;
 END;
@@ -295,6 +295,14 @@ END;
 CREATE OR REPLACE TRIGGER ZAMOWIENIE_TIMESTAMP_TRIG BEFORE INSERT ON ZAMOWIENIE FOR EACH ROW
 BEGIN
     :NEW.DATA_PRZYJECIA_ZAMOWIENIA := SYSDATE;
+END;
+/
+
+CREATE OR REPLACE TRIGGER ZAMOWIENIEAFTER_TRIG AFTER INSERT ON ZAMOWIONE_PRODUKTY FOR EACH ROW
+BEGIN
+  UPDATE PRODUKT
+    SET SZTUK_NA_MAGAZYNIE = SZTUK_NA_MAGAZYNIE - :NEW.ILOSC_SZTUK
+    WHERE PRODUKT_ID = :NEW.PRODUKT_ID;
 END;
 /
 
@@ -542,5 +550,100 @@ VALUES ('1','2','KORDA','FSDFSBF-745','PREMIUM','999,99','1','Lorem ipsum dolor 
 /
 INSERT INTO PRODUKT (DOSTAWCA_ID,KATEGORIA_ID,PRODUCENT,NUMER_KATALOGOWY,MODEL,CENA,SZTUK_NA_MAGAZYNIE,OPIS) 
 VALUES ('1','2','NASH','GAFGSGS-885','MOETTO','680,58','58','Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla elementum turpis risus, eu hendrerit odio lobortis aliquet.');
+/
+
+INSERT INTO PRODUKT (DOSTAWCA_ID,KATEGORIA_ID,PRODUCENT,NUMER_KATALOGOWY,MODEL,CENA,SZTUK_NA_MAGAZYNIE,OPIS) 
+VALUES ('2','1','Prologic','GADFA-455','LAMPA','312,21','43','Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla elementum turpis risus, eu hendrerit odio lobortis aliquet.');
+/
+INSERT INTO PRODUKT (DOSTAWCA_ID,KATEGORIA_ID,PRODUCENT,NUMER_KATALOGOWY,MODEL,CENA,SZTUK_NA_MAGAZYNIE,OPIS) 
+VALUES ('2','1','Prologic','GDSA-665','KNIFE','312,54','2','Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla elementum turpis risus, eu hendrerit odio lobortis aliquet.');
+/
+INSERT INTO PRODUKT (DOSTAWCA_ID,KATEGORIA_ID,PRODUCENT,NUMER_KATALOGOWY,MODEL,CENA,SZTUK_NA_MAGAZYNIE,OPIS) 
+VALUES ('2','1','Prologic','GFSAF-543','Boilie','432,84','5','Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla elementum turpis risus, eu hendrerit odio lobortis aliquet.');
+/
+INSERT INTO PRODUKT (DOSTAWCA_ID,KATEGORIA_ID,PRODUCENT,NUMER_KATALOGOWY,MODEL,CENA,SZTUK_NA_MAGAZYNIE,OPIS) 
+VALUES ('2','1','Prologic','KHJG-765','PARASOL','432,45','43','Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla elementum turpis risus, eu hendrerit odio lobortis aliquet.');
+/
+INSERT INTO PRODUKT (DOSTAWCA_ID,KATEGORIA_ID,PRODUCENT,NUMER_KATALOGOWY,MODEL,CENA,SZTUK_NA_MAGAZYNIE,OPIS) 
+VALUES ('2','1','Prologic','FHGKG-234','KRZESZŁO WĘDKARSKIE','43,99','1','Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla elementum turpis risus, eu hendrerit odio lobortis aliquet.');
+/
+INSERT INTO PRODUKT (DOSTAWCA_ID,KATEGORIA_ID,PRODUCENT,NUMER_KATALOGOWY,MODEL,CENA,SZTUK_NA_MAGAZYNIE,OPIS) 
+VALUES ('2','1','Prologic','GKGHJG-523','PŁYWAK','43,58','43','Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla elementum turpis risus, eu hendrerit odio lobortis aliquet.');
+/
+
+INSERT INTO PRODUKT (DOSTAWCA_ID,KATEGORIA_ID,PRODUCENT,NUMER_KATALOGOWY,MODEL,CENA,SZTUK_NA_MAGAZYNIE,OPIS) 
+VALUES ('2','3','Tandem Baits','JFGF-455','PHANTOM','54,21','13','Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla elementum turpis risus, eu hendrerit odio lobortis aliquet.');
+/
+INSERT INTO PRODUKT (DOSTAWCA_ID,KATEGORIA_ID,PRODUCENT,NUMER_KATALOGOWY,MODEL,CENA,SZTUK_NA_MAGAZYNIE,OPIS) 
+VALUES ('2','3','Nash','JFGG-665','BAITRUNNER','542,54','15','Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla elementum turpis risus, eu hendrerit odio lobortis aliquet.');
+/
+INSERT INTO PRODUKT (DOSTAWCA_ID,KATEGORIA_ID,PRODUCENT,NUMER_KATALOGOWY,MODEL,CENA,SZTUK_NA_MAGAZYNIE,OPIS) 
+VALUES ('2','3','Daiwa','VMNBV-543','QUICKDRAG','54,84','16','Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla elementum turpis risus, eu hendrerit odio lobortis aliquet.');
+/
+INSERT INTO PRODUKT (DOSTAWCA_ID,KATEGORIA_ID,PRODUCENT,NUMER_KATALOGOWY,MODEL,CENA,SZTUK_NA_MAGAZYNIE,OPIS) 
+VALUES ('2','3','FOX','UYRT-765','EOS','543,45','43','Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla elementum turpis risus, eu hendrerit odio lobortis aliquet.');
+/
+INSERT INTO PRODUKT (DOSTAWCA_ID,KATEGORIA_ID,PRODUCENT,NUMER_KATALOGOWY,MODEL,CENA,SZTUK_NA_MAGAZYNIE,OPIS) 
+VALUES ('2','3','Mivardi','LHJK-234','WIDOW','76,99','32','Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla elementum turpis risus, eu hendrerit odio lobortis aliquet.');
+/
+INSERT INTO PRODUKT (DOSTAWCA_ID,KATEGORIA_ID,PRODUCENT,NUMER_KATALOGOWY,MODEL,CENA,SZTUK_NA_MAGAZYNIE,OPIS) 
+VALUES ('2','3','Okuma','FSAD-523','BLACK','876,58','4','Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla elementum turpis risus, eu hendrerit odio lobortis aliquet.');
+/
+
+INSERT INTO PRODUKT (DOSTAWCA_ID,KATEGORIA_ID,PRODUCENT,NUMER_KATALOGOWY,MODEL,CENA,SZTUK_NA_MAGAZYNIE,OPIS) 
+VALUES ('2','4','PROLOGIC','GDS-432','SUPERNATURAL','654,21','23','Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla elementum turpis risus, eu hendrerit odio lobortis aliquet.');
+/
+INSERT INTO PRODUKT (DOSTAWCA_ID,KATEGORIA_ID,PRODUCENT,NUMER_KATALOGOWY,MODEL,CENA,SZTUK_NA_MAGAZYNIE,OPIS) 
+VALUES ('2','4','ESP','GSFD-431','SWEETCORN','57,54','4','Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla elementum turpis risus, eu hendrerit odio lobortis aliquet.');
+/
+INSERT INTO PRODUKT (DOSTAWCA_ID,KATEGORIA_ID,PRODUCENT,NUMER_KATALOGOWY,MODEL,CENA,SZTUK_NA_MAGAZYNIE,OPIS) 
+VALUES ('2','4','ENTERPRISE','JHGJ-431','ZING','87,84','43','Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla elementum turpis risus, eu hendrerit odio lobortis aliquet.');
+/
+INSERT INTO PRODUKT (DOSTAWCA_ID,KATEGORIA_ID,PRODUCENT,NUMER_KATALOGOWY,MODEL,CENA,SZTUK_NA_MAGAZYNIE,OPIS) 
+VALUES ('2','4','KORDA','GDSS-437','CITRUS','98,45','54','Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla elementum turpis risus, eu hendrerit odio lobortis aliquet.');
+/
+INSERT INTO PRODUKT (DOSTAWCA_ID,KATEGORIA_ID,PRODUCENT,NUMER_KATALOGOWY,MODEL,CENA,SZTUK_NA_MAGAZYNIE,OPIS) 
+VALUES ('2','4','NASH','JHG-097','BIGJUICE','687,99','4','Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla elementum turpis risus, eu hendrerit odio lobortis aliquet.');
+/
+INSERT INTO PRODUKT (DOSTAWCA_ID,KATEGORIA_ID,PRODUCENT,NUMER_KATALOGOWY,MODEL,CENA,SZTUK_NA_MAGAZYNIE,OPIS) 
+VALUES ('2','4','Okuma','JHG-976','PELLET','98,58','58','Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla elementum turpis risus, eu hendrerit odio lobortis aliquet.');
+/
+
+INSERT INTO PRODUKT (DOSTAWCA_ID,KATEGORIA_ID,PRODUCENT,NUMER_KATALOGOWY,MODEL,CENA,SZTUK_NA_MAGAZYNIE,OPIS) 
+VALUES ('2','5','JAXON','GDDS-5342','PROCARP','543,21','4','Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla elementum turpis risus, eu hendrerit odio lobortis aliquet.');
+/
+INSERT INTO PRODUKT (DOSTAWCA_ID,KATEGORIA_ID,PRODUCENT,NUMER_KATALOGOWY,MODEL,CENA,SZTUK_NA_MAGAZYNIE,OPIS) 
+VALUES ('2','5','MYSTIC','HFDF-534','GAPE','54,54','54','Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla elementum turpis risus, eu hendrerit odio lobortis aliquet.');
+/
+INSERT INTO PRODUKT (DOSTAWCA_ID,KATEGORIA_ID,PRODUCENT,NUMER_KATALOGOWY,MODEL,CENA,SZTUK_NA_MAGAZYNIE,OPIS) 
+VALUES ('2','5','VMC','KJHG-654','SPEICMEN','76,84','42','Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla elementum turpis risus, eu hendrerit odio lobortis aliquet.');
+/
+INSERT INTO PRODUKT (DOSTAWCA_ID,KATEGORIA_ID,PRODUCENT,NUMER_KATALOGOWY,MODEL,CENA,SZTUK_NA_MAGAZYNIE,OPIS) 
+VALUES ('2','5','SONIK','FASD-643','TRUST','542,45','23','Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla elementum turpis risus, eu hendrerit odio lobortis aliquet.');
+/
+INSERT INTO PRODUKT (DOSTAWCA_ID,KATEGORIA_ID,PRODUCENT,NUMER_KATALOGOWY,MODEL,CENA,SZTUK_NA_MAGAZYNIE,OPIS) 
+VALUES ('2','5','CORMORAN','542-635','SHANK','123,99','4','Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla elementum turpis risus, eu hendrerit odio lobortis aliquet.');
+/
+INSERT INTO PRODUKT (DOSTAWCA_ID,KATEGORIA_ID,PRODUCENT,NUMER_KATALOGOWY,MODEL,CENA,SZTUK_NA_MAGAZYNIE,OPIS) 
+VALUES ('2','5','OWNER','542-436','CARPUP','98,58','54','Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla elementum turpis risus, eu hendrerit odio lobortis aliquet.');
+/
+
+INSERT INTO PRODUKT (DOSTAWCA_ID,KATEGORIA_ID,PRODUCENT,NUMER_KATALOGOWY,MODEL,CENA,SZTUK_NA_MAGAZYNIE,OPIS) 
+VALUES ('2','6','MIVARDI','JFGF-23','NET','324,21','5','Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla elementum turpis risus, eu hendrerit odio lobortis aliquet.');
+/
+INSERT INTO PRODUKT (DOSTAWCA_ID,KATEGORIA_ID,PRODUCENT,NUMER_KATALOGOWY,MODEL,CENA,SZTUK_NA_MAGAZYNIE,OPIS) 
+VALUES ('2','6','AVID','KHGJ-856','FLOAT','432,54','21','Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla elementum turpis risus, eu hendrerit odio lobortis aliquet.');
+/
+INSERT INTO PRODUKT (DOSTAWCA_ID,KATEGORIA_ID,PRODUCENT,NUMER_KATALOGOWY,MODEL,CENA,SZTUK_NA_MAGAZYNIE,OPIS) 
+VALUES ('2','6','FOX','LKJH-335','CAMOLITE','32,84','4','Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla elementum turpis risus, eu hendrerit odio lobortis aliquet.');
+/
+INSERT INTO PRODUKT (DOSTAWCA_ID,KATEGORIA_ID,PRODUCENT,NUMER_KATALOGOWY,MODEL,CENA,SZTUK_NA_MAGAZYNIE,OPIS) 
+VALUES ('2','6','NASH','JGF-532','CRUZADE','543,45','54','Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla elementum turpis risus, eu hendrerit odio lobortis aliquet.');
+/
+INSERT INTO PRODUKT (DOSTAWCA_ID,KATEGORIA_ID,PRODUCENT,NUMER_KATALOGOWY,MODEL,CENA,SZTUK_NA_MAGAZYNIE,OPIS) 
+VALUES ('2','6','TRAKKER','FAS-523','LANDING','342,99','6','Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla elementum turpis risus, eu hendrerit odio lobortis aliquet.');
+/
+INSERT INTO PRODUKT (DOSTAWCA_ID,KATEGORIA_ID,PRODUCENT,NUMER_KATALOGOWY,MODEL,CENA,SZTUK_NA_MAGAZYNIE,OPIS) 
+VALUES ('2','6','AQUA','FDS-562','MESH','321,58','76','Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla elementum turpis risus, eu hendrerit odio lobortis aliquet.');
 
 COMMIT;

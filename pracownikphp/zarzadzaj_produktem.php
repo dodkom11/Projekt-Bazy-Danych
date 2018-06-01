@@ -184,7 +184,8 @@ oci_free_statement($stid);
                             <a class="nav-link" href="../sklep.php"><i class="fas fa-shopping-basket"></i></i>&nbsp;&nbsp;Sklep</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="../koszyk.php"><i class="fas fa-shopping-cart"></i>&nbsp;&nbsp;Koszyk</a>
+                            <?php echo '<a class="nav-link'; if($_SESSION['S_ILEKOSZYK'] > 0) echo ' koszykactive"'; else echo '"'; ?>href="../koszyk.php"><i class="fas fa-shopping-cart "></i>&nbsp;&nbsp;Koszyk (<?php echo $_SESSION['S_ILEKOSZYK']; ?>)</a>
+ 
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="../zamowienie.php"><i class="fas fa-history"></i>&nbsp;&nbsp;Zamówienia</a>
@@ -570,7 +571,7 @@ END;
     
     <div class="row">
         
-        <form action="funkcjePracownik.php" method="post">
+        <form action="funkcjePracownik.php" method="post" enctype="multipart/form-data">
             <div class="form-row">
                 <div class="form-group col-3">
                     <label for="inputdostawcaid">Dostawca ID</label>
@@ -603,6 +604,9 @@ END;
                 <div class="form-group col-3">
                     <label for="inputopisid">Opis</label>
                     <input type="text" class="form-control" id="inputopisid" name="opis" placeholder="Opis" >
+                </div>
+                <div class="form-group col-3">
+                    <input type="file" name="fileToUpload" id="fileToUpload">
                 </div>
             </div>
             <input type="submit" name="dodajproduktbutton" class="btn btn-primary" value="POTWIERDZ DODANIE" />

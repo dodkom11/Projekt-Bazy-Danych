@@ -34,10 +34,7 @@ $queryUsunProduktID= "begin
                      end;";
 
 //DODAJ PRODUKT
-$queryDodajProdukt = "begin 
-                            INSERTPRODUKT(:dostawcaid, :kategoriaid, :producent, :nrkatalogowy, :model, :cena, :sztuk, :opis);
-                     end;";
-
+$queryDodajProdukt = "INSERT INTO PRODUKT(DOSTAWCA_ID, KATEGORIA_ID, PRODUCENT, NUMER_KATALOGOWY, MODEL, CENA, SZTUK_NA_MAGAZYNIE, OPIS, ZDJECIE) VALUES (:dostawcaid, :kategoriaid, :producent, :nrkatalogowy, :model, :cena, :sztuk, :opis, empty_blob()) RETURNING ZDJECIE INTO :image";
 
 //DELTE KATEGORIA
 $queryDeleteKategoria = "begin 
@@ -83,6 +80,7 @@ function funkcjaUsunProdukt($connection, $queryUsunProduktID)
 
 function funkcjaDodajProdukt($connection, $queryDodajProdukt)
 {
+    $image = file_get_contents($_FILES['fileToUpload']['tmp_name']);
     //PARSOWANIE  
     $stid = oci_parse($connection, $queryDodajProdukt);
 
@@ -94,17 +92,21 @@ function funkcjaDodajProdukt($connection, $queryDodajProdukt)
     oci_bind_by_name($stid, ":model", $_POST['model']);
     oci_bind_by_name($stid, ":cena", $_POST['cena']);
     oci_bind_by_name($stid, ":sztuk", $_POST['sztuk']);
-    oci_bind_by_name($stid, ":opis", $_POST['opis']);
+    oci_bind_by_name($stid, ":opis", $_POST['opis']);    
+    $blob = oci_new_descriptor($connection, OCI_D_LOB);
+    oci_bind_by_name($stid, ":image", $blob, -1, OCI_B_BLOB);
 
-    //EXECUTE POLECENIE
-    $result = oci_execute($stid);
-    if (!$result) {
-        $m = oci_error($stid);
-        trigger_error('Nie udało się wykonać polecenia: ' . $m['message'], E_USER_ERROR);
+    oci_execute($stid, OCI_DEFAULT) or die ("Unable to execute query");
+
+    if(!$blob->save($image)) {
+        oci_rollback($connection);
+    }
+    else {
+        oci_commit($connection);
     }
 
-    //ZWOLNIJ ZASOBY
     oci_free_statement($stid);
+    $blob->free();
 
         echo '<div class="alert alert-success" role="alert"><strong>INFORMACJA!</strong> Pomyślnie Dodano Produkt: <strong>' . $_POST['producent'] . "</strong></div>";
 }
@@ -234,7 +236,8 @@ function funkcjaEdytujZamowienie($connection, $queryEdytujZamowienie)
                             <a class="nav-link" href="../sklep.php"><i class="fas fa-shopping-basket"></i></i>&nbsp;&nbsp;Sklep</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="../koszyk.php"><i class="fas fa-shopping-cart"></i>&nbsp;&nbsp;Koszyk</a>
+                            <?php echo '<a class="nav-link'; if($_SESSION['S_ILEKOSZYK'] > 0) echo ' koszykactive"'; else echo '"'; ?>href="../koszyk.php"><i class="fas fa-shopping-cart "></i>&nbsp;&nbsp;Koszyk (<?php echo $_SESSION['S_ILEKOSZYK']; ?>)</a>
+ 
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="../zamowienie.php"><i class="fas fa-history"></i>&nbsp;&nbsp;Zamówienia</a>

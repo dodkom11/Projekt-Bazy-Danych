@@ -37,10 +37,22 @@ $queryLicz = "begin
 $tablename  = 'KOSZYK';
 $columnname = 'PRODUKT_ID';
 
+
+$querySztuki = "begin 
+                :bv := COUNTSZTUKI(:tabl, :colm, :cond);    
+               end;";
+
+$columnname1 = 'ILOSC_SZTUK';
+
+
 if($_SERVER['REQUEST_METHOD'] == "POST" and isset($_POST['buttonproduktid'])) {
 		$condition  = "PRODUKT_ID = '" . $_POST['buttonproduktid'] . "' AND KONTO_ID = '" . $_SESSION['S_KONTO_ID'] . "'";
-
 }
+
+if($_SERVER['REQUEST_METHOD'] == "POST" and isset($_POST['buttonproduktidkoszykdec'])) {
+		$condition  = "PRODUKT_ID = '" . $_POST['buttonproduktidkoszykdec'] . "' AND KONTO_ID = '" . $_SESSION['S_KONTO_ID'] . "'";
+}
+
 //DODAJ PRODUKT DO KOSZYKA
 $queryDodajDoKoszyka = "begin 
               				INSERTKOSZYK(:produkt_id, :konto_id, :sztuk);
@@ -66,7 +78,7 @@ $queryStworzZamowienie =   "begin
 
 
 /* ==========		DOADAJ ZE SKLEPU			========== */
-if($_SERVER['REQUEST_METHOD'] == "POST" and isset($_POST['buttonproduktid'])) {
+if($_SERVER['REQUEST_METHOD'] == "POST" and isset($_POST['buttonproduktid'])) {	
 	/* ==========		SELECT LICZBA produktow			========== */
 	//PARSOWANIE  
 	$stid = oci_parse($connection, $queryLicz);
@@ -88,6 +100,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST" and isset($_POST['buttonproduktid'])) {
 	oci_free_statement($stid);
 
 	if($liczProdukt == 0) {
+		$_SESSION['S_ILEKOSZYK'] += 1;
 		$sztuk = 1;
 		//PARSOWANIE  
 		$stid = oci_parse($connection, $queryDodajDoKoszyka);
@@ -132,6 +145,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST" and isset($_POST['buttonproduktid'])) {
 
 /* ==========		DODAJ Z KOSZYKA			========== */
 if($_SERVER['REQUEST_METHOD'] == "POST" and isset($_POST['buttonproduktidkoszyk'])) {	
+
 		//PARSOWANIE  
 		$stid = oci_parse($connection, $queryProduktInkrementuj);
 
@@ -155,6 +169,31 @@ if($_SERVER['REQUEST_METHOD'] == "POST" and isset($_POST['buttonproduktidkoszyk'
 
 /* ==========		USUN Z KOSZYKA			========== */
 if($_SERVER['REQUEST_METHOD'] == "POST" and isset($_POST['buttonproduktidkoszykdec'])) {	
+
+/* ==========		SELECT LICZBA produktow			========== */
+	//PARSOWANIE  
+	$stid = oci_parse($connection, $querySztuki);
+
+	//PHP VARIABLE --> ORACLE PLACEHOLDER
+	oci_bind_by_name($stid, ":tabl", $tablename);
+	oci_bind_by_name($stid, ":colm", $columnname1);
+	oci_bind_by_name($stid, ":cond", $condition);
+	oci_bind_by_name($stid, ":bv", $liczSztuki, 10);
+
+	//EXECUTE POLECENIE
+	$result = oci_execute($stid);
+	if (!$result) {
+	    $m = oci_error($stid);
+	    trigger_error('Nie udało się wykonać polecenia: ' . $m['message'], E_USER_ERROR);
+	}
+
+	//ZWOLNIJ ZASOBY
+	oci_free_statement($stid);
+
+	if($liczSztuki == 1) {
+		$_SESSION['S_ILEKOSZYK'] -= 1;
+	}
+
 		//PARSOWANIE  
 		$stid = oci_parse($connection, $queryProduktDekrementuj);
 
@@ -178,7 +217,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST" and isset($_POST['buttonproduktidkoszykd
 
 
 /* ==========		DODAJ ZAMOWIENIE			========== */
-if($_SERVER['REQUEST_METHOD'] == "POST" and isset($_POST['zamow'])) {	
+if($_SERVER['REQUEST_METHOD'] == "POST" and isset($_POST['zamow'])) {		   
 		//PARSOWANIE  
 		$stid = oci_parse($connection, $queryStworzZamowienie);
 
@@ -189,18 +228,24 @@ if($_SERVER['REQUEST_METHOD'] == "POST" and isset($_POST['zamow'])) {
 		oci_bind_by_name($stid, ":metoda_platnosci", $_POST['splatnosc']);
 		oci_bind_by_name($stid, ":dokument_sprzedazy", $_POST['sdokument']);
 
+
+
 		//EXECUTE POLECENIE
 		$result = oci_execute($stid);
 		if (!$result) {
 		    $m = oci_error($stid);
-		    trigger_error('Nie udało się wykonać polecenia: ' . $m['message'], E_USER_ERROR);
+		  
+		    $_SESSION['error_code'] = $m['code'];
+		    header('Location: ../koszyk.php');
+		    exit();
+		} else {  
+	 		$_SESSION['S_ILEKOSZYK'] = 0;
+			//ZWOLNIJ ZASOBY
+			oci_free_statement($stid);
+			oci_close($connection); 
+			header('Location: ../zamowienie.php'); //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+			exit();
 		}
-
-		//ZWOLNIJ ZASOBY
-		oci_free_statement($stid);
-		oci_close($connection); 
-		header('Location: ../koszyk.php'); //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-		exit();
 	}
 
 	oci_close($connection); 

@@ -197,7 +197,7 @@ function funkcjaDodajDostawce($connection, $queryDodajDostawceID)
 function funkcjaUsunDostawce($connection, $queryUsunDostawceID)
 {
     //PARSOWANIE  
-    $stid = oci_parse($connection, $queryUsunKurieraID);
+    $stid = oci_parse($connection, $queryUsunDostawceID);
     //PHP VARIABLE --> ORACLE PLACEHOLDER
     oci_bind_by_name($stid, ":rekord_id", $_POST['usundostawceid']);
     //EXECUTE POLECENIE
@@ -255,7 +255,8 @@ function funkcjaUsunDostawce($connection, $queryUsunDostawceID)
                             <a class="nav-link" href="../sklep.php"><i class="fas fa-shopping-basket"></i></i>&nbsp;&nbsp;Sklep</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="../koszyk.php"><i class="fas fa-shopping-cart"></i>&nbsp;&nbsp;Koszyk</a>
+                            <?php echo '<a class="nav-link'; if($_SESSION['S_ILEKOSZYK'] > 0) echo ' koszykactive"'; else echo '"'; ?>href="../koszyk.php"><i class="fas fa-shopping-cart "></i>&nbsp;&nbsp;Koszyk (<?php echo $_SESSION['S_ILEKOSZYK']; ?>)</a>
+ 
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="../zamowienie.php"><i class="fas fa-history"></i>&nbsp;&nbsp;Zamówienia</a>

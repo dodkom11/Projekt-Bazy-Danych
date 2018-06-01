@@ -57,7 +57,39 @@
 			$_SESSION['S_NAZWISKO'] =  oci_result($stid, 'NAZWISKO');
 
     		unset($_SESSION['blad_log']); //usuń z sesji zmienna blad skoro udalo nam sie zalogowac
-    		oci_free_statement($stid); //wyczysc z pamieci RAM serwera zwrocone z bazy rezultaty zapytania			
+    		oci_free_statement($stid); //wyczysc z pamieci RAM serwera zwrocone z bazy rezultaty zapytania	
+
+			//PRODUKTY W KOSZYKU
+			$queryLicz = "begin 
+			                :bv := COUNTRW(:tabl, :colm, :cond);    
+			               end;";
+
+			$tablename  = 'KOSZYK';
+			$columnname = 'PRODUKT_ID';
+			$condition  = "KONTO_ID = '" . $_SESSION['S_KONTO_ID'] . "'";
+
+			/* ==========       SELECT LICZBA produktow         ========== */
+			//PARSOWANIE  
+			$stid = oci_parse($connection, $queryLicz);
+
+			//PHP VARIABLE --> ORACLE PLACEHOLDER
+			oci_bind_by_name($stid, ":tabl", $tablename);
+			oci_bind_by_name($stid, ":colm", $columnname);
+			oci_bind_by_name($stid, ":cond", $condition);
+			oci_bind_by_name($stid, ":bv", $liczProdukt, 10);
+
+			//EXECUTE POLECENIE
+			$result = oci_execute($stid);
+			if (!$result) {
+			    $m = oci_error($stid);
+			    trigger_error('Nie udało się wykonać polecenia: ' . $m['message'], E_USER_ERROR);
+			}
+
+			//ZWOLNIJ ZASOBY
+			oci_free_statement($stid);
+
+			$_SESSION['S_ILEKOSZYK'] = $liczProdukt;
+
     		header('Location: ../sklep.php');
 		}
 		else {

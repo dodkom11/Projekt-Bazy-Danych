@@ -14,6 +14,7 @@
         <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
         <!-- Custom styles for this template -->
         <link href="css/mycssVegas.css" rel="stylesheet">
+        <link href="css/mycss.css" rel="stylesheet">
         <link href="vendor/vegas/vegas.min.css" rel="stylesheet">
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.10/css/all.css" integrity="sha384-+d0P83n9kaQMCwj8F4RJB66tzIwOKmrdb46+porD/OvrJ+37WqIM7UoBtwHO6Nlg" crossorigin="anonymous">
     </head>
@@ -47,7 +48,8 @@
                                         <a class="nav-link" href="sklep.php"><i class="fas fa-shopping-basket"></i></i>&nbsp;&nbsp;Sklep</a>
                                     </li>
                                     <li class="nav-item">
-                                        <a class="nav-link" href="koszyk.php"><i class="fas fa-shopping-cart"></i>&nbsp;&nbsp;Koszyk</a>
+                                        <?php echo '<a class="nav-link'; if($_SESSION['S_ILEKOSZYK'] > 0) echo ' koszykactive"'; else echo '"'; ?>href="koszyk.php"><i class="fas fa-shopping-cart "></i>&nbsp;&nbsp;Koszyk (<?php echo $_SESSION['S_ILEKOSZYK']; ?>)</a>
+ 
                                     </li>
                                     <li class="nav-item">
                                         <a class="nav-link" href="zamowienie.php"><i class="fas fa-history"></i>&nbsp;&nbsp;Zamówienia</a>

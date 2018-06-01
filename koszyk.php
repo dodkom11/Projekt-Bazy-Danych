@@ -171,7 +171,6 @@ if (!$result) {
 
 //ZWOLNIJ ZASOBY
 oci_free_statement($stid);
-
      
 ?> 
 
@@ -219,7 +218,8 @@ oci_free_statement($stid);
                             <a class="nav-link" href="sklep.php"><i class="fas fa-shopping-basket"></i></i>&nbsp;&nbsp;Sklep</a>                            
                         </li>
                         <li class="nav-item active">
-                            <a class="nav-link" href="koszyk.php"><i class="fas fa-shopping-cart"></i>&nbsp;&nbsp;Koszyk</a>
+                            <?php echo '<a class="nav-link'; if($_SESSION['S_ILEKOSZYK'] > 0) echo ' koszykactive"'; else echo '"'; ?>href="koszyk.php"><i class="fas fa-shopping-cart "></i>&nbsp;&nbsp;Koszyk (<?php echo $_SESSION['S_ILEKOSZYK']; ?>)</a>
+ 
                             <span class="sr-only">(current)</span>
                         </li>
                         <li class="nav-item">
@@ -286,6 +286,7 @@ echo $liczProdukt;
                                                     <th>CENA</th>
                                                     <th>ILOSC_SZTUK</th>
                                                     <th>ŁĄCZNIE</th>
+                                                    <th>SZTUK NA MAGAZYNIE</th>
                                                    
                                                 </tr>
                                             </thead>
@@ -301,8 +302,9 @@ echo $liczProdukt;
                     $CENA                = $row['CENA'];
                     $ILOSC_SZTUK         = $row['ILOSC_SZTUK'];
                     $ILOCZYN             = $row['ILOCZYN'];
+                    $SZTUK_NA_MAGAZYNIE  = $row['SZTUK_NA_MAGAZYNIE'];
                     $SUMA                += $row['ILOCZYN'];
-                    echo "<tr><td>$PRODUCENT</td> <td>$MODEL</td><td>$NUMER_KATALOGOWY</td><td>$CENA</td><td>$ILOSC_SZTUK</td><td>$ILOCZYN</td>";
+                    echo "<tr><td>$PRODUCENT</td> <td>$MODEL</td><td>$NUMER_KATALOGOWY</td><td>$CENA</td><td>$ILOSC_SZTUK</td><td>$ILOCZYN</td><td>$SZTUK_NA_MAGAZYNIE</td>";
 
                     echo "<td><form action=\"logikaphp/logickoszyk.php\" method=\"post\"><button type=\"submit\" name=\"buttonproduktidkoszyk\" class=\"btn btn-primary btn-sm\" value=\"" . htmlspecialchars($PRODUKT_ID). "\">+</button></form></td>";
                     echo "<td><form action=\"logikaphp/logickoszyk.php\" method=\"post\"><button type=\"submit\" name=\"buttonproduktidkoszykdec\"class=\"btn btn-danger btn-sm\" value=\"" . htmlspecialchars($PRODUKT_ID) . "\">-</button></form></td></tr>";                   
@@ -352,7 +354,15 @@ echo $liczProdukt;
                                 </div>
                             </div>                           
                         </div> 
+                            <?php 
+                             if(isset($_SESSION['error_code'])){  
 
+                            if($_SESSION['error_code'] == 20008){
+                                echo '<p>Zamówienie nie może być zrealizowane, zbyt mała ilość sztuk na magazynie!</p>' ;
+                            }
+                             unset($_SESSION['error_code']);
+                        }
+                            ?>
                         <div class="form-group">
                               <input type="submit" name="zamow" class="btn btn-primary" value="Zamów" />                               
                         </div> 
