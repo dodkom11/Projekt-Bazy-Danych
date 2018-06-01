@@ -302,7 +302,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                        <div class="row">
                             <div class="card mb-3">
                                 <div class="card-header">
-                                <i class="fa fa-table"></i> Wybrany Klient</div>
+                                <i class="fa fa-table"></i> Wybrany Kurier</div>
                                 <div class="card-body">
                                     <div class="table-responsive">
                                         <table class="table table-bordered" id="dataTable2" width="100%" cellspacing="0">
@@ -348,7 +348,7 @@ END;
                         <div class="row">
                             <div class="card mb-3">
                                 <div class="card-header">
-                                <i class="fa fa-table"></i> Klienci [<?php
+                                <i class="fa fa-table"></i> Kurierzy [<?php
 //WYŚWIETL LICZBE KLIENTÓW
 echo $ileOsob;
 ?>]</div>
@@ -401,7 +401,7 @@ END;
                     <div class="row">
                         <div class="card mb-3">
                             <div class="card-header">
-                            <i class="fa fa-table"></i> Wybrany Klient</div>
+                            <i class="fa fa-table"></i> Wybrany Kurier</div>
                             <div class="card-body">
                                 <div class="table-responsive">
                                     <table class="table table-bordered" id="dataTable3" width="100%" cellspacing="0">

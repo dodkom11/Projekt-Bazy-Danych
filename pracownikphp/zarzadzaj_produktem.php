@@ -244,7 +244,7 @@ echo $_SERVER['PHP_SELF'];
                                 <div class="row">
                                     <div class="col-6">
                                         <div class="form-group row">
-                                            <label for="example-number-input" class="col-3 col-form-label">Podaj ID KONTA</label>
+                                            <label for="example-number-input" class="col-3 col-form-label">Podaj ID PRODUKTU</label>
                                             <div class="col-9">
                                                 <input class="form-control" type="number" name="number-input" min="1">
                                             </div>
@@ -336,7 +336,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                        <div class="row">
                             <div class="card mb-3">
                                 <div class="card-header">
-                                <i class="fa fa-table"></i> Wybrany Klient</div>
+                                <i class="fa fa-table"></i> Wybrany Produkt</div>
                                 <div class="card-body">
                                     <div class="table-responsive">
                                         <table class="table table-bordered" id="dataTable2" width="100%" cellspacing="0">
@@ -398,7 +398,7 @@ END;
                         <div class="row">
                             <div class="card mb-3">
                                 <div class="card-header">
-                                <i class="fa fa-table"></i> Klienci [<?php
+                                <i class="fa fa-table"></i> Produkty [<?php
 //WYŚWIETL LICZBE KLIENTÓW
 echo $ileOsob;
 ?>]</div>
@@ -475,7 +475,7 @@ END;
                     <div class="row">
                         <div class="card mb-3">
                             <div class="card-header">
-                            <i class="fa fa-table"></i> Wybrany Klient</div>
+                            <i class="fa fa-table"></i> Wybrany Produkt</div>
                             <div class="card-body">
                                 <div class="table-responsive">
                                     <table class="table table-bordered" id="dataTable3" width="100%" cellspacing="0">
