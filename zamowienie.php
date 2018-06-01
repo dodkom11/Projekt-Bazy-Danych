@@ -7,8 +7,8 @@
 session_start();
 
 //jezeli nie jestesmy zalogowani i nasze uprawnienia inne niz "admin" wroc do index.php
-if (!isset($_SESSION['zalogowany']) OR (strcmp($_SESSION['S_UPRAWNIENIA'], "admin") AND strcmp($_SESSION['S_UPRAWNIENIA'], "pracownik"))) {
-    header('Location: ../index.php');
+if (!isset($_SESSION['zalogowany'])) {
+    header('Location: index.php');
     exit(); //opuszczamy plik nie wykonuje sie reszta
 }
 

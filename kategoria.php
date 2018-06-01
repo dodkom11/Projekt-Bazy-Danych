@@ -175,7 +175,7 @@ oci_free_statement($stid);
                 <ul class="sidebar-nav">
                     <li class="sidebar-brand">
                         <a href="#">
-                            <strong>Kategorie<?php echo  $_POST['katid'];   ?></strong>
+                            <strong>Kategorie</strong>
                         </a>
   
                     </li><div class="btn-group-vertical">
