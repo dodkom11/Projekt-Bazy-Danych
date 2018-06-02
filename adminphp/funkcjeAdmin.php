@@ -1,5 +1,5 @@
 <?php
-
+ini_set('display_errors', 'Off');
 
 
 
@@ -7,7 +7,7 @@
 session_start();
 
 //jezeli nie jestesmy zalogowani i nasze uprawnienia inne niz "admin" wroc do index.php
-if (!isset($_SESSION['zalogowany']) OR strcmp($_SESSION['S_UPRAWNIENIA'], "admin")) {
+if ((!isset($_SESSION['zalogowany']) OR strcmp($_SESSION['S_UPRAWNIENIA'], "admin")) AND $_SESSION['zalogowany'] == TRUE ){
     header('Location: ../index.php');
     exit(); //opuszczamy plik nie wykonuje sie reszta
 }
@@ -28,7 +28,7 @@ if (!$connection) {
 
 
 /* ==========		ZMIENNE LOKALNE			========== */
-//SELECT KLIENCI TABELA
+
 $queryUsunKontoID = "begin 
               			 	DELETEKONTO(:rekord_id);
           				end;";
@@ -67,16 +67,18 @@ function funkcjaUsunKonto($connection, $queryUsunKontoID)
 	oci_bind_by_name($stid, ":rekord_id", $_POST['usunkontoid']);
 
 	//EXECUTE POLECENIE
-	$result = oci_execute($stid);
-	if (!$result) {
-	    $m = oci_error($stid);
-	    trigger_error('Nie udało się wykonać polecenia: ' . $m['message'], E_USER_ERROR);
-	}
+    $result = oci_execute($stid);
 
-	//ZWOLNIJ ZASOBY
-	oci_free_statement($stid);
-
-	echo '<div class="alert alert-success" role="alert"><strong>INFORMACJA!</strong> Pomyślnie usunięto konto ID: <strong>' . $_POST['usunkontoid'] . "</strong></div>";
+    if (!$result) {
+        $m = oci_error($stid);
+        if($m['code'] == "02292") {
+            echo '<div class="alert alert-danger" role="alert"><strong>BŁĄD!</strong> Nie można usunąć, ponieważ istnieją powiązania między tabelami.';
+        }
+    } else {
+	   echo '<div class="alert alert-success" role="alert"><strong>INFORMACJA!</strong> Pomyślnie usunięto konto ID: <strong>' . $_POST['usunkontoid'] . "</strong></div>";
+    }
+    //ZWOLNIJ ZASOBY
+    oci_free_statement($stid);
 }
 
 
@@ -98,11 +100,9 @@ function funkcjaDodajPracownik($connection, $queryDodajPracownikID)
 	    $m = oci_error($stid);
 	    trigger_error('Nie udało się wykonać polecenia: ' . $m['message'], E_USER_ERROR);
 	}
-
-	//ZWOLNIJ ZASOBY
-	oci_free_statement($stid);
-
 	echo '<div class="alert alert-success" role="alert"><strong>INFORMACJA!</strong> Pomyślnie dodano pracownika. Konto ID: <strong>' . $_POST['dodajpracownikid'] . "</strong></div>";
+    //ZWOLNIJ ZASOBY
+    oci_free_statement($stid);
 }
 
 
@@ -125,17 +125,15 @@ function funkcjaDodajKurier($connection, $queryDodajKurier)
 	    $m = oci_error($stid);
 	    trigger_error('Nie udało się wykonać polecenia: ' . $m['message'], E_USER_ERROR);
 	}
-
-	//ZWOLNIJ ZASOBY
-	oci_free_statement($stid);
-
 	echo '<div class="alert alert-success" role="alert"><strong>INFORMACJA!</strong> Pomyślnie dodano kuriera: <strong>' . $_POST['nazwafirmy'] . "</strong></div>";
+    //ZWOLNIJ ZASOBY
+    oci_free_statement($stid);
 }
 
 
 
 
-/* ==========		FUNKCJA DELETE KONTO			========== */
+/* ==========		FUNKCJA DELETE KURIER			========== */
 
 function funkcjaUsunKuriera($connection, $queryUsunKurieraID)
 {
@@ -146,17 +144,20 @@ function funkcjaUsunKuriera($connection, $queryUsunKurieraID)
 	oci_bind_by_name($stid, ":rekord_id", $_POST['usunkurieraid']);
 
 	//EXECUTE POLECENIE
-	$result = oci_execute($stid);
-	if (!$result) {
-	    $m = oci_error($stid);
-	    trigger_error('Nie udało się wykonać polecenia: ' . $m['message'], E_USER_ERROR);
-	}
-
+    $result = oci_execute($stid);
+    if (!$result) {
+        $m = oci_error($stid);
+        if($m['code'] == "02292") {
+            echo '<div class="alert alert-danger" role="alert"><strong>BŁĄD!</strong> Nie można usunąć, ponieważ istnieją powiązania między tabelami.';
+        }
+    } else {
+         echo '<div class="alert alert-success" role="alert"><strong>INFORMACJA!</strong> Pomyślnie usunięto kuriera ID: <strong>' . $_POST['usunkurieraid'] . "</strong></div>";
+     }
 	//ZWOLNIJ ZASOBY
 	oci_free_statement($stid);
-
-	echo '<div class="alert alert-success" role="alert"><strong>INFORMACJA!</strong> Pomyślnie usunięto kuriera ID: <strong>' . $_POST['usunkurieraid'] . "</strong></div>";
 }
+
+
 
 
 /* ==========       FUNKCJA DODAJ DOSTAWCE            ========== */
@@ -185,14 +186,13 @@ function funkcjaDodajDostawce($connection, $queryDodajDostawceID)
         $m = oci_error($stid);
         trigger_error('Nie udało się wykonać polecenia: ' . $m['message'], E_USER_ERROR);
     }
+    echo '<div class="alert alert-success" role="alert"><strong>INFORMACJA!</strong> Pomyślnie Dodano Dostawce: <strong>' . $_POST['nazwadostawcy'] . "</strong></div>";
 
     //ZWOLNIJ ZASOBY
     oci_free_statement($stid);
-
-        echo '<div class="alert alert-success" role="alert"><strong>INFORMACJA!</strong> Pomyślnie Dodano Dostawce: <strong>' . $_POST['nazwadostawcy'] . "</strong></div>";
 }
 
-/* ==========       FUNKCJA Usun Dostawce            ========== */
+/* ==========       FUNKCJA USUN DOSTAWCE            ========== */
 
 function funkcjaUsunDostawce($connection, $queryUsunDostawceID)
 {
@@ -204,11 +204,14 @@ function funkcjaUsunDostawce($connection, $queryUsunDostawceID)
     $result = oci_execute($stid);
     if (!$result) {
         $m = oci_error($stid);
-        trigger_error('Nie udało się wykonać polecenia: ' . $m['message'], E_USER_ERROR);
-    }
-    //ZWOLNIJ ZASOBY
+        if($m['code'] == "02292") {
+            echo '<div class="alert alert-danger" role="alert"><strong>BŁĄD!</strong> Nie można usunąć, ponieważ istnieją powiązania między tabelami.';
+        }
+    } else {
+        echo '<div class="alert alert-success" role="alert"><strong>INFORMACJA!</strong> Pomyślnie usunięto Dostawce ID: <strong>' . $_POST['usundostawceid'] . "</strong></div>";
+    }   
+    //ZWOLNIJ ZASOBY       
     oci_free_statement($stid);
-    echo '<div class="alert alert-success" role="alert"><strong>INFORMACJA!</strong> Pomyślnie usunięto Dostawce ID: <strong>' . $_POST['usundostawceid'] . "</strong></div>";
 }
 ?>
 <!DOCTYPE html>
@@ -219,17 +222,18 @@ function funkcjaUsunDostawce($connection, $queryUsunDostawceID)
         <meta name="description" content="">
         <meta name="author" content="">
         <title>goFISHINGshop</title>
-        <!-- Bootstrap core CSS -->
+        <!-- STYLE CSS -->
         <link href="../vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-        <!-- Custom styles for this template -->
         <link href="../css/simple-sidebar.css" rel="stylesheet">
         <link href="../css/mycss.css" rel="stylesheet">
         <link href="../vendor/datatables/dataTables.bootstrap4.css" rel="stylesheet">
+        <!-- IKONY -->
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.10/css/all.css" integrity="sha384-+d0P83n9kaQMCwj8F4RJB66tzIwOKmrdb46+porD/OvrJ+37WqIM7UoBtwHO6Nlg" crossorigin="anonymous">
     </head>
     <body>
         
-        <!-- Navigation -->
+        <!--  ==========    PASEK NAWIGACJI   ==========  -->
+
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
             <a class="text-left text-info zwin" href="#menu-toggle" id="menu-toggle"><i class="fas fa-minus-square"></i> <span class="pokazukryj">Ukryj</span></a>
             <div class="container">
@@ -256,12 +260,11 @@ function funkcjaUsunDostawce($connection, $queryUsunDostawceID)
                         </li>
                         <li class="nav-item">
                             <?php echo '<a class="nav-link'; if($_SESSION['S_ILEKOSZYK'] > 0) echo ' koszykactive"'; else echo '"'; ?>href="../koszyk.php"><i class="fas fa-shopping-cart "></i>&nbsp;&nbsp;Koszyk (<?php echo $_SESSION['S_ILEKOSZYK']; ?>)</a>
- 
+                            
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="../zamowienie.php"><i class="fas fa-history"></i>&nbsp;&nbsp;Zamówienia</a>
                         </li>
-
                         <li class="nav-item">
                             <a class="nav-link" href="../logikaphp/logout.php"><i class="fas fa-sign-in-alt"></i>&nbsp;&nbsp;Wyloguj</a>
                         </li>
@@ -270,7 +273,9 @@ function funkcjaUsunDostawce($connection, $queryUsunDostawceID)
             </div>
         </nav>
         <div id="wrapper" class="toggled">
-            <!-- Sidebar -->
+            
+       <!--  ==========    PASEK BOCZNY   ==========  -->
+
             <div id="sidebar-wrapper">
                 <ul class="sidebar-nav">
                     <li class="sidebar-brand">
@@ -292,37 +297,36 @@ function funkcjaUsunDostawce($connection, $queryUsunDostawceID)
                     </li>
                 </ul>
             </div>
-            <!-- /#sidebar-wrapper -->
-            <!-- Page Content -->
+            
+            <!--  ==========  WYWOŁANIE FUNKCJI ADMIN ==========  -->
+
             <div id="page-content-wrapper">
                 <div class="container-fluid">
-<?php
-	if($_SERVER['REQUEST_METHOD'] == "POST" and isset($_POST['usunkontobutton'])) {
-    		funkcjaUsunKonto($connection, $queryUsunKontoID);
-		}
-	else if($_SERVER['REQUEST_METHOD'] == "POST" and isset($_POST['dodajpracownikbutton'])) {
-			funkcjaDodajPracownik($connection, $queryDodajPracownikID);
-	}
-	else if($_SERVER['REQUEST_METHOD'] == "POST" and isset($_POST['dodajkurierbutton'])) {
-			funkcjaDodajKurier($connection, $queryDodajKurier);
-	}
-	else if($_SERVER['REQUEST_METHOD'] == "POST" and isset($_POST['usunkurierabutton'])) {
-			funkcjaUsunKuriera($connection, $queryUsunKurieraID);
-	}
-    else if($_SERVER['REQUEST_METHOD'] == "POST" and isset($_POST['usundostawcebutton'])) {
-            funkcjaUsunDostawce($connection, $queryUsunDostawceID);
-    }
-    else if($_SERVER['REQUEST_METHOD'] == "POST" and isset($_POST['dodajdostawcebutton'])) {
-            funkcjaDodajDostawce($connection, $queryDodajDostawceID);
-    }
-
-?>
-            <!-- ./container-fluid -->
+                    <?php
+                    	if($_SERVER['REQUEST_METHOD'] == "POST" and isset($_POST['usunkontobutton'])) {
+                        		funkcjaUsunKonto($connection, $queryUsunKontoID);
+                    		}
+                    	else if($_SERVER['REQUEST_METHOD'] == "POST" and isset($_POST['dodajpracownikbutton'])) {
+                    			funkcjaDodajPracownik($connection, $queryDodajPracownikID);
+                    	}
+                    	else if($_SERVER['REQUEST_METHOD'] == "POST" and isset($_POST['dodajkurierbutton'])) {
+                    			funkcjaDodajKurier($connection, $queryDodajKurier);
+                    	}
+                    	else if($_SERVER['REQUEST_METHOD'] == "POST" and isset($_POST['usunkurierabutton'])) {
+                    			funkcjaUsunKuriera($connection, $queryUsunKurieraID);
+                    	}
+                        else if($_SERVER['REQUEST_METHOD'] == "POST" and isset($_POST['usundostawcebutton'])) {
+                                funkcjaUsunDostawce($connection, $queryUsunDostawceID);
+                        }
+                        else if($_SERVER['REQUEST_METHOD'] == "POST" and isset($_POST['dodajdostawcebutton'])) {
+                                funkcjaDodajDostawce($connection, $queryDodajDostawceID);
+                        }
+                        oci_close($connection);
+                    ?>
+                </div>
         </div>
-        <!-- /#page-content-wrapper -->
-    </div>
-    <!-- /#wrapper -->
-    <!-- Bootstrap core JavaScript -->
+
+    <!-- JavaScripts -->
     <script src="../vendor/jquery/jquery.min.js"></script>
     <script src="../vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="../script/toogle.js"></script>
@@ -330,10 +334,5 @@ function funkcjaUsunDostawce($connection, $queryUsunDostawceID)
     <script src="../vendor/datatables/jquery.dataTables.js"></script>
     <script src="../vendor/datatables/dataTables.bootstrap4.js"></script>
     <script src="../vendor/datatables/callDataTables.js"></script>
-
 </body>
 </html>
-<?php
-	//CLOSE POŁĄCZENIE
-	oci_close($connection);
-?>

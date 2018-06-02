@@ -45,6 +45,7 @@ $querySelectKurierzy = "begin
                         end;";
 
 //PRODUKTY W KOSZYKU
+// ---------------------------------------------------
 $queryLicz = "begin 
                 :bv := COUNTRW(:tabl, :colm, :cond);    
                end;";
@@ -52,6 +53,9 @@ $queryLicz = "begin
 $tablename  = 'KOSZYK';
 $columnname = 'PRODUKT_ID';
 $condition  = "KONTO_ID = '" . $_SESSION['S_KONTO_ID'] . "'";
+// ---------------------------------------------------
+
+
 
 
 /* ==========       SELECT Produkty       ========== */
@@ -152,7 +156,7 @@ oci_free_statement($stid);
 
 
 
-/* ==========       SELECT LICZBA produktow         ========== */
+/* ==========       SELECT LICZBA PRODUKTÓW         ========== */
 //PARSOWANIE  
 $stid = oci_parse($connection, $queryLicz);
 
@@ -170,8 +174,7 @@ if (!$result) {
 }
 
 //ZWOLNIJ ZASOBY
-oci_free_statement($stid);
-     
+oci_free_statement($stid);     
 ?> 
 
 <!DOCTYPE html>
@@ -182,16 +185,17 @@ oci_free_statement($stid);
         <meta name="description" content="">
         <meta name="author" content="">
         <title>goFISHINGshop</title>
-        <!-- Bootstrap core CSS -->
+        <!-- STYLE CSS -->
         <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-        <!-- Custom styles for this template -->
         <link href="css/simple-sidebar.css" rel="stylesheet">
         <link href="css/mycss.css" rel="stylesheet">
+        <!-- IKONY -->
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.10/css/all.css" integrity="sha384-+d0P83n9kaQMCwj8F4RJB66tzIwOKmrdb46+porD/OvrJ+37WqIM7UoBtwHO6Nlg" crossorigin="anonymous">
     </head>
     <body>
        
-        <!-- Navigation -->
+        <!--  ==========    PASEK NAWIGACJI   ==========  -->
+
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
             <a class="text-left text-info zwin" href="#menu-toggle" id="menu-toggle"><i class="fas fa-minus-square"></i> <span class="pokazukryj">Ukryj</span></a>
             <div class="container">
@@ -234,8 +238,10 @@ oci_free_statement($stid);
             </div>
         </nav>
         <div id="wrapper" class="toggled">
-            <!-- Sidebar -->
-            <div id="sidebar-wrapper">
+            
+       <!--  ==========    PASEK BOCZNY   ==========  -->
+
+        <div id="sidebar-wrapper">
                 <ul class="sidebar-nav">
                     <li class="sidebar-brand">
                         <a href="#">
@@ -260,19 +266,17 @@ echo <<<END
 </li>
 END;
 }
-?></div>
+?>                     </div>
                 </ul>
-            </div>
-            <!-- /#sidebar-wrapper -->
-            <!-- Page Content -->
+        </div>
+
             <div id="page-content-wrapper">
                 <div class="container-fluid">
                     <div class="row">
-
-                                                    <div class="card mb-3">
+                            <div class="card mb-3">
                                 <div class="card-header">
                                 <i class="fa fa-table"></i> KOSZYK [<?php
-//WYŚWIETL LICZBE KLIENTÓW
+//WYŚWIETL LICZBE REKORDÓW
 echo $liczProdukt;
 ?>]</div>
                                 <div class="card-body">
@@ -292,7 +296,7 @@ echo $liczProdukt;
                                             </thead>
                                             <tbody>
                                                 <?php
-//WYPEŁNIJ TABELE JEŻELI PODANO ID KONTA
+//WYPEŁNIJ TABELE JEŻELI PODANO ID
     $SUMA = 0;                                                
     while (($row = oci_fetch_array($cursorKoszyk, OCI_ASSOC + OCI_RETURN_NULLS)) != false) {
                     $PRODUKT_ID          = $row['PRODUKT_ID'];
@@ -328,7 +332,7 @@ echo $liczProdukt;
                                   <label for="sel1">Wybierz Kuriera</label>
                                   <select class="form-control" id="sel1" name="skurier">
                                    <?php
-                                        //WYPEŁNIJ TABELE KLIENTAMI Z BAZY                                            
+                                        //WYPEŁNIJ TABELE REKORDAMI Z BAZY                                            
                                         while (($row = oci_fetch_array($cursorTabela, OCI_ASSOC + OCI_RETURN_NULLS)) != false) {
                                             $KURIER_ID           = $row['KURIER_ID'];
                                             $NAZWA_FIRMY         = $row['NAZWA_FIRMY'];                                        
@@ -358,7 +362,7 @@ echo $liczProdukt;
                              if(isset($_SESSION['error_code'])){  
 
                             if($_SESSION['error_code'] == 20008){
-                                echo '<p>Zamówienie nie może być zrealizowane, zbyt mała ilość sztuk na magazynie!</p>' ;
+                                echo '<div class="alert alert-danger" role="alert"><strong>INFORMACJA!</strong> Zamówienie nie może być zrealizowane, zbyt mała ilość sztuk na magazynie!</div>';
                             }
                              unset($_SESSION['error_code']);
                         }
@@ -368,15 +372,10 @@ echo $liczProdukt;
                         </div> 
                         </form>     
 
-                        <?php } ?>          
-                    <!-- /.row -->
-               
-                <!-- ./container-fluid -->
+                        <?php } ?>                   
             </div>
-            <!-- /#page-content-wrapper -->
         </div>
-        <!-- /#wrapper -->
-        <!-- Bootstrap core JavaScript -->
+        <!-- JavaScripts -->
         <script src="vendor/jquery/jquery.min.js"></script>
         <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
         <script src="script/toogle.js"></script>

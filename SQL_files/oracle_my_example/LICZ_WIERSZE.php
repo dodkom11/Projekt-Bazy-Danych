@@ -27,7 +27,7 @@
 /*
 	===== FUNKCJA PL/SQL =======
 
-create or replace function COUNTRW(TABLENAME VARCHAR2, COLUMNNAME VARCHAR2) 
+CREATE OR REPLACE function COUNTRW(TABLENAME VARCHAR2, COLUMNNAME VARCHAR2) 
    return number
 AS
    row_count number;

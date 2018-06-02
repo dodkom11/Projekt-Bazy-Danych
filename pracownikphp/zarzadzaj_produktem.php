@@ -28,34 +28,31 @@ if (!$connection) {
 
 
 /* ==========		ZMIENNE LOKALNE			========== */
-//SELECT KLIENCI TABELA
+
 $querySelectProdukty = "begin 
               			 	:cursor := SELECTPRODUKTY;
           				end;";
 
-//SELECT LICZBA KLIENTOW
-$queryLicz = "begin 
-                :bv := COUNTRW(:tabl, :colm, :cond);    
-               end;";
-
-//SELECT KLIENT PO ID
 $querySelectProduktID = "begin 
             				:cursor2 := SELECTPRODUKTID(:rekord_id);
             			end;";   
 
+// ---------------------------------------------------
+$queryLicz = "begin 
+                :bv := COUNTRW(:tabl, :colm, :cond);    
+               end;";
 $tablename  = 'PRODUKT';
 $columnname = 'PRODUKT_ID';
 $condition  = "'true'='true'";
+// ---------------------------------------------------
 
-//SELECT KLIENCI TABELA
 $querySelectDostawcy = "begin 
                             :cursor := SELECTDOSTAWCA;
                         end;";
 
 
 
-
-/* ==========		SELECT KLIENCI TABELA		========== */
+/* ==========		SELECT PRODUKTY TABELA		========== */
 //PARSOWANIE  
 $stid = oci_parse($connection, $querySelectProdukty);
 if (!$stid) {
@@ -83,6 +80,8 @@ if (!$result) {
 
 //ZWOLNIJ ZASOBY
 oci_free_statement($stid);
+
+
 
 
 /* ==========       SELECT DOSTAWCY TABELA       ========== */
@@ -118,7 +117,7 @@ oci_free_statement($stid);
 
 
 
-/* ==========		SELECT LICZBA KLIENTOW			========== */
+/* ==========		SELECT LICZBA PRODUKTÓW			========== */
 //PARSOWANIE  
 $stid = oci_parse($connection, $queryLicz);
 
@@ -126,7 +125,7 @@ $stid = oci_parse($connection, $queryLicz);
 oci_bind_by_name($stid, ":tabl", $tablename);
 oci_bind_by_name($stid, ":colm", $columnname);
 oci_bind_by_name($stid, ":cond", $condition);
-oci_bind_by_name($stid, ":bv", $ileOsob, 10);
+oci_bind_by_name($stid, ":bv", $ile, 10);
 
 //EXECUTE POLECENIE
 $result = oci_execute($stid);
@@ -147,17 +146,18 @@ oci_free_statement($stid);
         <meta name="description" content="">
         <meta name="author" content="">
         <title>goFISHINGshop</title>
-        <!-- Bootstrap core CSS -->
+        <!-- STYLE CSS -->
         <link href="../vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-        <!-- Custom styles for this template -->
         <link href="../css/simple-sidebar.css" rel="stylesheet">
         <link href="../css/mycss.css" rel="stylesheet">
         <link href="../vendor/datatables/dataTables.bootstrap4.css" rel="stylesheet">
+        <!-- IKONY -->
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.10/css/all.css" integrity="sha384-+d0P83n9kaQMCwj8F4RJB66tzIwOKmrdb46+porD/OvrJ+37WqIM7UoBtwHO6Nlg" crossorigin="anonymous">
     </head>
     <body>
         
-        <!-- Navigation -->
+        <!--  ==========    PASEK NAWIGACJI   ==========  -->
+
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
             <a class="text-left text-info zwin" href="#menu-toggle" id="menu-toggle"><i class="fas fa-minus-square"></i> <span class="pokazukryj">Ukryj</span></a>
             <div class="container">
@@ -199,7 +199,9 @@ oci_free_statement($stid);
             </div>
         </nav>
         <div id="wrapper" class="toggled">
-            <!-- Sidebar -->
+            
+       <!--  ==========    PASEK BOCZNY   ==========  -->
+
             <div id="sidebar-wrapper">
                 <ul class="sidebar-nav">
                     <li class="sidebar-brand">
@@ -218,8 +220,7 @@ oci_free_statement($stid);
                     </li>
                 </ul>
             </div>
-            <!-- /#sidebar-wrapper -->
-            <!-- Page Content -->
+
             <div id="page-content-wrapper">
                 <div class="container-fluid">
                     <nav>
@@ -302,7 +303,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     htmlspecialchars($_REQUEST['number-input']);
     
     if (empty($_REQUEST['number-input'])) { 	//JEŻELI INPUT PUSTY LUB NIEPOPRAWNE ID   	
-        $message = "PODAJ POPRAWNE KONTO_ID!";        
+        $message = "PODAJ POPRAWNE ID!";        
         echo "<script type='text/javascript'>alert('$message');</script>";
     } else {
 
@@ -356,7 +357,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                             </thead>
                                             <tbody>
                                                 <?php
-//WYPEŁNIJ TABELE JEŻELI PODANO ID KONTA
+//WYPEŁNIJ TABELE JEŻELI PODANO ID
 if (!empty($_REQUEST['number-input'])) {
     while (($row = oci_fetch_array($cursorPokazOsobe, OCI_ASSOC + OCI_RETURN_NULLS)) != false) {
         $PRODUKT_ID                     = $row['PRODUKT_ID'];
@@ -399,8 +400,8 @@ END;
                             <div class="card mb-3">
                                 <div class="card-header">
                                 <i class="fa fa-table"></i> Produkty [<?php
-//WYŚWIETL LICZBE KLIENTÓW
-echo $ileOsob;
+//WYŚWIETL LICZBE REKORDÓW
+echo $ile;
 ?>]</div>
                                 <div class="card-body">
                                     <div class="table-responsive">
@@ -435,7 +436,7 @@ echo $ileOsob;
                                             </tfoot>
                                             <tbody>
                                                 <?php
-//WYPEŁNIJ TABELE KLIENTAMI Z BAZY                                            
+//WYPEŁNIJ TABELE REKORDAMI Z BAZY                                            
 while (($row = oci_fetch_array($cursorTabela, OCI_ASSOC + OCI_RETURN_NULLS)) != false) {
         $PRODUKT_ID                     = $row['PRODUKT_ID'];
         $NAZWA_FIRMY                    = $row['NAZWA_FIRMY'];
@@ -655,7 +656,7 @@ END;
                         </tfoot>
                         <tbody>
                                                 <?php
-//WYPEŁNIJ TABELE KLIENTAMI Z BAZY                                            
+//WYPEŁNIJ TABELE REKORDAMI Z BAZY                                            
 while (($row = oci_fetch_array($cursorTabela1, OCI_ASSOC + OCI_RETURN_NULLS)) != false) {
         $DOSTAWCA_ID  = $row['DOSTAWCA_ID'];
         $NAZWA_FIRMY  = $row['NAZWA_FIRMY'];
@@ -680,14 +681,11 @@ while (($row = oci_fetch_array($cursorTabela1, OCI_ASSOC + OCI_RETURN_NULLS)) !=
                             </div>
                         </div>
                 
-                <!-- /.row -->
+
             </div>
-            <!-- ./container-fluid -->
         </div>
-        <!-- /#page-content-wrapper -->
     </div>
-    <!-- /#wrapper -->
-    <!-- Bootstrap core JavaScript -->
+    <!-- JavaScripts -->
     <script src="../vendor/jquery/jquery.min.js"></script>
     <script src="../vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="../script/toogle.js"></script>
@@ -695,7 +693,6 @@ while (($row = oci_fetch_array($cursorTabela1, OCI_ASSOC + OCI_RETURN_NULLS)) !=
     <script src="../vendor/datatables/jquery.dataTables.js"></script>
     <script src="../vendor/datatables/dataTables.bootstrap4.js"></script>
     <script src="../vendor/datatables/callDataTables.js"></script>
-
 </body>
 </html>
 <?php

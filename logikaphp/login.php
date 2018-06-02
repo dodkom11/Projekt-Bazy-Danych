@@ -1,9 +1,7 @@
 <?php
-	/*	>>> INFORMACJE - zaloguj.php
-			> Odpowiada za proces logowania
-			> Dodać IF-a || user || worker || admin		
-	*/
-	session_start(); //tworzenie sesji PHP
+
+	/* ==========       SESJA I WARUNKI DOSTEPU     ========== */
+	session_start();
 	
 	// Wróć do ../zalogujsie.php, jeżeli nie nastąpiła próba logowania - zmienne nie ustawione
 	if ((!isset($_POST['login'])) || (!isset($_POST['haslo'])))
@@ -59,6 +57,7 @@
     		unset($_SESSION['blad_log']); //usuń z sesji zmienna blad skoro udalo nam sie zalogowac
     		oci_free_statement($stid); //wyczysc z pamieci RAM serwera zwrocone z bazy rezultaty zapytania	
 
+			// ---------------------------------------------------
 			//PRODUKTY W KOSZYKU
 			$queryLicz = "begin 
 			                :bv := COUNTRW(:tabl, :colm, :cond);    
@@ -67,8 +66,8 @@
 			$tablename  = 'KOSZYK';
 			$columnname = 'PRODUKT_ID';
 			$condition  = "KONTO_ID = '" . $_SESSION['S_KONTO_ID'] . "'";
+			// ---------------------------------------------------
 
-			/* ==========       SELECT LICZBA produktow         ========== */
 			//PARSOWANIE  
 			$stid = oci_parse($connection, $queryLicz);
 
@@ -93,24 +92,9 @@
     		header('Location: ../sklep.php');
 		}
 		else {
-			$_SESSION['blad_log'] = '<span>Nieprawidlowy login lub haslo!</span>';
+			$_SESSION['blad_log'] = '<br/><div class="alert alert-danger" role="alert"><strong>INFORMACJA!</strong> Nieprawidlowy login lub haslo!</div>';
 			header('Location: ../zalogujsie.php');
 		}
 	}	
 	oci_close($connection); 
-
-	/* OBRAZEK PHP Z BAZY
-			$query2 = "SELECT ZDJECIE FROM PRODUKT WHERE PRODUKT_ID=1";
-			$stidx = oci_parse($connection, $query2);
-			$res = oci_execute($stidx);
-			$row = oci_fetch_array($stidx, OCI_ASSOC+OCI_RETURN_NULLS);
-			if (!$row) {
-			    header('Status: 404 Not Found');
-			} else {
-		 	   $img = $row['ZDJECIE']->load();			 	   
-		 	   echo '<div><img src="data:image/jpeg;base64,'.base64_encode($img).'" /></div>';
-			}
-			oci_free_statement($stidx);
-			oci_close($connection); 
-	*/
 ?>

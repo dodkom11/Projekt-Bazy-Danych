@@ -2,7 +2,7 @@
     session_start();
     
     //jezeli zalogowani przekieruj
-    if ((isset($_SESSION['zalogowany'])) && ($_SESSION['zalogowany']==true))
+    if ((isset($_SESSION['zalogowany'])) && ($_SESSION['zalogowany'] == TRUE))
     {
         header('Location: sklep.php');
         exit();
@@ -16,14 +16,17 @@
         <meta name="description" content="">
         <meta name="author" content="">
         <title>goFISHINGshop</title>
-        <!-- Bootstrap core CSS -->
+        <!-- STYLE CSS -->
         <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-        <!-- Custom styles for this template -->
         <link href="css/simple-sidebar.css" rel="stylesheet">
         <link href="css/mycss.css" rel="stylesheet">
+        <!-- IKONY -->
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.10/css/all.css" integrity="sha384-+d0P83n9kaQMCwj8F4RJB66tzIwOKmrdb46+porD/OvrJ+37WqIM7UoBtwHO6Nlg" crossorigin="anonymous">
     </head>
     <body class="bg-dark">
+
+         <!--  ==========    PASEK NAWIGACJI   ==========  -->
+
          <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
             <div class="container">
                 <a class="navbar-brand" href="index.php"><i class="fas fa-hands-helping"></i>&nbsp;&nbsp;goFISHINGshop</a>
@@ -60,10 +63,9 @@
                         <div class="form-group">
                             <label for="password">Hasło</label>
                             <input class="form-control" id="password"  name="haslo" type="password" placeholder="Podaj Hasło">
-                        </div>
-                       
+                        </div>  
+
                         <input type="submit" class="btn btn-primary btn-block" value="Zaloguj się"/>
-                        <!-- <a class="btn btn-primary btn-block" href="index.html">Login</a> -->
                     </form>
                     <div class="text-center">
                         <a class="d-block small mt-3" href="reg.php">Register an Account</a>
@@ -77,9 +79,7 @@
                 </div>
             </div>
         </div>
-        
-        <!-- /#wrapper -->
-        <!-- Bootstrap core JavaScript -->
+        <!-- JavaScripts -->
         <script src="vendor/jquery/jquery.min.js"></script>
         <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
         <script src="script/toogle.js"></script>

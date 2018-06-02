@@ -7,7 +7,7 @@
 session_start();
 
 //jezeli nie jestesmy zalogowani i nasze uprawnienia inne niz "admin" wroc do index.php
-if (!isset($_SESSION['zalogowany']) OR strcmp($_SESSION['S_UPRAWNIENIA'], "admin")) {
+if ((!isset($_SESSION['zalogowany']) OR strcmp($_SESSION['S_UPRAWNIENIA'], "admin")) AND $_SESSION['zalogowany'] == TRUE ) {
     header('Location: ../index.php');
     exit(); //opuszczamy plik nie wykonuje sie reszta
 }
@@ -28,27 +28,30 @@ if (!$connection) {
 
 
 /* ==========       ZMIENNE LOKALNE         ========== */
-//SELECT KLIENCI TABELA
+
 $querySelectDostawcy = "begin 
                             :cursor := SELECTDOSTAWCA;
                         end;";
 
-//SELECT LICZBA KLIENTOW
+
+$querySelectDostawcaID = "begin 
+                            :cursor2 := SELECTDOSTAWCAID(:rekord_id);
+                        end;";  
+
+// ---------------------------------------------------
 $queryLicz = "begin 
                 :bv := COUNTRW(:tabl, :colm, :cond);    
                end;";
 
-//SELECT KLIENT PO ID
-$querySelectDostawcaID = "begin 
-                            :cursor2 := SELECTDOSTAWCAID(:rekord_id);
-                        end;";   
-
 $tablename  = 'DOSTAWCA';
 $columnname = 'DOSTAWCA_ID';
 $condition  = "'true'='true'";
+// ---------------------------------------------------
 
 
-/* ==========       SELECT KLIENCI TABELA       ========== */
+
+
+/* ==========       SELECT DOSTAWCY      ========== */
 //PARSOWANIE  
 $stid = oci_parse($connection, $querySelectDostawcy);
 if (!$stid) {
@@ -77,7 +80,10 @@ if (!$result) {
 //ZWOLNIJ ZASOBY
 oci_free_statement($stid);
 
-/* ==========       SELECT LICZBA KLIENTOW          ========== */
+
+
+
+/* ==========       SELECT LICZBA DOSTAWCOW          ========== */
 //PARSOWANIE  
 $stid = oci_parse($connection, $queryLicz);
 
@@ -85,7 +91,7 @@ $stid = oci_parse($connection, $queryLicz);
 oci_bind_by_name($stid, ":tabl", $tablename);
 oci_bind_by_name($stid, ":colm", $columnname);
 oci_bind_by_name($stid, ":cond", $condition);
-oci_bind_by_name($stid, ":bv", $ileOsob, 10);
+oci_bind_by_name($stid, ":bv", $ile, 10);
 
 //EXECUTE POLECENIE
 $result = oci_execute($stid);
@@ -106,17 +112,18 @@ oci_free_statement($stid);
         <meta name="description" content="">
         <meta name="author" content="">
         <title>goFISHINGshop</title>
-        <!-- Bootstrap core CSS -->
+        <!-- STYLE CSS -->
         <link href="../vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-        <!-- Custom styles for this template -->
         <link href="../css/simple-sidebar.css" rel="stylesheet">
         <link href="../css/mycss.css" rel="stylesheet">
         <link href="../vendor/datatables/dataTables.bootstrap4.css" rel="stylesheet">
+        <!-- IKONY -->
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.10/css/all.css" integrity="sha384-+d0P83n9kaQMCwj8F4RJB66tzIwOKmrdb46+porD/OvrJ+37WqIM7UoBtwHO6Nlg" crossorigin="anonymous">
     </head>
     <body>
         
-        <!-- Navigation -->
+        <!--  ==========    PASEK NAWIGACJI   ==========  -->
+
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
             <a class="text-left text-info zwin" href="#menu-toggle" id="menu-toggle"><i class="fas fa-minus-square"></i> <span class="pokazukryj">Ukryj</span></a>
             <div class="container">
@@ -157,7 +164,9 @@ oci_free_statement($stid);
             </div>
         </nav>
         <div id="wrapper" class="toggled">
-            <!-- Sidebar -->
+
+       <!--  ==========    PASEK BOCZNY   ==========  -->
+       
             <div id="sidebar-wrapper">
                 <ul class="sidebar-nav">
                     <li class="sidebar-brand">
@@ -179,8 +188,7 @@ oci_free_statement($stid);
                     </li>
                 </ul>
             </div>
-            <!-- /#sidebar-wrapper -->
-            <!-- Page Content -->
+
             <div id="page-content-wrapper">
                 <div class="container-fluid">
                     <nav>
@@ -214,16 +222,16 @@ echo $_SERVER['PHP_SELF'];
                                     <div class="col-2">
                                         <button type="submit" class="btn btn-primary">AKCEPTUJ</button>
                                     </div>
-                                    <div class="col-4">
-   
+                                    <div class="col-4">   
                                         <?php
 // POKAŻ WYBRANE ID JEŚLI PODANO ID
 if (!empty($_REQUEST['number-input'])) {
 
-//WARUNEK CZY ISTENIEJE KLIENT 
+//WARUNEK CZY ISTENIEJE DOSTAWCA 
 $condition2 = "DOSTAWCA_ID='" . $_REQUEST['number-input'] . "'";
 
-/* ==========       SPRAWDZ CZY KONTO NALEZY DO KLIENT          ========== */
+
+/* ==========       SPRAWDZ CZY KONTO NALEZY DO DOSTAWCA          ========== */
 //PARSOWANIE  
 $stid = oci_parse($connection, $queryLicz);
 
@@ -242,6 +250,7 @@ if (!$result) {
 
 //ZWOLNIJ ZASOBY
 oci_free_statement($stid);
+
     if($istniejeKonto > 0) {
 echo <<<END
 <span style="font-size: 25px;">WYBRANE ID: </span> <span class="badge badge-dark" style="font-size: 26px;">
@@ -258,37 +267,32 @@ END;
                         </form>
                         <?php
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    
+
     // ZBIERAMY DANE Z INPUT
     htmlspecialchars($_REQUEST['number-input']);
-    
-    if (empty($_REQUEST['number-input'])) {     //JEŻELI INPUT PUSTY LUB NIEPOPRAWNE ID     
-        $message = "PODAJ POPRAWNE KONTO_ID!";        
-        echo "<script type='text/javascript'>alert('$message');</script>";
-    } else {
 
-        //PARSOWANIE 
+    if (empty($_REQUEST['number-input'])) { //JEŻELI INPUT PUSTY LUB NIEPOPRAWNE ID
+        $message = "PODAJ POPRAWNE ID!";
+        echo "<script type='text/javascript'>alert('$message');</script>";
+    } else {        
+        //PARSOWANIE
         $stid = oci_parse($connection, $querySelectDostawcaID);
         if (!$stid) {
             $m = oci_error($connection);
             trigger_error('Nie udało się przeanalizować polecenia pl/sql: ' . $m['message'], E_USER_ERROR);
         }
-
-        //PHP VARIABLE --> ORACLE PLACEHOLDER        
-        $cursorPokazOsobe = oci_new_cursor($connection);
+        //PHP VARIABLE --> ORACLE PLACEHOLDER
+        $cursorPokaz = oci_new_cursor($connection);
         oci_bind_by_name($stid, ":rekord_id", $_REQUEST['number-input']);
-        oci_bind_by_name($stid, ":cursor2", $cursorPokazOsobe, -1, OCI_B_CURSOR);
-
+        oci_bind_by_name($stid, ":cursor2", $cursorPokaz, -1, OCI_B_CURSOR);
         //EXECUTE POLECENIE
         $result = oci_execute($stid);
         if (!$result) {
             $m = oci_error($stid);
             trigger_error('Nie udało się wykonać polecenia: ' . $m['message'], E_USER_ERROR);
         }
-
         //EXECUTE KURSOR
-        oci_execute($cursorPokazOsobe, OCI_DEFAULT);
-
+        oci_execute($cursorPokaz, OCI_DEFAULT);
         //ZWOLNIJ ZASOBY
         oci_free_statement($stid);
     }
@@ -321,10 +325,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                             </thead>
                                             <tbody>
                                                 <?php
-//WYPEŁNIJ TABELE JEŻELI PODANO ID KONTA
+//WYPEŁNIJ TABELE JEŻELI PODANO ID
 
 if (!empty($_REQUEST['number-input'])) {
-    while (($row = oci_fetch_array($cursorPokazOsobe, OCI_ASSOC + OCI_RETURN_NULLS)) != false) {
+    while (($row = oci_fetch_array($cursorPokaz, OCI_ASSOC + OCI_RETURN_NULLS)) != false) {
         $DOSTAWCA_ID  = $row['DOSTAWCA_ID'];
         $NAZWA_FIRMY  = $row['NAZWA_FIRMY'];
         $MIEJSCOWOSC  = $row['MIEJSCOWOSC'];
@@ -368,8 +372,8 @@ END;
                             <div class="card mb-3">
                                 <div class="card-header">
                                 <i class="fa fa-table"></i> Dostawcy [<?php
-//WYŚWIETL LICZBE KLIENTÓW
-echo $ileOsob;
+//WYŚWIETL LICZBE REKORDÓW
+echo $ile;
 ?>]</div>
                                 <div class="card-body">
                                     <div class="table-responsive">
@@ -410,7 +414,7 @@ echo $ileOsob;
                                             </tfoot>
                                             <tbody>
                                                 <?php
-//WYPEŁNIJ TABELE KLIENTAMI Z BAZY                                            
+//WYPEŁNIJ TABELE REKORDAMI Z BAZY                                            
 while (($row = oci_fetch_array($cursorTabela, OCI_ASSOC + OCI_RETURN_NULLS)) != false) {
         $DOSTAWCA_ID  = $row['DOSTAWCA_ID'];
         $NAZWA_FIRMY  = $row['NAZWA_FIRMY'];
@@ -601,16 +605,11 @@ END;
                         </div>
                         <input type="submit" name="dodajdostawcebutton" class="btn btn-primary" value="POTWIERDZ DODANIE" />
                     </form>  
-
                 </div>                
-                <!-- /.row -->
             </div>
-            <!-- ./container-fluid -->
         </div>
-        <!-- /#page-content-wrapper -->
     </div>
-    <!-- /#wrapper -->
-    <!-- Bootstrap core JavaScript -->
+    <!-- JavaScripts -->
     <script src="../vendor/jquery/jquery.min.js"></script>
     <script src="../vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="../script/toogle.js"></script>
@@ -618,7 +617,6 @@ END;
     <script src="../vendor/datatables/jquery.dataTables.js"></script>
     <script src="../vendor/datatables/dataTables.bootstrap4.js"></script>
     <script src="../vendor/datatables/callDataTables.js"></script>
-
 </body>
 </html>
 <?php

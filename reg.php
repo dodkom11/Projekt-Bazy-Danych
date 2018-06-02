@@ -11,14 +11,17 @@
         <meta name="description" content="">
         <meta name="author" content="">
         <title>goFISHINGshop</title>
-        <!-- Bootstrap core CSS -->
+        <!-- STYLE CSS -->
         <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-        <!-- Custom styles for this template -->
         <link href="css/simple-sidebar.css" rel="stylesheet">
         <link href="css/mycss.css" rel="stylesheet">
+        <!-- IKONY -->
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.10/css/all.css" integrity="sha384-+d0P83n9kaQMCwj8F4RJB66tzIwOKmrdb46+porD/OvrJ+37WqIM7UoBtwHO6Nlg" crossorigin="anonymous">
-    </head>
+    </head>    
     <body class="bg-dark">
+
+        <!--  ==========    PASEK NAWIGACJI   ==========  -->
+
          <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
             <div class="container">
                 <a class="navbar-brand" href="index.php"><i class="fas fa-hands-helping"></i>&nbsp;&nbsp;goFISHINGshop</a>
@@ -42,11 +45,36 @@
                 </div>
             </div>
         </nav>
-
         <div class="container" id="wrapper">
             <div class="card card-login mx-auto mt-5">
                 <div class="card-header">Rejestracja</div>
                 <div class="card-body">
+                    <div class="container-fluid">
+                       <?php
+                            if(isset($_SESSION['error_code'])){  
+
+                                if($_SESSION['error_code'] == 20001){
+                                    echo '<div class="alert alert-danger" role="alert"><strong>INFORMACJA!</strong> Wypełnij wszystkie pola!</div>';
+                                }
+                                if($_SESSION['error_code'] == 20002){
+                                    echo '<div class="alert alert-danger" role="alert"><strong>INFORMACJA!</strong> Hasła się od siebie różnią</div>';
+                                }
+                                if($_SESSION['error_code'] == 20003){
+                                    echo '<div class="alert alert-danger" role="alert"><strong>INFORMACJA!</strong> Hasło zbyt krótkie (mniej niż 7 znaków)</div>';
+                                }
+                                if($_SESSION['error_code'] == 20004){
+                                    echo '<div class="alert alert-danger" role="alert"><strong>INFORMACJA!</strong> Hasło zbyt łatwe!</div>';
+                                }
+                                if($_SESSION['error_code'] == 20005){
+                                    echo '<div class="alert alert-danger" role="alert"><strong>INFORMACJA!</strong> Hasło powinno mieć przynajmniej jedną literę, jedną cyfrę i znak przestankowy</div>';
+                                }
+                                if($_SESSION['error_code'] == 20006){
+                                    echo '<div class="alert alert-danger" role="alert"><strong>INFORMACJA!</strong> Login jest zajęty, proszę wybierz inny</div>';
+                                }                              
+                                unset($_SESSION['error_code']);
+                            }                         
+                        ?>
+                    </div>
                     <form action="logikaphp/rejestracja.php" method="post">
                        <div class="form-group">
                             <label>Imię</label>
@@ -57,9 +85,10 @@
                                 echo "value = $imie";
                                 unset($_SESSION['imie']); 
                                  }
-                          ?>>
+                            ?>>
                         </div>
-                       <div class="form-group">
+
+                        <div class="form-group">
                             <label>Nazwisko</label>
                             <input required class="form-control" id="nazwisko"  name="nazwisko" type="text" placeholder="Nazwisko"
                             <?php
@@ -68,7 +97,7 @@
                                 echo "value = $nazwisko";
                                 unset($_SESSION['nazwisko']); 
                                  }
-                          ?>>
+                            ?>>
                         </div>
 
                         <div class="form-group">
@@ -81,11 +110,10 @@
                                 echo "value = $email";
                                 unset($_SESSION['email']); 
                                  }
-                          ?>>
+                            ?>>
                         </div>
 
-
-                       <div class="form-group">
+                        <div class="form-group">
                             <label>Nazwa użytkownika</label>
                             <input required class="form-control" id="login" type="text" name="login" placeholder="Nazwa użytkownika"
                             <?php
@@ -94,20 +122,20 @@
                                 echo "value = $login";
                                 unset($_SESSION['login']); 
                                  }
-                          ?>>
+                            ?>>
                         </div>
-                       <div class="form-group">
+
+                        <div class="form-group">
                             <label>Hasło</label>
                             <input required class="form-control" id="password"  name="password" type="password" placeholder="Hasło">
                         </div>
-                       <div class="form-group">
+
+                        <div class="form-group">
                             <label>Potwierdź hasło</label>
                             <input required class="form-control" id="password2"  name="password2" type="password" placeholder="Potwierdź hasło">
-                        
-                        
-
                         </div>
-                       <div class="form-group">
+
+                        <div class="form-group">
                             <label>Województwo</label>
                             <input required class="form-control" id="woj" type="text" name="woj" placeholder="Województwo"
                             <?php
@@ -116,11 +144,10 @@
                                 echo "value = $woj";
                                 unset($_SESSION['woj']); 
                                  }
-                          ?>>
+                            ?>>
                         </div>
-
                         
-                       <div class="form-group">
+                        <div class="form-group">
                             <label>Miejscowosc</label>
                             <input required class="form-control" id="miejsc" type="text" name="miejsc" placeholder="Miejscowosc"
                             <?php
@@ -129,11 +156,10 @@
                                 echo "value = $miejsc";
                                 unset($_SESSION['miejsc']); 
                                  }
-                          ?>>
+                            ?>>
                         </div>
-
                         
-                       <div class="form-group">
+                        <div class="form-group">
                             <label>Kod pocztowy</label>
                             <input required class="form-control" id="poczt" type="text" name="poczt" placeholder="Kod pocztowy"
                             <?php
@@ -142,7 +168,7 @@
                                 echo "value = $poczt";
                                 unset($_SESSION['poczt']); 
                                  }
-                          ?>>
+                            ?>>
                         </div>
 
                         
@@ -155,11 +181,10 @@
                                 echo "value = $ulica";
                                 unset($_SESSION['ulica']); 
                                  }
-                          ?>>
+                            ?>>
                         </div>
 
-
-                       <div class="form-group">
+                        <div class="form-group">
                             <label>Nr domu</label>
                             <input required class="form-control" id="nr_domu" type="number" name="nr_domu" placeholder="Nr domu"
                             <?php
@@ -168,7 +193,7 @@
                                 echo "value = $nr_domu";
                                 unset($_SESSION['nr_domu']); 
                                  }
-                          ?>>
+                            ?>>
                         </div>
 
                         <div class="form-group">
@@ -180,53 +205,17 @@
                                 echo "value = $nr_tel";
                                 unset($_SESSION['nr_tel']); 
                                  }
-                          ?>>
+                            ?>>
                         </div>
-
-
-
                        
-                        <input type="submit" class="btn btn-primary btn-block" value="Utwórz konto" name="rejestruj"/>
-                      
+                        <input type="submit" class="btn btn-primary btn-block" value="Utwórz konto" name="rejestruj"/>                      
                     </form>
-                     </div>
-                   <?php
-
-                        if(isset($_SESSION['error_code'])){  
-
-                            if($_SESSION['error_code'] == 20001){
-                                echo '<p>Wypełnij wszystkie pola!</p>' ;
-                            }
-                            if($_SESSION['error_code'] == 20002){
-                                echo '<p>Hasla sie od siebie roznia</p>' ;
-                            }
-                            if($_SESSION['error_code'] == 20003){
-                                echo '<p>Haslo zbyt krotkie (mniej niz 7 znakow)</p>' ;
-                            }
-                            if($_SESSION['error_code'] == 20004){
-                                echo '<p>Haslo zbyt latwe</p>' ;
-                            }
-                            if($_SESSION['error_code'] == 20005){
-                                echo '<p>Haslo powinno miec przynajmniej jedna litere, jedna cyfre i znak przestankowy</p>' ;
-                            }
-                            if($_SESSION['error_code'] == 20006){
-                                echo '<p>Login jest zajęty, proszę wybierz inny</p>' ;
-                            }
-                            
-                                
-                            unset($_SESSION['error_code']);
-                        } 
-                        
-                    ?>
-
+                  </div>
                 </div>
-                </div>
-               
-            </div>
-        </div>
-        
-        <!-- /#wrapper -->
-        <!-- Bootstrap core JavaScript -->
+             </div>               
+           </div>
+        </div>        
+        <!-- JavaScripts -->
         <script src="vendor/jquery/jquery.min.js"></script>
         <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
         <script src="script/toogle.js"></script>

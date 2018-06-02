@@ -10,16 +10,18 @@
         <meta name="description" content="">
         <meta name="author" content="">
         <title>goFISHINGshop</title>
-        <!-- Bootstrap core CSS -->
+        <!-- STYLE CSS -->
         <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-        <!-- Custom styles for this template -->
         <link href="css/mycssVegas.css" rel="stylesheet">
         <link href="css/mycss.css" rel="stylesheet">
         <link href="vendor/vegas/vegas.min.css" rel="stylesheet">
+        <!-- IKONY -->
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.10/css/all.css" integrity="sha384-+d0P83n9kaQMCwj8F4RJB66tzIwOKmrdb46+porD/OvrJ+37WqIM7UoBtwHO6Nlg" crossorigin="anonymous">
     </head>
     <body>
-        <!-- Navigation -->
+        
+        <!--  ==========    PASEK NAWIGACJI   ==========  -->
+
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
             <div class="container">
                 <a class="navbar-brand" href="index.php"><i class="fas fa-hands-helping"></i>&nbsp;&nbsp;goFISHINGshop</a>
@@ -69,20 +71,21 @@
                 </div>
             </div>
         </nav>
-        <div id="vegasSlide"></div>        
+        <div id="vegasSlide"></div> 
+        <!-- JavaScripts -->     
         <script src="vendor/jquery/jquery.min.js"></script>
         <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-        <script src="vendor/vegas/vegas.min.js"></script>
+        <script src="vendor/vegas/vegas.min.js"></script>        
         <script type="text/javascript">
-        $("#vegasSlide").vegas({
-        slides: [
-            { src: "img/slider/veg1.jpg" },
-            { src: "img/slider/veg2.jpg" },
-            { src: "img/slider/veg3.jpg" },
-            { src: "img/slider/veg4.jpg" }
-            ],
-            overlay: 'vendor/vegas/overlays/01.png'
-        });
+            $("#vegasSlide").vegas({
+            slides: [
+                { src: "img/slider/veg1.jpg" },
+                { src: "img/slider/veg2.jpg" },
+                { src: "img/slider/veg3.jpg" },
+                { src: "img/slider/veg4.jpg" }
+                ],
+                overlay: 'vendor/vegas/overlays/01.png'
+            });
         </script>
     </body>
 </html>

@@ -1,5 +1,5 @@
 <?php
-
+ini_set('display_errors', 'Off');
 
 
 
@@ -66,17 +66,19 @@ function funkcjaUsunProdukt($connection, $queryUsunProduktID)
     $result = oci_execute($stid);
     if (!$result) {
         $m = oci_error($stid);
-        trigger_error('Nie udało się wykonać polecenia: ' . $m['message'], E_USER_ERROR);
+        if($m['code'] == "02292") {
+            echo '<div class="alert alert-danger" role="alert"><strong>BŁĄD!</strong> Nie można usunąć, ponieważ istnieją powiązania między tabelami.';
+        }
+    } else {
+        echo '<div class="alert alert-success" role="alert"><strong>INFORMACJA!</strong> Pomyślnie usunięto Produkt ID: <strong>' . $_POST['usunproduktid'] . "</strong></div>";
     }
 
     //ZWOLNIJ ZASOBY
-    oci_free_statement($stid);
-
-    echo '<div class="alert alert-success" role="alert"><strong>INFORMACJA!</strong> Pomyślnie usunięto konto ID: <strong>' . $_POST['usunproduktid'] . "</strong></div>";
+    oci_free_statement($stid);    
 }
 
 
-/* ==========       FUNKCJA DODAJ PRACOWNIKA           ========== */
+/* ==========       FUNKCJA DODAJ PRODUKT           ========== */
 
 function funkcjaDodajProdukt($connection, $queryDodajProdukt)
 {
@@ -111,6 +113,7 @@ function funkcjaDodajProdukt($connection, $queryDodajProdukt)
         echo '<div class="alert alert-success" role="alert"><strong>INFORMACJA!</strong> Pomyślnie Dodano Produkt: <strong>' . $_POST['producent'] . "</strong></div>";
 }
 
+
 /* ==========       FUNKCJA DELETE KATEGORIA            ========== */
 
 function funkcjaUsunKategorie($connection, $queryDeleteKategoria)
@@ -125,13 +128,16 @@ function funkcjaUsunKategorie($connection, $queryDeleteKategoria)
     $result = oci_execute($stid);
     if (!$result) {
         $m = oci_error($stid);
-        trigger_error('Nie udało się wykonać polecenia: ' . $m['message'], E_USER_ERROR);
+        if($m['code'] == "02292") {
+            echo '<div class="alert alert-danger" role="alert"><strong>BŁĄD!</strong> Nie można usunąć, ponieważ istnieją powiązania między tabelami.';
+        }
+    } else {
+       echo '<div class="alert alert-success" role="alert"><strong>INFORMACJA!</strong> Pomyślnie usunięto kategorie ID: <strong>' . $_POST['usunkategorieid'] . "</strong></div>";
     }
 
     //ZWOLNIJ ZASOBY
     oci_free_statement($stid);
 
-    echo '<div class="alert alert-success" role="alert"><strong>INFORMACJA!</strong> Pomyślnie usunięto kategorie ID: <strong>' . $_POST['usunkategorieid'] . "</strong></div>";
 }
 
 
@@ -160,8 +166,6 @@ function funkcjaDodajKategorie($connection, $queryInsertKategoria)
 }
 
 
-
-
 /* ==========       FUNKCJA EDYTUJ ZAMOWIENIE          ========== */
 
 function funkcjaEdytujZamowienie($connection, $queryEdytujZamowienie)
@@ -183,13 +187,13 @@ function funkcjaEdytujZamowienie($connection, $queryEdytujZamowienie)
         trigger_error('Nie udało się wykonać polecenia: ' . $m['message'], E_USER_ERROR);
     }
 
+
+
     //ZWOLNIJ ZASOBY
     oci_free_statement($stid);
 
     echo '<div class="alert alert-success" role="alert"><strong>INFORMACJA!</strong> Pomyślna edycja zamówienia ID: <strong>' . $_POST['edytujzamowieniebutton'] . "</strong></div>";
 }
-
-
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -199,17 +203,18 @@ function funkcjaEdytujZamowienie($connection, $queryEdytujZamowienie)
         <meta name="description" content="">
         <meta name="author" content="">
         <title>goFISHINGshop</title>
-        <!-- Bootstrap core CSS -->
+        <!-- STYLE CSS -->
         <link href="../vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-        <!-- Custom styles for this template -->
         <link href="../css/simple-sidebar.css" rel="stylesheet">
         <link href="../css/mycss.css" rel="stylesheet">
         <link href="../vendor/datatables/dataTables.bootstrap4.css" rel="stylesheet">
+        <!-- IKONY -->
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.10/css/all.css" integrity="sha384-+d0P83n9kaQMCwj8F4RJB66tzIwOKmrdb46+porD/OvrJ+37WqIM7UoBtwHO6Nlg" crossorigin="anonymous">
     </head>
     <body>
         
-        <!-- Navigation -->
+        <!--  ==========    PASEK NAWIGACJI   ==========  -->
+
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
             <a class="text-left text-info zwin" href="#menu-toggle" id="menu-toggle"><i class="fas fa-minus-square"></i> <span class="pokazukryj">Ukryj</span></a>
             <div class="container">
@@ -251,7 +256,9 @@ function funkcjaEdytujZamowienie($connection, $queryEdytujZamowienie)
             </div>
         </nav>
         <div id="wrapper" class="toggled">
-            <!-- Sidebar -->
+            
+       <!--  ==========    PASEK BOCZNY   ==========  -->
+
             <div id="sidebar-wrapper">
                 <ul class="sidebar-nav">
                    <li class="sidebar-brand">
@@ -270,8 +277,8 @@ function funkcjaEdytujZamowienie($connection, $queryEdytujZamowienie)
                     </li>
                 </ul>
             </div>
-            <!-- /#sidebar-wrapper -->
-            <!-- Page Content -->
+
+<!--  ==========  WYWOŁANIE FUNKCJI PRACOWNIK ==========  -->
             <div id="page-content-wrapper">
                 <div class="container-fluid">
 <?php
@@ -291,12 +298,9 @@ function funkcjaEdytujZamowienie($connection, $queryEdytujZamowienie)
         funkcjaEdytujZamowienie($connection, $queryEdytujZamowienie);
     }
 ?>
-            <!-- ./container-fluid -->
         </div>
-        <!-- /#page-content-wrapper -->
     </div>
-    <!-- /#wrapper -->
-    <!-- Bootstrap core JavaScript -->
+    <!-- JavaScripts -->
     <script src="../vendor/jquery/jquery.min.js"></script>
     <script src="../vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="../script/toogle.js"></script>
@@ -304,7 +308,6 @@ function funkcjaEdytujZamowienie($connection, $queryEdytujZamowienie)
     <script src="../vendor/datatables/jquery.dataTables.js"></script>
     <script src="../vendor/datatables/dataTables.bootstrap4.js"></script>
     <script src="../vendor/datatables/callDataTables.js"></script>
-
 </body>
 </html>
 <?php

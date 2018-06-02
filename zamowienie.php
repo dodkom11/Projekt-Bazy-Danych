@@ -28,7 +28,6 @@ if (!$connection) {
 
 
 /* ==========       ZMIENNE LOKALNE         ========== */
-//SELECT KLIENCI TABELA
 $querySelectZamowienia = "begin 
                             :cursor := SELECTZAMOWIENIAID(:konto_id);
                         end;";
@@ -37,50 +36,50 @@ $querySzczegoly        = "begin
                             :cursor3 := SELECTSZCZEGOLYZAMOWIENIA(:rekord_id);
                         end;";
 
-
-//SELECT OSTATNIE KATEGORIA
 $queryPokazKategorie =      "begin 
                                 :cursor := SELECTKATEGORIA;
                             end;";
 
-
-//SELECT LICZBA KLIENTOW
+// ---------------------------------------------------
 $queryLicz = "begin 
                 :bv := COUNTRW(:tabl, :colm, :cond);    
                end;"; 
 
 $tablename  = 'ZAMOWIENIE';
 $columnname = 'ZAMOWIENIE_ID';
-$condition  = "'TRUE'='TRUE'";
-
-//WARUNEK CZY ISTENIEJE KLIENT 
-$condition2  = "UPRAWNIENIA = 'klient' AND KONTO_ID = '";
+$condition = "KONTO_ID='" . $_SESSION['S_KONTO_ID'] . "'";
+// ---------------------------------------------------
 
 
 
 
 /* ==========       SELECT KATEGORIA      ========== */
+
 //PARSOWANIE
 $stid = oci_parse($connection, $queryPokazKategorie);
 if (!$stid) {
-$m = oci_error($connection);
-trigger_error('Nie udało się przeanalizować polecenia pl/sql: ' . $m['message'], E_USER_ERROR);
+    $m = oci_error($connection);
+    trigger_error('Nie udało się przeanalizować polecenia pl/sql: ' . $m['message'], E_USER_ERROR);
 }
+
 //PHP VARIABLE --> ORACLE PLACEHOLDER
 $cursorKategoria = oci_new_cursor($connection);
-oci_bind_by_name($stid, ":cursor", $cursorKategoria, -1, OCI_B_CURSOR);
+    oci_bind_by_name($stid, ":cursor", $cursorKategoria, -1, OCI_B_CURSOR);
+
 //EXECUTE POLECENIE
 $result = oci_execute($stid);
-if (!$result) {
-$m = oci_error($stid);
-trigger_error('Nie udało się wykonać polecenia: ' . $m['message'], E_USER_ERROR);
-}
+    if (!$result) {
+        $m = oci_error($stid);
+        trigger_error('Nie udało się wykonać polecenia: ' . $m['message'], E_USER_ERROR);
+    }
+
 //EXECUTE KURSOR
 $result = oci_execute($cursorKategoria, OCI_DEFAULT);
-if (!$result) {
-$m = oci_error($stid);
-trigger_error('Nie udało się wykonać polecenia: ' . $m['message'], E_USER_ERROR);
+    if (!$result) {
+       $m = oci_error($stid);
+        trigger_error('Nie udało się wykonać polecenia: ' . $m['message'], E_USER_ERROR);
 }
+
 //ZWOLNIJ ZASOBY
 oci_free_statement($stid);
 
@@ -150,16 +149,17 @@ oci_free_statement($stid);
         <meta name="description" content="">
         <meta name="author" content="">
         <title>goFISHINGshop</title>
-        <!-- Bootstrap core CSS -->
+        <!-- STYLE CSS -->
         <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-        <!-- Custom styles for this template -->
         <link href="css/simple-sidebar.css" rel="stylesheet">
         <link href="css/mycss.css" rel="stylesheet">
+        <!-- IKONY -->
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.10/css/all.css" integrity="sha384-+d0P83n9kaQMCwj8F4RJB66tzIwOKmrdb46+porD/OvrJ+37WqIM7UoBtwHO6Nlg" crossorigin="anonymous">
     </head>
     <body>
         
-        <!-- Navigation -->
+        <!--  ==========    PASEK NAWIGACJI   ==========  -->
+       
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
             <a class="text-left text-info zwin" href="#menu-toggle" id="menu-toggle"><i class="fas fa-minus-square"></i> <span class="pokazukryj">Ukryj</span></a>
             <div class="container">
@@ -200,7 +200,9 @@ oci_free_statement($stid);
             </div>
         </nav>
         <div id="wrapper" class="toggled">
-            <!-- Sidebar -->
+            
+       <!--  ==========    PASEK BOCZNY   ==========  -->
+
             <div id="sidebar-wrapper">
                 <ul class="sidebar-nav">
                     <li class="sidebar-brand">
@@ -228,8 +230,6 @@ END;
                 ?></div>
             </ul>
         </div>
-        <!-- /#sidebar-wrapper -->
-        <!-- Page Content -->
         <div id="page-content-wrapper">
             <div class="container-fluid">
  <div class="row">
@@ -393,14 +393,10 @@ while (($row = oci_fetch_array($cursorSzczegoly, OCI_ASSOC + OCI_RETURN_NULLS)) 
                         </div>            
 <?php } ?>                 
                     
-                    
-                    <!-- ./container-fluid -->
                 </div>
-                <!-- /#page-content-wrapper -->
             </div>
         </div>
-        <!-- /#wrapper -->
-        <!-- Bootstrap core JavaScript -->
+        <!-- JavaScripts -->
         <script src="vendor/jquery/jquery.min.js"></script>
         <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
         <script src="script/toogle.js"></script>

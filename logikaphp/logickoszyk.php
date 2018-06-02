@@ -29,14 +29,16 @@ if (!$connection) {
 
 
 /* ==========		ZMIENNE LOKALNE			========== */
+
 //CZY PRODUKT W KOSZYKU
+// ---------------------------------------------------
 $queryLicz = "begin 
                 :bv := COUNTRW(:tabl, :colm, :cond);    
                end;";
 
 $tablename  = 'KOSZYK';
 $columnname = 'PRODUKT_ID';
-
+// ---------------------------------------------------
 
 $querySztuki = "begin 
                 :bv := COUNTSZTUKI(:tabl, :colm, :cond);    
@@ -79,7 +81,7 @@ $queryStworzZamowienie =   "begin
 
 /* ==========		DOADAJ ZE SKLEPU			========== */
 if($_SERVER['REQUEST_METHOD'] == "POST" and isset($_POST['buttonproduktid'])) {	
-	/* ==========		SELECT LICZBA produktow			========== */
+	/* ==========		SELECT LICZBA PRODUKTÓW			========== */
 	//PARSOWANIE  
 	$stid = oci_parse($connection, $queryLicz);
 

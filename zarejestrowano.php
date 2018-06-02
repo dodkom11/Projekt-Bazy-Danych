@@ -1,6 +1,5 @@
 <?php
-session_start();
-
+    session_start();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -10,14 +9,17 @@ session_start();
         <meta name="description" content="">
         <meta name="author" content="">
         <title>goFISHINGshop</title>
-        <!-- Bootstrap core CSS -->
+        <!-- STYLE CSS -->
         <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-        <!-- Custom styles for this template -->
         <link href="css/simple-sidebar.css" rel="stylesheet">
-        <link href="css/mycss.css" rel="stylesheet">
+        <link href="css/mycss.css" rel="stylesheet">        
+        <!-- IKONY -->
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.10/css/all.css" integrity="sha384-+d0P83n9kaQMCwj8F4RJB66tzIwOKmrdb46+porD/OvrJ+37WqIM7UoBtwHO6Nlg" crossorigin="anonymous">
     </head>
     <body class="bg-dark">
+
+         <!--  ==========    PASEK NAWIGACJI   ==========  -->
+
          <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
             <div class="container">
                 <a class="navbar-brand" href="index.php"><i class="fas fa-hands-helping"></i>&nbsp;&nbsp;goFISHINGshop</a>
@@ -31,10 +33,6 @@ session_start();
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="zamowienie.php"><i class="fas fa-history"></i>&nbsp;&nbsp;Zamówienia</a>
-                        </li>
-
-                        <li class="nav-item">
                             <a class="nav-link" href="zalogujsie.php"><i class="fas fa-sign-in-alt"></i>&nbsp;&nbsp;Login</a>
                         </li>
                         <li class="nav-item">
@@ -44,31 +42,21 @@ session_start();
                     </ul>
                 </div>
             </div>
-        </nav>
-        
+        </nav>   
 
         <div class="container" id="wrapper">
-
             <div class="card card-login mx-auto mt-5">
-
-                <div class="card-body">
-                	
+                <div class="card-body">                	
                 	<div class="text-center">
                         <a class="d-block small mt-3" >&nbsp;&nbsp;<h2>Pomyślnie Zarejestrowano!</h2>&nbsp;&nbsp;</a>
-                    </div>
-                	
+                    </div>                	
                     <div class="text-center">
                         <a class="d-block small mt-3" href="zalogujsie.php"><h4>Zaloguj Sie!<h4></a>
                     </div>
-
-                </div>
-                
-                </div>
+                </div>                
             </div>
         </div>
-        
-        <!-- /#wrapper -->
-        <!-- Bootstrap core JavaScript -->
+        <!-- JavaScripts -->
         <script src="vendor/jquery/jquery.min.js"></script>
         <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
         <script src="script/toogle.js"></script>

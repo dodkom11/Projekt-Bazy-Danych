@@ -105,9 +105,7 @@ if (!$result) {
 }
 
 //ZWOLNIJ ZASOBY
-oci_free_statement($stid);     
- 
-     
+oci_free_statement($stid);        
 ?> 
 
 <!DOCTYPE html>
@@ -118,16 +116,17 @@ oci_free_statement($stid);
         <meta name="description" content="">
         <meta name="author" content="">
         <title>goFISHINGshop</title>
-        <!-- Bootstrap core CSS -->
+        <!-- STYLE CSS -->
         <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-        <!-- Custom styles for this template -->
         <link href="css/simple-sidebar.css" rel="stylesheet">
         <link href="css/mycss.css" rel="stylesheet">
+        <!-- IKONY -->
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.10/css/all.css" integrity="sha384-+d0P83n9kaQMCwj8F4RJB66tzIwOKmrdb46+porD/OvrJ+37WqIM7UoBtwHO6Nlg" crossorigin="anonymous">
     </head>
     <body>
        
-        <!-- Navigation -->
+        <!--  ==========    PASEK NAWIGACJI   ==========  -->
+
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
             <a class="text-left text-info zwin" href="#menu-toggle" id="menu-toggle"><i class="fas fa-minus-square"></i> <span class="pokazukryj">Ukryj</span></a>
             <div class="container">
@@ -170,7 +169,9 @@ oci_free_statement($stid);
             </div>
         </nav>
         <div id="wrapper" class="toggled">
-            <!-- Sidebar -->
+            
+       <!--  ==========    PASEK BOCZNY   ==========  -->
+
             <div id="sidebar-wrapper">
                 <ul class="sidebar-nav">
                     <li class="sidebar-brand">
@@ -199,8 +200,7 @@ END;
 ?></div>
                 </ul>
             </div>
-            <!-- /#sidebar-wrapper -->
-            <!-- Page Content -->
+
             <div id="page-content-wrapper">
                 <div class="container-fluid">
                     <div class="row">
@@ -234,7 +234,7 @@ END;
                             </a>
                         </div>
                     </div>
-                    <!-- /.row -->
+    
                     <div class="row">
                     <?php                        
                         while (($row = oci_fetch_array($cursorProdukty, OCI_ASSOC + OCI_RETURN_NULLS)) != false) {     
@@ -313,14 +313,11 @@ END;
                         }
                     ?>                       
                     </div>
-                    <!-- /.row -->
+    
                 </div>
-                <!-- ./container-fluid -->
             </div>
-            <!-- /#page-content-wrapper -->
         </div>
-        <!-- /#wrapper -->
-        <!-- Bootstrap core JavaScript -->
+        <!-- JavaScripts -->
         <script src="vendor/jquery/jquery.min.js"></script>
         <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
         <script src="script/toogle.js"></script>

@@ -28,7 +28,6 @@ if (!$connection) {
 
 
 /* ==========		ZMIENNE LOKALNE			========== */
-//SELECT KLIENCI TABELA
 $querySelectZamowienia = "begin 
               			 	:cursor := SELECTZAMOWIENIA;
           				end;";
@@ -37,28 +36,24 @@ $querySzczegoly        = "begin
                             :cursor3 := SELECTSZCZEGOLYZAMOWIENIA(:rekord_id);
                         end;";
 
-//SELECT LICZBA KLIENTOW
+$querySelectKlientID = "begin 
+            				:cursor2 := SELECTKLIENCIKONTOID(:rekord_id);
+            			end;";  
+
+// ---------------------------------------------------
 $queryLicz = "begin 
                 :bv := COUNTRW(:tabl, :colm, :cond);    
                end;";
 
-//SELECT KLIENT PO ID
-$querySelectKlientID = "begin 
-            				:cursor2 := SELECTKLIENCIKONTOID(:rekord_id);
-            			end;";   
-
 $tablename  = 'ZAMOWIENIE';
 $columnname = 'ZAMOWIENIE_ID';
 $condition  = "'TRUE'='TRUE'";
-
-//WARUNEK CZY ISTENIEJE KLIENT 
-$condition2  = "UPRAWNIENIA = 'klient' AND KONTO_ID = '";
+// ---------------------------------------------------
 
 
 
 
-
-/* ==========		SELECT KLIENCI TABELA		========== */
+/* ==========		SELECT ZAMOWIENIA TABELA		========== */
 //PARSOWANIE  
 $stid = oci_parse($connection, $querySelectZamowienia);
 if (!$stid) {
@@ -86,9 +81,6 @@ if (!$result) {
 
 //ZWOLNIJ ZASOBY
 oci_free_statement($stid);
-
-
-
 
 
 
@@ -122,17 +114,19 @@ oci_free_statement($stid);
         <meta name="description" content="">
         <meta name="author" content="">
         <title>goFISHINGshop</title>
-        <!-- Bootstrap core CSS -->
+        <!-- STYLE CSS -->
         <link href="../vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-        <!-- Custom styles for this template -->
         <link href="../css/simple-sidebar.css" rel="stylesheet">
         <link href="../css/mycss.css" rel="stylesheet">
         <link href="../vendor/datatables/dataTables.bootstrap4.css" rel="stylesheet">
+
+        <!-- IKONY -->
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.10/css/all.css" integrity="sha384-+d0P83n9kaQMCwj8F4RJB66tzIwOKmrdb46+porD/OvrJ+37WqIM7UoBtwHO6Nlg" crossorigin="anonymous">
     </head>
     <body>
         
-        <!-- Navigation -->
+        <!--  ==========    PASEK NAWIGACJI   ==========  -->
+
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
             <a class="text-left text-info zwin" href="#menu-toggle" id="menu-toggle"><i class="fas fa-minus-square"></i> <span class="pokazukryj">Ukryj</span></a>
             <div class="container">
@@ -173,7 +167,9 @@ oci_free_statement($stid);
             </div>
         </nav>
         <div id="wrapper" class="toggled">
-            <!-- Sidebar -->
+            
+       <!--  ==========    PASEK BOCZNY   ==========  -->
+
             <div id="sidebar-wrapper">
                 <ul class="sidebar-nav">
                     <li class="sidebar-brand">
@@ -192,8 +188,7 @@ oci_free_statement($stid);
                     </li>
                 </ul>
             </div>
-            <!-- /#sidebar-wrapper -->
-            <!-- Page Content -->
+
             <div id="page-content-wrapper">
                 <div class="container-fluid">
                     <nav>
@@ -310,7 +305,6 @@ $EMAIL                       = $row['EMAIL'];
                             </div>
                         </div>
 
-
 <?php 
 
 /* ==========       SELECT SZCZEGOLY ZAMOWIENIA      ========== */
@@ -371,7 +365,7 @@ oci_free_statement($stid);
 
                                                 <?php
 
-//WYPEŁNIJ TABELE KLIENTAMI Z BAZY
+//WYPEŁNIJ TABELE SZCZEGOLAMI ZAMOWIENIA Z BAZY
 while (($row = oci_fetch_array($cursorSzczegoly, OCI_ASSOC + OCI_RETURN_NULLS)) != false) {
     $PRODUKT_ID                  = $row['PRODUKT_ID'];
     $PRODUCENT                   = $row['PRODUCENT'];
@@ -423,13 +417,10 @@ while (($row = oci_fetch_array($cursorSzczegoly, OCI_ASSOC + OCI_RETURN_NULLS)) 
                 </div>
 <?php } ?>  
             </div>
-            <!-- ./container-fluid -->
         </div>
-        <!-- /#page-content-wrapper -->
     </div>
-    <!-- /#wrapper -->
-    <!-- Bootstrap core JavaScript -->
-
+    
+    <!-- JavaScripts -->
     <script src="../vendor/jquery/jquery.min.js"></script>
     <script src="../vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="../script/toogle.js"></script>
@@ -437,7 +428,6 @@ while (($row = oci_fetch_array($cursorSzczegoly, OCI_ASSOC + OCI_RETURN_NULLS)) 
     <script src="../vendor/datatables/jquery.dataTables.js"></script>
     <script src="../vendor/datatables/dataTables.bootstrap4.js"></script>
     <script src="../vendor/datatables/callDataTables.js"></script>
-
 </body>
 </html>
 <?php
