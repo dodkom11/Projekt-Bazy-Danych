@@ -33,7 +33,7 @@ if (!$connection) {
 //CZY PRODUKT W KOSZYKU
 // ---------------------------------------------------
 $queryLicz = "begin 
-                :bv := COUNTRW(:tabl, :colm, :cond);    
+                :bv := PINNE.COUNTRW(:tabl, :colm, :cond);    
                end;";
 
 $tablename  = 'KOSZYK';
@@ -41,7 +41,7 @@ $columnname = 'PRODUKT_ID';
 // ---------------------------------------------------
 
 $querySztuki = "begin 
-                :bv := COUNTSZTUKI(:tabl, :colm, :cond);    
+                :bv := PKOSZYK.COUNTSZTUKI(:tabl, :colm, :cond);    
                end;";
 
 $columnname1 = 'ILOSC_SZTUK';
@@ -57,22 +57,22 @@ if($_SERVER['REQUEST_METHOD'] == "POST" and isset($_POST['buttonproduktidkoszykd
 
 //DODAJ PRODUKT DO KOSZYKA
 $queryDodajDoKoszyka = "begin 
-              				INSERTKOSZYK(:produkt_id, :konto_id, :sztuk);
+              				PKOSZYK.INSERTKOSZYK(:produkt_id, :konto_id, :sztuk);
           				end;";
 
 //ZWIEKSZ ILOSC PRODUKTOW O 1
 $queryProduktInkrementuj =  "begin 
-              			 		UPDATEKOSZYKINC(:produkt_id, :konto_id);
+              			 		PKOSZYK.UPDATEKOSZYKINC(:produkt_id, :konto_id);
           				    end;";
 
 //ZMNIEJSZ ILOSC PRODUKTOW O 1
 $queryProduktDekrementuj=  "begin 
-              			 		UPDATEKOSZYKDEC(:produkt_id, :konto_id);
+              			 		PKOSZYK.UPDATEKOSZYKDEC(:produkt_id, :konto_id);
           				    end;";
 
 //STWORZ ZAMOWIENIE
 $queryStworzZamowienie =   "begin 
-              			 		STWORZ_ZAMOWIENIE(:konto_id, :kurier_id, :koszt_zamowienia, :metoda_platnosci, :dokument_sprzedazy);
+              			 		PZAMOWIENIE.STWORZ_ZAMOWIENIE(:konto_id, :kurier_id, :koszt_zamowienia, :metoda_platnosci, :dokument_sprzedazy);
           				    end;";
 
 

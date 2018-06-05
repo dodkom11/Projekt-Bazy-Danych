@@ -30,17 +30,17 @@ if (!$connection) {
 /* ==========       ZMIENNE LOKALNE         ========== */
 
 $querySelectDostawcy = "begin 
-                            :cursor := SELECTDOSTAWCA;
+                            :cursor := PDOSTAWCA.SELECTDOSTAWCA;
                         end;";
 
 
 $querySelectDostawcaID = "begin 
-                            :cursor2 := SELECTDOSTAWCAID(:rekord_id);
+                            :cursor2 := PDOSTAWCA.PDOSTAWCA.SELECTDOSTAWCAID(:rekord_id);
                         end;";  
 
 // ---------------------------------------------------
 $queryLicz = "begin 
-                :bv := COUNTRW(:tabl, :colm, :cond);    
+                :bv := PINNE.COUNTRW(:tabl, :colm, :cond);    
                end;";
 
 $tablename  = 'DOSTAWCA';

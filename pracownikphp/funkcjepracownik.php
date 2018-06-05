@@ -30,7 +30,7 @@ if (!$connection) {
 /* ==========       ZMIENNE LOKALNE         ========== */
 //DELETE PRODUKT
 $queryUsunProduktID= "begin 
-                            DELETEPRODUKT(:rekord_id);
+                            PPRODUKT.DELETEPRODUKT(:rekord_id);
                      end;";
 
 //DODAJ PRODUKT
@@ -38,17 +38,17 @@ $queryDodajProdukt = "INSERT INTO PRODUKT(DOSTAWCA_ID, KATEGORIA_ID, PRODUCENT, 
 
 //DELTE KATEGORIA
 $queryDeleteKategoria = "begin 
-                            DELETEKATEGORIA(:rekord_id);
+                            PKATEGORIA.DELETEKATEGORIA(:rekord_id);
                         end;"; 
 
 //INSERT KATEGORIA
 $queryInsertKategoria = "begin 
-                            INSERTKATEGORIA(:nazwa, :opis);
+                            PKATEGORIA.INSERTKATEGORIA(:nazwa, :opis);
                         end;"; 
 
 //EDYTUJ ZAMOWIENIE
 $queryEdytujZamowienie = "begin 
-                            UPDATEZAMOWIENIE(:rekord_id, :data, :zaakaceptowano, :zaplacnono, :zrealizowano);
+                            PZAMOWIENIE.UPDATEZAMOWIENIE(:rekord_id, :data, :zaakaceptowano, :zaplacnono, :zrealizowano);
                          end;";                       
 
 

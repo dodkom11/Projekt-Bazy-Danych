@@ -30,16 +30,16 @@ if (!$connection) {
 /* ==========		ZMIENNE LOKALNE			========== */
 
 $querySelectProdukty = "begin 
-              			 	:cursor := SELECTPRODUKTY;
+              			 	:cursor := PPRODUKT.SELECTPRODUKTY;
           				end;";
 
 $querySelectProduktID = "begin 
-            				:cursor2 := SELECTPRODUKTID(:rekord_id);
+            				:cursor2 := PPRODUKT.SELECTPRODUKTID(:rekord_id);
             			end;";   
 
 // ---------------------------------------------------
 $queryLicz = "begin 
-                :bv := COUNTRW(:tabl, :colm, :cond);    
+                :bv := PINNE.COUNTRW(:tabl, :colm, :cond);    
                end;";
 $tablename  = 'PRODUKT';
 $columnname = 'PRODUKT_ID';
@@ -47,7 +47,7 @@ $condition  = "'true'='true'";
 // ---------------------------------------------------
 
 $querySelectDostawcy = "begin 
-                            :cursor := SELECTDOSTAWCA;
+                            :cursor := PDOSTAWCA.SELECTDOSTAWCA;
                         end;";
 
 

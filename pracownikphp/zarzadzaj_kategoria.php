@@ -30,16 +30,16 @@ if (!$connection) {
 /* ==========		ZMIENNE LOKALNE			========== */
 
 $queryPokazKategorie =   "begin 
-                              :cursor := SELECTKATEGORIA;
+                              :cursor := PKATEGORIA.SELECTKATEGORIA;
                           end;";
 
 $querySelectKategoriaID = "begin 
-            				:cursor2 := SELECTKATEGORIAID(:rekord_id);
+            				:cursor2 := PKATEGORIA.PKATEGORIA.SELECTKATEGORIAID(:rekord_id);
             			end;";   
 
 // ---------------------------------------------------
 $queryLicz = "begin 
-                :bv := COUNTRW(:tabl, :colm, :cond);    
+                :bv := PINNE.COUNTRW(:tabl, :colm, :cond);    
                end;";
 
 $tablename  = 'KATEGORIA';

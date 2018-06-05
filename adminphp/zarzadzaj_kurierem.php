@@ -30,16 +30,16 @@ if (!$connection) {
 /* ==========       ZMIENNE LOKALNE         ========== */
 
 $querySelectKurierzy = "begin 
-                            :cursor := SELECTKURIERZY;
+                            :cursor := PKURIER.SELECTKURIERZY;
                         end;";
 
 $querySelectKurierID = "begin 
-                            :cursor2 := SELECTKURIERID(:rekord_id);
+                            :cursor2 := PKURIER.SELECTKURIERID(:rekord_id);
                         end;";   
 
 // ---------------------------------------------------
 $queryLicz = "begin 
-                :bv := COUNTRW(:tabl, :colm, :cond);    
+                :bv := PINNE.COUNTRW(:tabl, :colm, :cond);    
                end;";
 
 $tablename  = 'KURIER';

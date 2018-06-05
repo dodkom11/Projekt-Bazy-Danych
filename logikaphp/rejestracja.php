@@ -21,7 +21,7 @@ if (!$connection) {
 /* ==========       ZMIENNE LOKALNE         ========== */
 
 	$sql = 'BEGIN 
-				REJESTRACJA(:login, :haslo, :haslo2, :imie, :nazwisko, :email, :woj, :miejsc, :poczt, :ulica, :nr_domu, :nr_tel);
+				PINNE.REJESTRACJA(:login, :haslo, :haslo2, :imie, :nazwisko, :email, :woj, :miejsc, :poczt, :ulica, :nr_domu, :nr_tel);
 			END;';
 
 	$login = $_POST['login'];

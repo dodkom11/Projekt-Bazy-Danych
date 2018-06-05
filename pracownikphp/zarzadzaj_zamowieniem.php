@@ -29,20 +29,20 @@ if (!$connection) {
 
 /* ==========		ZMIENNE LOKALNE			========== */
 $querySelectZamowienia = "begin 
-              			 	:cursor := SELECTZAMOWIENIA;
+              			 	:cursor := PZAMOWIENIE.SELECTZAMOWIENIA;
           				end;";
 
 $querySzczegoly        = "begin 
-                            :cursor3 := SELECTSZCZEGOLYZAMOWIENIA(:rekord_id);
+                            :cursor3 := PZAMOWIENIE.SELECTSZCZEGOLYZAMOWIENIA(:rekord_id);
                         end;";
 
 $querySelectKlientID = "begin 
-            				:cursor2 := SELECTKLIENCIKONTOID(:rekord_id);
+            				:cursor2 := PKLIENT.SELECTKLIENCIKONTOID(:rekord_id);
             			end;";  
 
 // ---------------------------------------------------
 $queryLicz = "begin 
-                :bv := COUNTRW(:tabl, :colm, :cond);    
+                :bv := PINNE.COUNTRW(:tabl, :colm, :cond);    
                end;";
 
 $tablename  = 'ZAMOWIENIE';

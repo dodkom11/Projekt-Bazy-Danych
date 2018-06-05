@@ -34,12 +34,12 @@ if (!$connection) {
 /* ==========       ZMIENNE LOKALNE         ========== */
 //SELECT PRODUKTY Z KATEGORI
 $queryProduktyKategoria = "begin 
-                                :cursor := SELECTPRODUKTYKATEGORIAID(:katid);
+                                :cursor := PPRODUKT.SELECTPRODUKTYKATEGORIAID(:katid);
                             end;";
 
 //SELECT KATEGORIA
 $queryPokazKategorie =      "begin 
-                                :cursor := SELECTKATEGORIA;
+                                :cursor := PKATEGORIA.SELECTKATEGORIA;
                             end;";
 
 

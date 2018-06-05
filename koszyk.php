@@ -31,23 +31,23 @@ if (!$connection) {
 /* ==========       ZMIENNE LOKALNE         ========== */
 //SELECT PRODUKTY w koszyku
 $queryProduktyKoszyk =     "begin 
-                                :cursor := POKAZKOSZYK(:kontoid);
+                                :cursor := PKOSZYK.POKAZKOSZYK(:kontoid);
                             end;";
 
 //SELECT OSTATNIE KATEGORIA
 $queryPokazKategorie =      "begin 
-                                :cursor := SELECTKATEGORIA;
+                                :cursor := PKATEGORIA.SELECTKATEGORIA;
                             end;";
 
 //SELECT KURIERZY TABELA
 $querySelectKurierzy = "begin 
-                            :cursor := SELECTKURIERZY;
+                            :cursor := PKURIER.SELECTKURIERZY;
                         end;";
 
 //PRODUKTY W KOSZYKU
 // ---------------------------------------------------
 $queryLicz = "begin 
-                :bv := COUNTRW(:tabl, :colm, :cond);    
+                :bv := PINNE.COUNTRW(:tabl, :colm, :cond);    
                end;";
 
 $tablename  = 'KOSZYK';

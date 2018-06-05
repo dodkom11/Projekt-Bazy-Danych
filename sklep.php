@@ -31,12 +31,12 @@ if (!$connection) {
 /* ==========       ZMIENNE LOKALNE         ========== */
 //SELECT OSTATNIE 6 PRODUKTÓW 
 $queryOstatnie6Produktow = "begin 
-                                :cursor := LAST6PRODUCTS;
+                                :cursor := PPRODUKT.LAST6PRODUCTS;
                             end;";
 
 //SELECT OSTATNIE KATEGORIA
 $queryPokazKategorie =      "begin 
-                                :cursor := SELECTKATEGORIA;
+                                :cursor := PKATEGORIA.SELECTKATEGORIA;
                             end;";
 
 

@@ -34,23 +34,23 @@ $queryUsunKontoID = "begin
           				end;";
 
 $queryDodajPracownikID = "begin 
-              			 	INSERTPRACOWNIK(:rekord_id, :pensja, :premia);
+              			 	PPRACOWNIK.INSERTPRACOWNIK(:rekord_id, :pensja, :premia);
           				end;";
 
 $queryDodajKurier = "begin 
-              			  	INSERTKURIER(:nazwa);
+              			  	PKURIER.INSERTKURIER(:nazwa);
           			end;";
 
 $queryUsunKurieraID= "begin 
-              			 	DELETEKURIER(:rekord_id);
+              			 	PKURIER.DELETEKURIER(:rekord_id);
           			 end;";
 
 $queryUsunDostawceID = "begin 
-                            DELETEDOSTAWCA(:rekord_id);
+                            PDOSTAWCA.DELETEDOSTAWCA(:rekord_id);
                     end;";
 
 $queryDodajDostawceID= "begin 
-                            INSERTDOSTAWCA(:nazwadostawcy, :miejscowosc, :wojewodztwo, :kodpocztowy, :ulica, :nrdomu, :nrlokalu, :email, :nrtel, :fax, :www);
+                            PDOSTAWCA.INSERTDOSTAWCA(:nazwadostawcy, :miejscowosc, :wojewodztwo, :kodpocztowy, :ulica, :nrdomu, :nrlokalu, :email, :nrtel, :fax, :www);
                      end;";
 
 

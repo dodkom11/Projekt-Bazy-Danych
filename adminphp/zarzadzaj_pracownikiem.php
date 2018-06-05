@@ -30,16 +30,16 @@ if (!$connection) {
 /* ==========       ZMIENNE LOKALNE         ========== */
 
 $querySelectPracownik = "begin 
-                            :cursor := SELECTPRACOWNICY;
+                            :cursor := PPRACOWNIK.SELECTPRACOWNICY;
                         end;";
 
 $querySelectPracownikID = "begin 
-                            :cursor2 := SELECTPRACOWNIKKONTOID(:rekord_id);
+                            :cursor2 := PPRACOWNIK.SELECTPRACOWNIKKONTOID(:rekord_id);
                         end;";   
 
 // ---------------------------------------------------
 $queryLicz = "begin 
-                :bv := COUNTRW(:tabl, :colm, :cond);    
+                :bv := PINNE.COUNTRW(:tabl, :colm, :cond);    
                end;";
 
 $tablename  = 'KONTO';

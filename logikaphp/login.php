@@ -60,7 +60,7 @@
 			// ---------------------------------------------------
 			//PRODUKTY W KOSZYKU
 			$queryLicz = "begin 
-			                :bv := COUNTRW(:tabl, :colm, :cond);    
+			                :bv := PINNE.COUNTRW(:tabl, :colm, :cond);    
 			               end;";
 
 			$tablename  = 'KOSZYK';

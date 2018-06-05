@@ -29,17 +29,17 @@ if (!$connection) {
 
 /* ==========		ZMIENNE LOKALNE			========== */
 
-$querySelectKlienci = "begin 
-              			 	:cursor := SELECTKLIENCI;
+$querySelectKlienci     = "begin 
+              			 	:cursor := PKLIENT.SELECTKLIENCI;
           				end;";
 
 $querySelectKlientID = "begin 
-            				:cursor2 := SELECTKLIENCIKONTOID(:rekord_id);
+            				:cursor2 := PKLIENT.SELECTKLIENCIKONTOID(:rekord_id);
             			end;";   
 
 // ---------------------------------------------------
 $queryLicz = "begin 
-                :bv := COUNTRW(:tabl, :colm, :cond);    
+                :bv := PINNE.COUNTRW(:tabl, :colm, :cond);    
                end;";
 
 $tablename  = 'KONTO';
