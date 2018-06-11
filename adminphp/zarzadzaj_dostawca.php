@@ -35,7 +35,7 @@ $querySelectDostawcy = "begin
 
 
 $querySelectDostawcaID = "begin 
-                            :cursor2 := PDOSTAWCA.PDOSTAWCA.SELECTDOSTAWCAID(:rekord_id);
+                            :cursor2 := PDOSTAWCA.SELECTDOSTAWCAID(:rekord_id);
                         end;";  
 
 // ---------------------------------------------------

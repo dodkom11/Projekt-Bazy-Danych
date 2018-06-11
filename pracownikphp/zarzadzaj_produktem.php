@@ -596,11 +596,11 @@ END;
                 </div>
                 <div class="form-group col-3">
                     <label for="inputcenaid">Cena</label>
-                    <input type="number" class="form-control" id="inputcenaid" name="cena" placeholder="Model" required>
+                    <input type="number" min="0" step="0.01" class="form-control" id="inputcenaid" name="cena" placeholder="Model" required>
                 </div>
                 <div class="form-group col-3">
                     <label for="inputsztukid">Liczba Sztuk</label>
-                    <input type="number" class="form-control" id="inputsztukid" name="sztuk" placeholder="Sztuk" required>
+                    <input type="number" min="0" class="form-control" id="inputsztukid" name="sztuk" placeholder="Sztuk" required>
                 </div>
                 <div class="form-group col-3">
                     <label for="inputopisid">Opis</label>

@@ -34,7 +34,7 @@ $queryPokazKategorie =   "begin
                           end;";
 
 $querySelectKategoriaID = "begin 
-            				:cursor2 := PKATEGORIA.PKATEGORIA.SELECTKATEGORIAID(:rekord_id);
+            				:cursor2 := PKATEGORIA.SELECTKATEGORIAID(:rekord_id);
             			end;";   
 
 // ---------------------------------------------------
